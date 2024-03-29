@@ -4,10 +4,10 @@ import os
 
 from classes import alien_1, projectile, player
 
-class level_1(self):
+class level_1:
 
     #global class vars
-	loaded_images = []
+    loaded_images = []
     loaded_sounds = []
 
 
@@ -29,11 +29,11 @@ class level_1(self):
             counter += 1
         self.loaded_sounds = loaded_sounds
 	
-	def init_lvl():
-		pygame.init()
+    def init_lvl(self):
+        pygame.init()
 
         # set screen & label
-        self.win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Main Menu")
 
         # load all images
@@ -65,5 +65,4 @@ class level_1(self):
         pygame.mixer.music.play(-1)
 
 
-	def start_lvl():
-
+#def start_lvl():
