@@ -1,4 +1,6 @@
-
+import pygame
+import os
+import sys
 
 class alien_1(object):
 		def __init__(self,x,y, width, height, end):
