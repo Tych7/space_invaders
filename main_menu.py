@@ -15,6 +15,16 @@ class Game:
     first_order_entered = False
     second_order_entered = False
 
+    def load_images(self, unloaded_images):
+        loaded_images = {}
+        directory = "images/"
+        counter = 0
+        for x in unloaded_images:
+            loaded_images[counter] = pygame.image.load(directory + x).convert_alpha()
+            counter += 1
+
+        return loaded_images
+
     def init_game(self):
         pygame.init()
 
@@ -36,8 +46,8 @@ class Game:
         self.loaded_estatic_images = self.load_images(estatic_images)
 
         # Start music
-        pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
-        pygame.mixer.music.play(-1)
+        # pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
+        # pygame.mixer.music.play(-1)
 
         # Center screen
         bg_width, bg_height = self.loaded_estatic_images[0].get_size()
@@ -46,15 +56,6 @@ class Game:
         self.width_max = (screen_width - bg_width) / 2
         self.height_max = (screen_height - bg_height) / 2
 
-    def load_images(self, unloaded_images):
-        loaded_images = {}
-        directory = "images/"
-        counter = 0
-        for x in unloaded_images:
-            loaded_images[counter] = pygame.image.load(directory + x).convert_alpha()
-            counter += 1
-
-        return loaded_images
 
     def update_entered_number(self, number):
         if number == -1:
@@ -84,11 +85,14 @@ class Game:
         self.win.blit(self.loaded_estatic_images[6], (self.width_max + 600, self.height_max + 650))
         self.win.blit(self.loaded_estatic_images[7], (self.width_max + 1000, self.height_max + 350))
 
+        font = pygame.font.SysFont('couriernew', 30, True)
+        level_select = font.render('Level:' + str(game_1.entered_number), 1, (4, 245, 4))
+        game_1.win.blit(level_select, (game_1.width_max + 1030, game_1.height_max +  365))
+
 
 #MAIN LOOP
 while True:
     game_1 = Game()
-
     game_1.init_game()
 
     while True:
@@ -124,11 +128,8 @@ while True:
                 elif event.key == pygame.K_SPACE:
                     if game_1.entered_number == 1:
                         obj = level_1()
-                        obj.start_lvl_1()
-
-        font = pygame.font.SysFont('couriernew', 30, True)
-        level_select = font.render('Level:' + str(game_1.entered_number), 1, (4, 245, 4))
-        game_1.win.blit(level_select, (game_1.width_max + 1030, game_1.height_max +  365))
-
+                        obj.start_level()
+                        
+               
         pygame.display.update()
         game_1.update_screen()
