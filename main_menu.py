@@ -2,59 +2,42 @@ import pygame
 import os
 import sys
 
+
+from classes import global_game_functions
 from lvl_01 import level_1
 
 
 class Game:
     images = []
     win = None
-    width_ratio = 0
-    height_ratio = 0
+    ratio = 0
 
     entered_number = 0
     first_order_entered = False
     second_order_entered = False
 
-    def load_images(self, unloaded_images):
-        loaded_images = []
-        directory = "images/"
-        for x in unloaded_images:
-            loaded_images.append(pygame.image.load(directory + x).convert_alpha())
-        return loaded_images
-    
-    def scale_images(self, loaded_images):
-        scaled_images = []
+    def set_ratio(self, loaded_images, game_functions):
         bg_width, bg_height = loaded_images[0].get_size()
         screen_width, screen_height = pygame.display.get_surface().get_size()
 
-        self.width_ratio = screen_width / bg_width
-        self.height_ratio = screen_height / bg_height
+        self.ratio = screen_width / bg_width
+        game_functions.ratio = self.ratio
 
-        for x in loaded_images:
-            image_width, image_height = x.get_size()
-            scaled_images.append(pygame.transform.scale(x, (image_width * self.width_ratio, image_height * self.height_ratio)))
-        return scaled_images
-
-    def init_game(self):
+    def init_game(self, game_functions):
         pygame.init()
 
-        # Set screen & label
         self.win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Main Menu")
 
-        # Load all images
-        estatic_images = [
+        images = [
             "bgA.jpg",
-            "quit.png",
-            "level.png",
             "mainmenu.png",
-            "info.png",
-            "info2.png",
-            "start.png",
-            "lvl_select.png",
+            "selected_lvl.png",
+            "alien_a.png",
         ]
-        loaded_images = self.load_images(estatic_images)
-        self.images = self.scale_images(loaded_images)
+        loaded_images = game_functions.load_images(images)
+        self.set_ratio(loaded_images, game_functions)
+        self.images = game_functions.scale_images(loaded_images)
 
         # Start music
         # pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
@@ -77,33 +60,29 @@ class Game:
             else:
                 self.entered_number = self.entered_number * 10 + number
             self.second_order_entered = True
-    
-    def scale_font_size(self, base_size):
-        screen_width, screen_height = pygame.display.get_surface().get_size()
-        scaled_size = int(base_size * min(self.width_ratio, self.height_ratio))
-        return scaled_size
+        
 
-    def update_screen(self):
+    def update_screen(self, game_functions):
         self.win.blit(self.images[0], (0 , 0))
-        self.win.blit(self.images[1], (self.width_ratio * 950, self.height_ratio * 775))
-        self.win.blit(self.images[2], (self.width_ratio * 400, self.height_ratio * 425))
-        self.win.blit(self.images[3], (self.width_ratio * 400, self.height_ratio * 50))
-        self.win.blit(self.images[4], (self.width_ratio * 400, self.height_ratio * 770))
-        self.win.blit(self.images[5], (self.width_ratio * 400, self.height_ratio * 800))
-        self.win.blit(self.images[6], (self.width_ratio * 600, self.height_ratio * 650))
-        self.win.blit(self.images[7], (self.width_ratio * 1000, self.height_ratio * 350))
+        self.win.blit(self.images[1], (self.ratio * 425, self.ratio * 150))
+        self.win.blit(self.images[2], (self.ratio * 500, self.ratio * 610))
 
-        font_size = self.scale_font_size(30)
-        font = pygame.font.SysFont('couriernew', font_size, True)
-        level_select = font.render('Level:' + str(game_1.entered_number), 1, (4, 245, 4))
-        self.win.blit(level_select, (self.width_ratio * 1030, self.height_ratio * 365))
-
+        game_functions.display_text(30, '    Select a Level    '      , 625, 475, self.win)
+        game_functions.display_text(30, 'Press [SPACE] to start'      , 625, 505, self.win)
+        game_functions.display_text(25, '[C] - Controls'              , 475, 750, self.win)
+        game_functions.display_text(25, '[I] - Game Info'             , 475, 775, self.win)
+        game_functions.display_text(25, '[Q] - Quit'                  , 1000, 750, self.win)
+        game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 650, 625, self.win)
+        
+        self.win.blit(self.images[3], (self.ratio * 530, self.ratio * 630))
+        self.win.blit(self.images[3], (self.ratio * 1070, self.ratio * 630))
 
 
 #MAIN LOOP
 while True:
     game_1 = Game()
-    game_1.init_game()
+    game_functions = global_game_functions()
+    game_1.init_game(game_functions)
 
     while True:
         for event in pygame.event.get():
@@ -142,4 +121,4 @@ while True:
                         
                
         pygame.display.update()
-        game_1.update_screen()
+        game_1.update_screen(game_functions)

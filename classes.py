@@ -2,15 +2,46 @@ import pygame
 import os
 import sys
 
+class global_game_functions:
+	ratio = 0
+
+	def load_images(self, unloaded_images):
+		loaded_images = []
+		directory = "images/"
+		for x in unloaded_images:
+			loaded_images.append(pygame.image.load(directory + x).convert_alpha())
+		return loaded_images
+
+	def load_sounds(self, unloaded_sounds):
+		loaded_sounds = []
+		directory = "sounds/"
+		for x in unloaded_sounds:
+			loaded_sounds.append(pygame.mixer.Sound(directory + x))
+		self.loaded_sounds = loaded_sounds
+    
+	def scale_images(self, loaded_images):
+		scaled_images = []
+		for x in loaded_images:
+			image_width, image_height = x.get_size()
+			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
+		return scaled_images
+	
+	def display_text(self, size, text, width, height, win):
+		font_size = int(size * min(self.ratio, self.ratio))
+		font = pygame.font.SysFont('couriernew', font_size, True)
+		renderd_text = font.render(text, 1, (4, 245, 4))
+		win.blit(renderd_text, (self.ratio * width, self.ratio * height))
+
+
 class alien_1(object):
-		def __init__(self,x,y, width, height, end):
+		def __init__(self,x,y, width, height, end, ratio):
 			self.x = x
 			self.y = y
 			self.width = width
 			self.height = height
 			self.end = end
 			self.path = [self.x , self.end]
-			self.vel = 1
+			self.vel = 1 * ratio
 			self.hitbox = (self.x, self.y, 34, 27)
 			self.health = 0
 			self.visible = True
