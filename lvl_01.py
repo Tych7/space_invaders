@@ -7,8 +7,8 @@ from classes import alien_1, projectile, player
 class level_1:
 
     #global static data
-    loaded_images = []
-    loaded_sounds = []
+    images = []
+    sounds = []
     win = None
     width_max = 0
     height_max = 0
@@ -52,7 +52,7 @@ class level_1:
         ]
         self.load_sounds(sounds)
 
-        bg_width, bg_height = self.loaded_images[0].get_size()
+        bg_width, bg_height = self.loaimagesed_images[0].get_size()
         screen_width, screen_height = pygame.display.get_surface().get_size()
         self.width_max = (screen_width - bg_width) / 2
         self.height_max = (screen_height - bg_height) / 2
@@ -62,26 +62,26 @@ class level_1:
         directory = "images/"
         for x in unloaded_images:
             loaded_images.append(pygame.image.load(directory + x).convert_alpha())
-        self.loaded_images = loaded_images
+        self.images = loaded_images
 
     def load_sounds(self, unloaded_sounds):
         loaded_sounds = []
         directory = "sounds/"
         for x in unloaded_sounds:
             loaded_sounds.append(pygame.mixer.Sound(directory + x))
-        self.loaded_sounds = loaded_sounds
+        self.sounds = loaded_sounds
 
     def update_screen(self):
-        self.win.blit(self.loaded_images[0], (self.width_max , self.height_max ))
-        self.win.blit(self.loaded_images[1], (self.width_max + 200, self.height_max + 825))
+        self.win.blit(self.images[0], (self.width_max , self.height_max ))
+        self.win.blit(self.images[1], (self.width_max + 200, self.height_max + 825))
 
         font00 = pygame.font.SysFont('couriernew', 30, True)
         text00 = font00.render('Score: ' + str(self.score), 1, (124,252,0))
         self.win.blit(text00, (self.width_max + 1150, self.height_max +  60))
 
-        for x in self.alien_1_objects: x.draw(self.win, self.loaded_images[11])
+        for x in self.alien_1_objects: x.draw(self.win, self.images[11])
 
-        player_images = [self.loaded_images[2], self.loaded_images[3], self.loaded_images[4]]
+        player_images = [self.images[2], self.images[3], self.images[4]]
         for x in self.player_objects: x.draw(self.win, player_images)
 
 
@@ -122,9 +122,9 @@ class level_1:
                 alienC.vel = 0
                 alienD.vel = 0
                 alienE.vel = 0
-                self.win.blit(self.loaded_images[7], (self.width_max + 350, self.height_max + 750))
-                self.win.blit(self.loaded_images[8], (self.width_max + 950, self.height_max + 750))
-                self.win.blit(self.loaded_images[9], (self.width_max + 350, self.height_max + 800))
+                self.win.blit(self.images[7], (self.width_max + 350, self.height_max + 750))
+                self.win.blit(self.images[8], (self.width_max + 950, self.height_max + 750))
+                self.win.blit(self.images[9], (self.width_max + 350, self.height_max + 800))
                 if keys[pygame.K_q]:
                     pygame.quit()
                     sys.exit(0)
