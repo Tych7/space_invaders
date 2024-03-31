@@ -3,8 +3,6 @@ import os
 import sys
 
 class global_game_functions:
-	ratio = 0
-
 	def load_images(self, unloaded_images):
 		loaded_images = []
 		directory = "images/"
@@ -17,7 +15,7 @@ class global_game_functions:
 		directory = "sounds/"
 		for x in unloaded_sounds:
 			loaded_sounds.append(pygame.mixer.Sound(directory + x))
-		self.loaded_sounds = loaded_sounds
+		self.sounds = loaded_sounds
     
 	def scale_images(self, loaded_images):
 		scaled_images = []
@@ -25,48 +23,76 @@ class global_game_functions:
 			image_width, image_height = x.get_size()
 			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
 		return scaled_images
+
+	def display_image(self, image, width, height, win):
+		screen_center  = (pygame.display.get_surface().get_size()[0])/2
+		image_width = 0
+		if width == 0:
+			image_width = screen_center - (image.get_size()[0] / 2)
+		elif width < 0:
+			image_width = screen_center - image.get_size()[0] + width 
+		else:
+			image_width = screen_center + width
+     
+		win.blit(image, (self.ratio * image_width, self.ratio * height))
+
 	
 	def display_text(self, size, text, width, height, win):
 		font_size = int(size * min(self.ratio, self.ratio))
 		font = pygame.font.SysFont('couriernew', font_size, True)
 		renderd_text = font.render(text, 1, (4, 245, 4))
-		win.blit(renderd_text, (self.ratio * width, self.ratio * height))
+  
+		screen_center  = (pygame.display.get_surface().get_size()[0])/2
+		image_width = 0
+		if width == 0:
+			image_width = screen_center - (font.size(text)[0] / 2)
+		elif width < 0:
+			image_width = screen_center - font.size(text)[0] + width 
+		else:
+			image_width = screen_center + width
+  
+		win.blit(renderd_text, (self.ratio * image_width, self.ratio * height))
+	
+	def alien_hit(self, alien, bullets, image, sound, win):
+		if alien.visible:
+			for bullet in bullets:
+				if bullet.y - bullet.radius < alien.hitbox[1] + alien.hitbox[3] and bullet.y + bullet.radius > alien.hitbox[1]:
+					if bullet.x + bullet.radius > alien.hitbox[0] and bullet.x - bullet.radius < alien.hitbox[0] + alien.hitbox[2]:
+						alien.hit(win, image, sound)
+						bullets.pop(bullets.index(bullet))
+						return True
+		return False
+		
 
+	
 
 class alien_1(object):
-		def __init__(self,x,y, width, height, end, ratio):
+		def __init__(self,x,y, ratio):
 			self.x = x
 			self.y = y
-			self.width = width
-			self.height = height
-			self.end = end
+			self.width = 34
+			self.height = 27
+			self.end = self.x + (500 * ratio)
 			self.path = [self.x , self.end]
 			self.vel = 1 * ratio
 			self.hitbox = (self.x, self.y, 34, 27)
 			self.health = 0
 			self.visible = True
-			self.bullets = []
 			self.shootloop = 0
-			self.loopbreak = False
-		
-		def set_loopbreak(self, val):
-			self.loopbreak = val
+			self.ratio = ratio
 
 		def draw(self, win, image):
-			if self.visible:
+			if self.y < (1080 * self.ratio):
 				self.move()
-				if self.vel > 0:
+				if self.visible == True:
 					win.blit(image, (self.x,self.y))
-				else:
-					win.blit(image, (self.x,self.y))
-
-				pygame.draw.rect(win, (255,0,0), (self.hitbox[0], self.hitbox[1] - 5, 38, 5))
-				pygame.draw.rect(win, (0,128,0), (self.hitbox[0], self.hitbox[1] - 5, 38 - (50 * (0 - self.health)), 5))
-				self.hitbox = (self.x - 2, self.y - 1, 35, 27)
+					pygame.draw.rect(win, (255,0,0), (self.hitbox[0], self.hitbox[1] - 5, 38, 5))
+					pygame.draw.rect(win, (0,128,0), (self.hitbox[0], self.hitbox[1] - 5, 38 - (50 * (0 - self.health)), 5))
+					self.hitbox = (self.x - 2, self.y - 1, 35, 27)
 				#pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 		def move(self):
-			if not self.loopbreak and self.vel > 0:
+			if self.vel > 0:
 				if self.x + self.vel < self.path[1]:
 					self.x += self.vel
 				else:
@@ -82,6 +108,7 @@ class alien_1(object):
 				self.health -= 1
 			else:
 				self.visible = False
+				self.vel = 0
 				win.blit(image, (self.x,self.y))
 				sound.play()
 				print('hit')
@@ -98,16 +125,18 @@ class projectile(object):
 			pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
 
 class player(object):
-		def __init__(self,x,y,width,height):
+		def __init__(self,x,y, ratio):
 			self.x = x
 			self.y = y
-			self.height = height
-			self.width = width
-			self.vel = 5
+			self.height = 45
+			self.width = 35
+			self.vel = 5 * ratio
 			self.left = False
 			self.right = False
 			self.hitbox = (self.x, self.y, 35, 45)
 			self.visible = True
+			self.bullets = []
+			self.shootloop = 0
 
 		def draw(self, win, images):
 			if self.left:

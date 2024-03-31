@@ -63,19 +63,20 @@ class Game:
         
 
     def update_screen(self, game_functions):
-        self.win.blit(self.images[0], (0 , 0))
-        self.win.blit(self.images[1], (self.ratio * 425, self.ratio * 150))
-        self.win.blit(self.images[2], (self.ratio * 500, self.ratio * 610))
+        game_functions.display_image(self.images[0], 0 , 0, self.win)
+        game_functions.display_image(self.images[1], 0 , 150, self.win)
+        game_functions.display_image(self.images[2], 0 , 610, self.win)
 
-        game_functions.display_text(30, '    Select a Level    '      , 625, 475, self.win)
-        game_functions.display_text(30, 'Press [SPACE] to start'      , 625, 505, self.win)
-        game_functions.display_text(25, '[C] - Controls'              , 475, 750, self.win)
-        game_functions.display_text(25, '[I] - Game Info'             , 475, 775, self.win)
-        game_functions.display_text(25, '[Q] - Quit'                  , 1000, 750, self.win)
-        game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 650, 625, self.win)
+        game_functions.display_text(30, 'Select a Level'              , 0, 475, self.win)
+        game_functions.display_text(30, 'Press [SPACE] to start'      , 0, 505, self.win)
+        game_functions.display_text(25, '[C] - Controls '             , -150, 750, self.win)
+        game_functions.display_text(25, '[I] - Game Info'             , -150, 775, self.win)
+        game_functions.display_text(25, '[Q] - Quit     '             , 200, 750, self.win)
+        game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 0, 625, self.win)
         
-        self.win.blit(self.images[3], (self.ratio * 530, self.ratio * 630))
-        self.win.blit(self.images[3], (self.ratio * 1070, self.ratio * 630))
+        game_functions.display_image(self.images[3], 250 , 630, self.win)
+        game_functions.display_image(self.images[3], -250 , 630, self.win)
+        
 
 
 #MAIN LOOP
@@ -113,11 +114,10 @@ while True:
                     game_1.update_entered_number(-1)
                 elif event.key == pygame.K_q:
                     pygame.quit()
+                    sys.exit(0)
 
                 elif event.key == pygame.K_SPACE:
-                    if game_1.entered_number == 1:
-                        obj = level_1()
-                        obj.start_level()
+                    if game_1.entered_number == 1: obj = level_1(); obj.start_level()
                         
                
         pygame.display.update()
