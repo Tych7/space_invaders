@@ -65,18 +65,18 @@ class Game:
 
     def update_screen(self, game_functions):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
-        game_functions.display_image(self.images[1], 0 , 150, self.win)
-        game_functions.display_image(self.images[2], 0 , 610, self.win)
+        game_functions.display_image(self.images[1], 0 , 150 * self.ratio, self.win)
+        game_functions.display_image(self.images[2], 0 , 610 * self.ratio, self.win)
 
-        game_functions.display_text(30, 'Select a Level'              , 0, 475, self.win)
-        game_functions.display_text(30, 'Press [SPACE] to start'      , 0, 505, self.win)
-        game_functions.display_text(25, '[C] - Controls '             , -150, 750, self.win)
-        game_functions.display_text(25, '[I] - Game Info'             , -150, 775, self.win)
-        game_functions.display_text(25, '[Q] - Quit     '             , 200, 750, self.win)
-        game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 0, 625, self.win)
+        game_functions.display_text(30, 'Select a Level'              , 0, 475 * self.ratio, self.win)
+        game_functions.display_text(30, 'Press [SPACE] to start'      , 0, 505 * self.ratio, self.win)
+        game_functions.display_text(25, '[C] - Controls '             , -150 * self.ratio, 750 * self.ratio, self.win)
+        game_functions.display_text(25, '[I] - Game Info'             , -150 * self.ratio, 775 * self.ratio, self.win)
+        game_functions.display_text(25, '[Q] - Quit     '             , 200 * self.ratio, 750 * self.ratio, self.win)
+        game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 0, 625 * self.ratio, self.win)
         
-        game_functions.display_image(self.images[3], 250 , 630, self.win)
-        game_functions.display_image(self.images[3], -250 , 630, self.win)
+        game_functions.display_image(self.images[3], 250 * self.ratio, 630 * self.ratio, self.win)
+        game_functions.display_image(self.images[3], -250 * self.ratio, 630 * self.ratio, self.win)
         
 
 

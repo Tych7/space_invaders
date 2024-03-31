@@ -63,7 +63,7 @@ class level_1:
         
         #display static images
         game_functions.display_image(self.images[0], 0 , 0, self.win)
-        game_functions.display_image(self.images[1], -400 , 815, self.win)
+        game_functions.display_image(self.images[1], -400 * self.ratio, 815 * self.ratio, self.win)
 
         #display aliens type 1
         for x in self.alien_1_objects: x.draw(self.win, self.images[8])
@@ -73,25 +73,25 @@ class level_1:
         for x in self.player_objects: x.draw(self.win, player_images)
 
         #display text
-        game_functions.display_text(30,'Score: ' + str(self.score), 325, 60, self.win)
-        game_functions.display_text(30,'Level 1', -440, 830, self.win)
+        game_functions.display_text(30,'Score: ' + str(self.score), 325 * self.ratio, 60 * self.ratio, self.win)
+        game_functions.display_text(30,'Level 1', -440 * self.ratio, 830 * self.ratio, self.win)
         
         if self.pauze:
-            game_functions.display_text(25, '[M] - Main Menu '             , -150, 750, self.win)
-            game_functions.display_text(25, '[R] - Restart   '             , -150, 775, self.win)
-            game_functions.display_text(25, '[Q] - Quit      '             , 200, 750, self.win)
+            game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
+            game_functions.display_text(25, '[R] - Restart   '             , -150 * self.ratio, 775 * self.ratio, self.win)
+            game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
             
         if self.winner:
-            game_functions.display_text(25, '[M] - Main Menu '             , -150, 750, self.win)
-            game_functions.display_text(25, '[R] - Restart   '             , -150, 775, self.win)
-            game_functions.display_text(25, '[Q] - Quit      '             , 200, 750, self.win)
-            game_functions.display_image(self.images[6], 0 , 400, self.win)
+            game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
+            game_functions.display_text(25, '[R] - Restart   '             , -150 * self.ratio, 775 * self.ratio, self.win)
+            game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
+            game_functions.display_image(self.images[6], 0 , 400 * self.ratio, self.win)
         
         if self.lose:
-            game_functions.display_text(25, '[M] - Main Menu '             , -150, 750, self.win)
-            game_functions.display_text(25, '[R] - Restart   '             , -150, 775, self.win)
-            game_functions.display_text(25, '[Q] - Quit      '             , 200, 750, self.win)
-            game_functions.display_image(self.images[5], 0 , 400, self.win)
+            game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
+            game_functions.display_text(25, '[R] - Restart   '             , -150 * self.ratio, 775 * self.ratio, self.win)
+            game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
+            game_functions.display_image(self.images[5], 0 , 400 * self.ratio, self.win)
             
         #display projectiles
         for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
@@ -170,7 +170,7 @@ class level_1:
                     if len(self.player_objects[0].bullets) < 1:
                         self.player_objects[0].bullets.append(projectile(
                             round(self.player_objects[0].x + self.player_objects[0].width //2), 
-                            round(self.player_objects[0].y + self.player_objects[0].height//2), 6, (0,255,255)))
+                            round(self.player_objects[0].y + self.player_objects[0].height//2), 6, (0,255,255), self.ratio))
                         self.sounds[0].play()
                     
                         

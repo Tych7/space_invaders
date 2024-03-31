@@ -25,16 +25,17 @@ class global_game_functions:
 		return scaled_images
 
 	def display_image(self, image, width, height, win):
-		screen_center  = (pygame.display.get_surface().get_size()[0])/2
+		screen_center  = ((pygame.display.get_surface().get_size()[0])/2)
 		image_width = 0
 		if width == 0:
-			image_width = screen_center - (image.get_size()[0] / 2)
+			image_width = screen_center - ((image.get_size()[0]) / 2)	
 		elif width < 0:
-			image_width = screen_center - image.get_size()[0] + width 
+			image_width = screen_center - image.get_size()[0] + width
 		else:
 			image_width = screen_center + width
-     
-		win.blit(image, (self.ratio * image_width, self.ratio * height))
+
+		win.blit(image, (image_width, height))
+		
 
 	
 	def display_text(self, size, text, width, height, win):
@@ -51,7 +52,7 @@ class global_game_functions:
 		else:
 			image_width = screen_center + width
   
-		win.blit(renderd_text, (self.ratio * image_width, self.ratio * height))
+		win.blit(renderd_text, (image_width, height))
 	
 	def alien_hit(self, alien, bullets, image, sound, win):
 		if alien.visible:
@@ -68,12 +69,12 @@ class alien_1(object):
 		def __init__(self,x,y, ratio):
 			self.x = x
 			self.y = y
-			self.width = 34
-			self.height = 27
+			self.width = 34 * ratio
+			self.height = 27 * ratio
 			self.end = self.x + (500 * ratio)
 			self.path = [self.x , self.end]
 			self.vel = 1 * ratio
-			self.hitbox = (self.x, self.y, 34, 27)
+			self.hitbox = (self.x, self.y, 34 * ratio, 27 * ratio)
 			self.health = 0
 			self.visible = True
 			self.shootloop = 0
@@ -86,8 +87,8 @@ class alien_1(object):
 					win.blit(image, (self.x,self.y))
 					pygame.draw.rect(win, (255,0,0), (self.hitbox[0], self.hitbox[1] - 5, 38, 5))
 					pygame.draw.rect(win, (0,128,0), (self.hitbox[0], self.hitbox[1] - 5, 38 - (50 * (0 - self.health)), 5))
-					self.hitbox = (self.x - 2, self.y - 1, 35, 27)
-				#pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+					self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
+					# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 		def move(self):
 			if self.vel > 0:
@@ -112,12 +113,12 @@ class alien_1(object):
 				print('hit')
 
 class projectile(object):
-		def __init__(self,x,y,radius,color):
+		def __init__(self,x,y,radius,color, ratio):
 			self.x = x
 			self.y = y
-			self.radius = radius
+			self.radius = radius * ratio 
 			self.color = color
-			self.vel = 8
+			self.vel = 8 * ratio
 
 		def draw(self,win):
 			pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
@@ -126,8 +127,8 @@ class player(object):
 		def __init__(self,x,y, ratio):
 			self.x = x
 			self.y = y
-			self.height = 45
-			self.width = 35
+			self.height = 45 * ratio
+			self.width = 35 * ratio
 			self.vel = 5 * ratio
 			self.left = False
 			self.right = False
@@ -144,5 +145,5 @@ class player(object):
 			else:
 				win.blit(images[0], (self.x,self.y))
 
-			self.hitbox = (self.x, self.y, 35, 45)
-			#pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+			self.hitbox = (self.x, self.y, self.width, self.height)
+			# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
