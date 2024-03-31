@@ -5,6 +5,7 @@ import sys
 
 from classes import global_game_functions
 from lvl_01 import level_1
+from lvl_02 import level_2
 
 
 class Game:
@@ -118,7 +119,8 @@ while True:
 
                 elif event.key == pygame.K_SPACE:
                     if game_1.entered_number == 1: obj = level_1(); obj.start_level()
-                        
+                    elif game_1.entered_number == 2: obj = level_2(); obj.start_level()
+
                
         pygame.display.update()
         game_1.update_screen(game_functions)

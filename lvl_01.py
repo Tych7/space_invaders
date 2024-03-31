@@ -73,7 +73,7 @@ class level_1:
         for x in self.player_objects: x.draw(self.win, player_images)
 
         #display text
-        game_functions.display_text(30,'Score: ' + str(self.score), 350, 60, self.win)
+        game_functions.display_text(30,'Score: ' + str(self.score), 325, 60, self.win)
         game_functions.display_text(30,'Level 1', -440, 830, self.win)
         
         if self.pauze:

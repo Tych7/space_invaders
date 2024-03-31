@@ -64,8 +64,6 @@ class global_game_functions:
 		return False
 		
 
-	
-
 class alien_1(object):
 		def __init__(self,x,y, ratio):
 			self.x = x
