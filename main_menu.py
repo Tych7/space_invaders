@@ -41,8 +41,8 @@ class Game:
         self.images = game_functions.scale_images(loaded_images)
 
         # Start music
-        # pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
-        # pygame.mixer.music.play(-1)
+        pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
+        pygame.mixer.music.play(-1)
 
     def update_entered_number(self, number):
         if number == -1:

@@ -109,11 +109,11 @@ class level_1:
         self.alien_row_c = 200 * self.ratio
         
         player_1 = player(self.ratio * 800, self.ratio * 750, self.ratio); self.player_objects.append(player_1)
-        alienA = alien_1(self.ratio * 350, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienA)
-        alienB = alien_1(self.ratio * 450, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienB)
-        alienC = alien_1(self.ratio * 550, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienC)
-        alienD = alien_1(self.ratio * 650, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienD)
-        alienE = alien_1(self.ratio * 750, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienE)
+        alienA = alien_1(self.ratio * 350, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienA)
+        alienB = alien_1(self.ratio * 450, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienB)
+        alienC = alien_1(self.ratio * 550, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienC)
+        alienD = alien_1(self.ratio * 650, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienD)
+        alienE = alien_1(self.ratio * 750, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienE)
         
     def keyboard_inputs(self):
         keys = pygame.key.get_pressed()

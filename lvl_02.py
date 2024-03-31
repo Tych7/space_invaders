@@ -110,20 +110,20 @@ class level_2:
         
         player_1 = player(self.ratio * 800, self.ratio * 750, self.ratio); self.player_objects.append(player_1)
         
-        alienA = alien_1(self.ratio * 350, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienA)
-        alienB = alien_1(self.ratio * 450, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienB)
-        alienC = alien_1(self.ratio * 550, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienC)
-        alienD = alien_1(self.ratio * 650, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienD)
-        alienE = alien_1(self.ratio * 750, self.alien_row_a, self.ratio); self.alien_1_objects.append(alienE)
+        alienA = alien_1(self.ratio * 350, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienA)
+        alienB = alien_1(self.ratio * 450, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienB)
+        alienC = alien_1(self.ratio * 550, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienC)
+        alienD = alien_1(self.ratio * 650, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienD)
+        alienE = alien_1(self.ratio * 750, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienE)
         
-        alienF = alien_1(self.ratio * 450, self.alien_row_b, self.ratio); self.alien_1_objects.append(alienF)
-        alienG = alien_1(self.ratio * 650, self.alien_row_b, self.ratio); self.alien_1_objects.append(alienG)
+        alienF = alien_1(self.ratio * 450, self.alien_row_b, self.ratio, 1); self.alien_1_objects.append(alienF)
+        alienG = alien_1(self.ratio * 650, self.alien_row_b, self.ratio, 1); self.alien_1_objects.append(alienG)
         
-        alienJ = alien_1(self.ratio * 350, self.alien_row_c, self.ratio); self.alien_1_objects.append(alienJ)
-        alienI = alien_1(self.ratio * 450, self.alien_row_c, self.ratio); self.alien_1_objects.append(alienI)
-        alienJ = alien_1(self.ratio * 550, self.alien_row_c, self.ratio); self.alien_1_objects.append(alienJ)
-        alienK = alien_1(self.ratio * 650, self.alien_row_c, self.ratio); self.alien_1_objects.append(alienK)
-        alienL = alien_1(self.ratio * 750, self.alien_row_c, self.ratio); self.alien_1_objects.append(alienL)
+        alienJ = alien_1(self.ratio * 350, self.alien_row_c, self.ratio, 1); self.alien_1_objects.append(alienJ)
+        alienI = alien_1(self.ratio * 450, self.alien_row_c, self.ratio, 1); self.alien_1_objects.append(alienI)
+        alienJ = alien_1(self.ratio * 550, self.alien_row_c, self.ratio, 1); self.alien_1_objects.append(alienJ)
+        alienK = alien_1(self.ratio * 650, self.alien_row_c, self.ratio, 1); self.alien_1_objects.append(alienK)
+        alienL = alien_1(self.ratio * 750, self.alien_row_c, self.ratio, 1); self.alien_1_objects.append(alienL)
         
     def keyboard_inputs(self):
         keys = pygame.key.get_pressed()
