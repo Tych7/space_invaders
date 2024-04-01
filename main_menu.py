@@ -4,6 +4,7 @@ import sys
 
 
 from classes import global_game_functions
+from controls import Controls
 from lvl_01 import level_1
 from lvl_02 import level_2
 
@@ -41,8 +42,8 @@ class Game:
         self.images = game_functions.scale_images(loaded_images)
 
         # Start music
-        pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
-        pygame.mixer.music.play(-1)
+        # pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
+        # pygame.mixer.music.play(-1)
 
     def update_entered_number(self, number):
         if number == -1:
@@ -69,9 +70,9 @@ class Game:
         game_functions.display_image(self.images[2], 0 , 610 * self.ratio, self.win)
 
         game_functions.display_text(30, 'Select a Level'              , 0, 475 * self.ratio, self.win)
-        game_functions.display_text(30, 'Press [SPACE] to start'      , 0, 505 * self.ratio, self.win)
+        game_functions.display_text(30, 'Press [ENTER] to start'      , 0, 505 * self.ratio, self.win)
         game_functions.display_text(25, '[C] - Controls '             , -150 * self.ratio, 750 * self.ratio, self.win)
-        game_functions.display_text(25, '[I] - Game Info'             , -150 * self.ratio, 775 * self.ratio, self.win)
+        # game_functions.display_text(25, '[I] - Game Info'             , -150 * self.ratio, 775 * self.ratio, self.win)
         game_functions.display_text(25, '[Q] - Quit     '             , 200 * self.ratio, 750 * self.ratio, self.win)
         game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 0, 625 * self.ratio, self.win)
         
@@ -113,13 +114,13 @@ while True:
                     game_1.update_entered_number(0)
                 elif event.key == pygame.K_BACKSPACE:
                     game_1.update_entered_number(-1)
-                elif event.key == pygame.K_q:
-                    pygame.quit()
-                    sys.exit(0)
 
-                elif event.key == pygame.K_SPACE:
-                    if game_1.entered_number == 1: obj = level_1(); obj.start_level()
-                    elif game_1.entered_number == 2: obj = level_2(); obj.start_level()
+                elif event.key == pygame.K_q: pygame.quit(); sys.exit(0)
+                elif event.key == pygame.K_c: obj = Controls(); obj.main()
+
+                elif event.key == pygame.K_RETURN:
+                    if game_1.entered_number == 1: obj = level_1(); obj.main()
+                    elif game_1.entered_number == 2: obj = level_2(); obj.main()
 
                
         pygame.display.update()

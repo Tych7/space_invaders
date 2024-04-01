@@ -36,7 +36,7 @@ while True:
 
 
     if keys[pygame.K_m]:
-    	exit()
+        exit()
     if keys[pygame.K_q]:
         exit()
 

@@ -16,7 +16,7 @@ class level_2:
 
     #global variable data
     score = 0
-    pauze = False
+    pause = False
     winner = False
     lose = False
     running = True
@@ -76,7 +76,7 @@ class level_2:
         game_functions.display_text(30,'Score: ' + str(self.score), 325 * self.ratio, 60 * self.ratio, self.win)
         game_functions.display_text(30,'Level 2', -440 * self.ratio, 830 * self.ratio, self.win)
         
-        if self.pauze:
+        if self.pause:
             game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
             game_functions.display_text(25, '[R] - Restart   '             , -150 * self.ratio, 775 * self.ratio, self.win)
             game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
@@ -101,7 +101,7 @@ class level_2:
         self.alien_1_objects.clear()
         self.winner = False
         self.lose = False
-        self.pauze = False
+        self.pause = False
         self.score = 0
         
         self.alien_row_a = 100 * self.ratio
@@ -135,7 +135,7 @@ class level_2:
         if keys[pygame.K_m]:
             self.running = False
 
-    def start_level(self):
+    def main(self):
         game_functions = global_game_functions()
         self.init_lvl(global_game_functions)
         self.init_objects()
@@ -166,7 +166,7 @@ class level_2:
             if self.player_objects[0].shootloop > 0: self.player_objects[0].shootloop += 1
             if self.player_objects[0].shootloop > 3: self.player_objects[0].shootloop = 0
 
-            if not self.pauze:
+            if not self.pause:
                 for bullet in self.player_objects[0].bullets:
                     if bullet.y < 850 * self.ratio and bullet.y > 50 * self.ratio:
                             bullet.y -= bullet.vel
@@ -175,7 +175,7 @@ class level_2:
 
         #player controls
             keys = pygame.key.get_pressed()
-            if not self.pauze:
+            if not self.pause:
                 if keys[pygame.K_SPACE] and self.player_objects[0].shootloop == 0:
                     if len(self.player_objects[0].bullets) < 1:
                         self.player_objects[0].bullets.append(projectile(
@@ -197,11 +197,11 @@ class level_2:
                 self.player_objects[0].right = False
                                 
         
-        #Pauze game         
+        #pause game         
             if keys[pygame.K_ESCAPE] and not self.winner and not self.lose:
-                self.pauze = True
+                self.pause = True
 
-            if self.pauze:
+            if self.pause:
                 for obj in self.alien_1_objects: obj.vel = 0
                 self.keyboard_inputs()
                     

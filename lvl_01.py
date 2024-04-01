@@ -125,7 +125,7 @@ class level_1:
         if keys[pygame.K_m]:
             self.running = False
 
-    def start_level(self):
+    def main(self):
         game_functions = global_game_functions()
         self.init_lvl(global_game_functions)
         self.init_objects()
