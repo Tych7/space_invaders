@@ -63,6 +63,9 @@ class Controls:
         game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
         game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
         
+        with open('mute.txt', 'r') as file:
+            content = file.read()
+            if content.strip() == "false": game_functions.display_image(self.images[4], -450 * self.ratio, 60 * self.ratio, self.win)
         
 
     def main(self):
@@ -73,6 +76,8 @@ class Controls:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_s: game_functions.mute_sound_toggle()
             
             keys = pygame.key.get_pressed()
             if keys[pygame.K_q]:

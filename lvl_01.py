@@ -13,6 +13,9 @@ class level_1:
     player_objects = [] 
     alien_1_objects = []
     ratio = 0
+    level_string = "level 1"
+    alien_rows = []
+    alien_collums = []
 
     #global variable data
     score = 0
@@ -20,9 +23,6 @@ class level_1:
     winner = False
     lose = False
     running = True
-    alien_row_a = 0
-    alien_row_b = 0
-    alien_row_c = 0
 
     def set_ratio(self, loaded_images, game_functions):
         bg_width = loaded_images[0].get_size()[0]
@@ -35,7 +35,7 @@ class level_1:
         pygame.init()
 
         self.win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        pygame.display.set_caption("level 1")
+        pygame.display.set_caption(self.level_string)
 
         images = [
             "bgA.jpg",
@@ -46,6 +46,7 @@ class level_1:
             "gameover.png",
             "win.png",
             "explo.png",
+            "mute.png",
             "alien_A.png",
         ]
         loaded_images = game_functions.load_images(self, images)
@@ -66,7 +67,7 @@ class level_1:
         game_functions.display_image(self.images[1], -400 * self.ratio, 815 * self.ratio, self.win)
 
         #display aliens type 1
-        for x in self.alien_1_objects: x.draw(self.win, self.images[8])
+        for x in self.alien_1_objects: x.draw(self.win, self.images[9])
 
         #display player
         player_images = [self.images[2], self.images[3], self.images[4]]
@@ -74,7 +75,7 @@ class level_1:
 
         #display text
         game_functions.display_text(30,'Score: ' + str(self.score), 325 * self.ratio, 60 * self.ratio, self.win)
-        game_functions.display_text(30,'Level 1', -440 * self.ratio, 830 * self.ratio, self.win)
+        game_functions.display_text(30,self.level_string, -440 * self.ratio, 830 * self.ratio, self.win)
         
         if self.pauze:
             game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
@@ -92,6 +93,11 @@ class level_1:
             game_functions.display_text(25, '[R] - Restart   '             , -150 * self.ratio, 775 * self.ratio, self.win)
             game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
             game_functions.display_image(self.images[5], 0 , 400 * self.ratio, self.win)
+
+        #display mute icon
+        with open('mute.txt', 'r') as file:
+            content = file.read()
+            if content.strip() == "false": game_functions.display_image(self.images[8], -450 * self.ratio, 60 * self.ratio, self.win)
             
         #display projectiles
         for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
@@ -104,26 +110,30 @@ class level_1:
         self.pauze = False
         self.score = 0
         
-        self.alien_row_a = 100 * self.ratio
-        self.alien_row_b = 150 * self.ratio
-        self.alien_row_c = 200 * self.ratio
+        index = 0
+        while index < 5: self.alien_rows.append(100 + (index * 30)); index += 1
+        index = 0
+        while index < 5: self.alien_collums.append(350 + (index * 100)); index += 1
         
         player_1 = player(self.ratio * 800, self.ratio * 750, self.ratio); self.player_objects.append(player_1)
-        alienA = alien_1(self.ratio * 350, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienA)
-        alienB = alien_1(self.ratio * 450, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienB)
-        alienC = alien_1(self.ratio * 550, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienC)
-        alienD = alien_1(self.ratio * 650, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienD)
-        alienE = alien_1(self.ratio * 750, self.alien_row_a, self.ratio, 1); self.alien_1_objects.append(alienE)
+
+        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[0],self.ratio * self.alien_rows[0], self.ratio, 1))
+        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[1],self.ratio * self.alien_rows[0], self.ratio, 1))
+        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[2],self.ratio * self.alien_rows[0], self.ratio, 1))
+        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[3],self.ratio * self.alien_rows[0], self.ratio, 1))
+        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[4],self.ratio * self.alien_rows[0], self.ratio, 1))
+        
         
     def keyboard_inputs(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_q]:
             pygame.quit()
             sys.exit(0)
-        if keys[pygame.K_r]:
+        elif keys[pygame.K_r]:
             self.init_objects()
-        if keys[pygame.K_m]:
+        elif keys[pygame.K_m]:
             self.running = False
+
 
     def main(self):
         game_functions = global_game_functions()
@@ -132,20 +142,22 @@ class level_1:
 
         move_down = False
         self.running = True
-        
+
         #Start Main Loop
         while self.running:
+            pygame.time.delay(11)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
-                    
-            pygame.time.delay(11)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_s: game_functions.mute_sound_toggle()
             
         #Moving the aliens down
             if self.alien_1_objects[0].x < (800 * self.ratio):
                  move_down = True
             if (self.alien_1_objects[0].x > 800 * self.ratio) and move_down:
-                for obj in self.alien_1_objects: obj.y += 50
+                for obj in self.alien_1_objects: obj.y += (50 * self.ratio)
                 move_down = False
                     
         #Check if aliens get hit
@@ -171,7 +183,9 @@ class level_1:
                         self.player_objects[0].bullets.append(projectile(
                             round(self.player_objects[0].x + self.player_objects[0].width //2), 
                             round(self.player_objects[0].y + self.player_objects[0].height//2), 6, (0,255,255), self.ratio))
-                        self.sounds[0].play()
+                        with open('mute.txt', 'r') as file:
+                            content = file.read()
+                            if content.strip() == "true": self.sounds[0].play()
                     
                         
             if keys[pygame.K_LEFT] and self.player_objects[0].x > 300 * self.ratio:
@@ -213,7 +227,7 @@ class level_1:
                 for obj in self.alien_1_objects: obj.vel = 0                
                 self.lose = True
                 self.keyboard_inputs()
-        
+
         #Refresh screen
             pygame.display.update()
             self.update_screen(game_functions)

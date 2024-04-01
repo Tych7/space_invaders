@@ -7,6 +7,7 @@ from classes import global_game_functions
 from controls import Controls
 from lvl_01 import level_1
 from lvl_02 import level_2
+from lvl_03 import level_3
 
 
 class Game:
@@ -19,8 +20,8 @@ class Game:
     second_order_entered = False
 
     def set_ratio(self, loaded_images, game_functions):
-        bg_width, bg_height = loaded_images[0].get_size()
-        screen_width, screen_height = pygame.display.get_surface().get_size()
+        bg_width = loaded_images[0].get_size()[0]
+        screen_width = pygame.display.get_surface().get_size()[0]
 
         self.ratio = screen_width / bg_width
         game_functions.ratio = self.ratio
@@ -36,14 +37,15 @@ class Game:
             "mainmenu.png",
             "selected_lvl.png",
             "alien_a.png",
+            "mute.png",
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
         self.images = game_functions.scale_images(loaded_images)
 
-        # Start music
-        # pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
-        # pygame.mixer.music.play(-1)
+        # load mixer with music
+        pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
+        pygame.mixer.music.play(-1)
 
     def update_entered_number(self, number):
         if number == -1:
@@ -78,14 +80,20 @@ class Game:
         
         game_functions.display_image(self.images[3], 250 * self.ratio, 630 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -250 * self.ratio, 630 * self.ratio, self.win)
-        
 
+        with open('mute.txt', 'r') as file:
+            content = file.read()
+            if content.strip() == "false": game_functions.display_image(self.images[4], -450 * self.ratio, 60 * self.ratio, self.win)
 
+    
 #MAIN LOOP
 while True:
     game_1 = Game()
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
+
+    with open('mute.txt', 'w') as file:
+        file.write("true")
 
     while True:
         for event in pygame.event.get():
@@ -117,10 +125,13 @@ while True:
 
                 elif event.key == pygame.K_q: pygame.quit(); sys.exit(0)
                 elif event.key == pygame.K_c: obj = Controls(); obj.main()
+                elif event.key == pygame.K_s: game_functions.mute_sound_toggle()
 
                 elif event.key == pygame.K_RETURN:
                     if game_1.entered_number == 1: obj = level_1(); obj.main()
                     elif game_1.entered_number == 2: obj = level_2(); obj.main()
+                    elif game_1.entered_number == 3: obj = level_3(); obj.main()
+
 
                
         pygame.display.update()
