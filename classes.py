@@ -95,8 +95,8 @@ class alien_1(object):
 			self.move()
 			if self.visible == True:
 				win.blit(image, (self.x,self.y))
-				pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 10, self.hitbox[1] - 5, 38, 5))
-				pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 10, self.hitbox[1] - 5, 38 - (50 * (0 - self.health)), 5))
+				pygame.draw.rect(win, (255,0,0), (self.hitbox[0] * self.ratio, (self.hitbox[1] - 5) * self.ratio, 38, 5))
+				pygame.draw.rect(win, (0,128,0), (self.hitbox[0] * self.ratio, (self.hitbox[1] - 5) * self.ratio, 38 - (50 * (0 - self.health)), 5))
 				self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
 				# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 

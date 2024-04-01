@@ -28,6 +28,7 @@ class Controls:
 
         images = [
             "keyboard_controls.png",
+            "mute.png"
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -65,7 +66,7 @@ class Controls:
         
         with open('mute.txt', 'r') as file:
             content = file.read()
-            if content.strip() == "false": game_functions.display_image(self.images[4], -450 * self.ratio, 60 * self.ratio, self.win)
+            if content.strip() == "false": game_functions.display_image(self.images[1], -450 * self.ratio, 60 * self.ratio, self.win)
         
 
     def main(self):
