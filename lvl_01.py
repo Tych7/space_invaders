@@ -215,6 +215,7 @@ class level_1:
                 if obj.visible == True:
                     all_aliens_invisible = False
             if all_aliens_invisible == True:
+                for obj in self.alien_1_objects: obj.vel = 0
                 self.winner = True
                 self.keyboard_inputs()
         
