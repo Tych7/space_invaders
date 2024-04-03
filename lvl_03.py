@@ -233,6 +233,9 @@ class level_3:
                 if obj.y + obj.height > self.player_objects[0].y:
                     alien_to_low = True
             if alien_to_low == True:
+                with open('mute.txt', 'r') as file:
+                            content = file.read()
+                            if content.strip() == "true": self.sounds[1].play()
                 for obj in self.alien_1_objects: obj.vel = 0                
                 self.lose = True
                 self.keyboard_inputs()
