@@ -68,22 +68,22 @@ class Game:
 
     def update_screen(self, game_functions):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
-        game_functions.display_image(self.images[1], 0 , 150 * self.ratio, self.win)
-        game_functions.display_image(self.images[2], 0 , 610 * self.ratio, self.win)
+        game_functions.display_image(self.images[1], 0 , 240 * self.ratio, self.win)
+        game_functions.display_image(self.images[2], 0 , 975 * self.ratio, self.win)
 
-        game_functions.display_text(30, 'Select a Level'              , 0, 475 * self.ratio, self.win)
-        game_functions.display_text(30, 'Press [ENTER] to start'      , 0, 505 * self.ratio, self.win)
-        game_functions.display_text(25, '[C] - Controls '             , -150 * self.ratio, 750 * self.ratio, self.win)
+        game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
+        game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
+        game_functions.display_text(40, '[C] - Controls '             , -240 * self.ratio, 1200 * self.ratio, self.win)
         # game_functions.display_text(25, '[I] - Game Info'             , -150 * self.ratio, 775 * self.ratio, self.win)
-        game_functions.display_text(25, '[Q] - Quit     '             , 200 * self.ratio, 750 * self.ratio, self.win)
-        game_functions.display_text(30, 'Selected Level = ' + str(game_1.entered_number), 0, 625 * self.ratio, self.win)
+        game_functions.display_text(40, '[Q] - Quit     '             , 320 * self.ratio, 1200 * self.ratio, self.win)
+        game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 995 * self.ratio, self.win)
         
-        game_functions.display_image(self.images[3], 250 * self.ratio, 630 * self.ratio, self.win)
-        game_functions.display_image(self.images[3], -250 * self.ratio, 630 * self.ratio, self.win)
+        game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
+        game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
         with open('mute.txt', 'r') as file:
             content = file.read()
-            if content.strip() == "false": game_functions.display_image(self.images[4], -450 * self.ratio, 60 * self.ratio, self.win)
+            if content.strip() == "false": game_functions.display_image(self.images[4], -720 * self.ratio, 100 * self.ratio, self.win)
 
     
 #MAIN LOOP

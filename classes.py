@@ -17,7 +17,7 @@ class global_game_functions:
 
 	def load_images(self, unloaded_images):
 		loaded_images = []
-		directory = "images/"
+		directory = "upscaled_images/"
 		for x in unloaded_images:
 			loaded_images.append(pygame.image.load(directory + x).convert_alpha())
 		return loaded_images
@@ -79,12 +79,12 @@ class alien_1(object):
 	def __init__(self,x,y, ratio, vel):
 		self.x = x
 		self.y = y
-		self.width = 34 * ratio
-		self.height = 27 * ratio
-		self.end = self.x + (500 * ratio)
+		self.width = 60 * ratio
+		self.height = 45 * ratio
+		self.end = self.x + (800 * ratio)
 		self.path = [self.x , self.end]
 		self.vel = vel * ratio
-		self.hitbox = (self.x, self.y, 34 * ratio, 27 * ratio)
+		self.hitbox = (self.x, self.y, 60 * ratio, 45 * ratio)
 		self.health = 0
 		self.visible = True
 		self.shootloop = 0
@@ -95,8 +95,8 @@ class alien_1(object):
 			self.move()
 			if self.visible == True:
 				win.blit(image, (self.x,self.y))
-				pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 5 * self.ratio) , 38, 5))
-				pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 5 * self.ratio) , 38 - (50 * (0 - self.health)), 5))
+				pygame.draw.rect(win, (255,0,0), (self.hitbox[0] * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55, 5))
+				pygame.draw.rect(win, (0,128,0), (self.hitbox[0] * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55 - (50 * (0 - self.health)), 5))
 				self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
 				# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
@@ -129,7 +129,7 @@ class projectile(object):
 		self.y = y
 		self.radius = radius * ratio 
 		self.color = color
-		self.vel = 8 * ratio
+		self.vel = 12 * ratio
 
 	def draw(self,win):
 		pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
@@ -138,12 +138,12 @@ class player(object):
 	def __init__(self,x,y, ratio):
 		self.x = x
 		self.y = y
-		self.height = 45 * ratio
-		self.width = 35 * ratio
-		self.vel = 5 * ratio
+		self.height = 80 * ratio
+		self.width = 58 * ratio
+		self.vel = 8 * ratio
 		self.left = False
 		self.right = False
-		self.hitbox = (self.x, self.y, 35, 45)
+		self.hitbox = (self.x, self.y, 58, 80)
 		self.visible = True
 		self.bullets = []
 		self.shootloop = 0

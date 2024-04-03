@@ -60,13 +60,13 @@ class Controls:
     def update_screen(self, game_functions):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
 
-        game_functions.display_text(50, 'Keyboard Controls'             , 0, 100 * self.ratio, self.win)
-        game_functions.display_text(25, '[M] - Main Menu '             , -150 * self.ratio, 750 * self.ratio, self.win)
-        game_functions.display_text(25, '[Q] - Quit      '             , 200 * self.ratio, 750 * self.ratio, self.win)
+        game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
+        game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
+        game_functions.display_text(40, '[Q] - Quit      '             , 320 * self.ratio, 1200 * self.ratio, self.win)
         
         with open('mute.txt', 'r') as file:
             content = file.read()
-            if content.strip() == "false": game_functions.display_image(self.images[1], -450 * self.ratio, 60 * self.ratio, self.win)
+            if content.strip() == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
         
 
     def main(self):
