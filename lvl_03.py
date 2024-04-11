@@ -49,7 +49,7 @@ class level_3:
             "alien_A.png",
         ]
         loaded_images = game_functions.load_images(self, images)
-        self.set_ratio(loaded_images, game_functions)
+        self.set_ratio()
         self.images = game_functions.scale_images(self, loaded_images)
         
         sounds = [
