@@ -4,7 +4,7 @@ import os
 import json
 import csv
 
-from classes import global_game_functions,alien, projectile, player
+from classes import global_game_functions,alien, projectile, player, Button
 
 class level:
 
@@ -66,8 +66,8 @@ class level:
         game_functions.display_image(self.images[0], 0 , 0, self.win)
         game_functions.display_image(self.images[1], -640 * self.ratio, 1300 * self.ratio, self.win)
 
-        #display aliens type 1
-        for x in self.alien_1_objects: x.draw(self.win, self.images[9])
+        #display aliens type A
+        for x in self.alien_1_objects: x.draw(self.win)
 
         #display player
         player_images = [self.images[2], self.images[3], self.images[4]]
@@ -122,8 +122,10 @@ class level:
                 for col_idx, value in enumerate(row):
                     x = col_idx
                     y = row_idx
-                    if value == '1':
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (160 + y * 50), self.ratio))
+                    if value == '1':                     #|            x              |               y            |widht|height|vel|   image      |  ratio    |
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[9], self.ratio))
+                    if value == '2':
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[9], self.ratio))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)

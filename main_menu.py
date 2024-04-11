@@ -4,7 +4,7 @@ import sys
 import json
 
 
-from classes import global_game_functions
+from classes import global_game_functions, Button
 from controls import Controls
 from level_template import level
 
@@ -13,6 +13,7 @@ class Game:
     images = []
     win = None
     ratio = 0
+    buttons = []
 
     entered_number = 0
     first_order_entered = False
@@ -76,13 +77,12 @@ class Game:
 
         game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
         game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
-        game_functions.display_text(40, '[C] - Controls '             , -240 * self.ratio, 1200 * self.ratio, self.win)
-        # game_functions.display_text(25, '[I] - Game Info'             , -150 * self.ratio, 775 * self.ratio, self.win)
-        game_functions.display_text(40, '[Q] - Quit     '             , 320 * self.ratio, 1200 * self.ratio, self.win)
         game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 995 * self.ratio, self.win)
         
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
+
+        for button in self.buttons: button.draw(self.win)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -94,6 +94,10 @@ while True:
     game_1 = Game()
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
+
+    quit_button = Button(1625, 1200, 200, 50, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+    controls_button = Button(735, 1200, 200, 50, "Controls", 40, lambda: Controls().main(game_functions))
+    game_1.buttons = [quit_button, controls_button]
     
     with open("settings.json", 'r') as file: data = json.load(file)
     data["music"] = "true"
@@ -103,7 +107,9 @@ while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
-            elif event.type == pygame.KEYDOWN:
+            quit_button.handle_event(event)
+            controls_button.handle_event(event)
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)
                 elif event.key == pygame.K_2:
@@ -133,6 +139,8 @@ while True:
 
                 elif event.key == pygame.K_RETURN:
                     obj = level(); obj.main(game_functions, "Level " + str(game_1.entered_number), "levels/lvl_" + str(game_1.entered_number) + ".csv")
+                
+                
 
 
                

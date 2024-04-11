@@ -3,6 +3,43 @@ import os
 import sys
 import json
 
+
+class Button:
+    ratio = 0
+
+    def set_ratio(self):
+        with open("settings.json", 'r') as file: 
+            data = json.load(file)
+            self.ratio = data["ratio"]
+
+    def __init__(self, x, y, width, height, text, font_size, action):
+        self.set_ratio()
+        self.text = text
+        self.action = action
+        self.x = x * self.ratio
+        self.y = y * self.ratio
+        self.width = width * self.ratio
+        self.height = height * self.ratio
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.font_size = font_size
+	
+    def draw(self, screen):
+        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
+        font_size = int(self.font_size * min(self.ratio, self.ratio))
+        font = pygame.font.SysFont('couriernew', font_size, True)
+        renderd_text = font.render(self.text, 1, (4, 245, 4))
+
+        text_x = (self.width / 2) - (font.size(self.text)[0] / 2)
+        text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
+
+        screen.blit(renderd_text, (self.x + text_x, self.y + text_y))
+    
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.action()
+
+
 class global_game_functions:
 	ratio = 0
  
@@ -86,25 +123,26 @@ class global_game_functions:
 	
 
 class alien(object):
-	def __init__(self,x,y, ratio):
+	def __init__(self, x, y, width, height, vel, alien_image, ratio):
 		self.x = x
 		self.y = y
-		self.width = 60 * ratio
-		self.height = 45 * ratio
+		self.width = width * ratio
+		self.height = height * ratio
 		self.end = self.x + (800 * ratio)
 		self.path = [self.x , self.end]
-		self.vel = 2 * ratio
-		self.hitbox = (self.x, self.y, 60 * ratio, 45 * ratio)
+		self.vel = vel * ratio
+		self.hitbox = (self.x, self.y, width * ratio, height * ratio)
 		self.health = 0
 		self.visible = True
 		self.shootloop = 0
 		self.ratio = ratio
+		self.image = alien_image
 
-	def draw(self, win, image):
+	def draw(self, win):
 		if self.y < (1080 * self.ratio):
 			self.move()
 			if self.visible == True:
-				win.blit(image, (self.x,self.y))
+				win.blit(self.image, (self.x,self.y))
 				pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55 * self.ratio, 5))
 				pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio , (self.hitbox[1] - 8 * self.ratio) , (55 * self.ratio) - (55 * (0 - self.health)), 5))
 				self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
