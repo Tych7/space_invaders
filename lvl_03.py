@@ -78,6 +78,9 @@ class level_3:
         else: score_alignment = 1020
         game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
         
+        game_functions.display_text(50,self.level_string, -700 * self.ratio, 1325 * self.ratio, self.win)
+
+        
         if self.pauze:
             game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
             game_functions.display_text(40, '[R] - Restart   '             , -240 * self.ratio, 1240 * self.ratio, self.win)
