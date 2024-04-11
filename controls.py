@@ -14,12 +14,10 @@ class Controls:
 
     running = True
 
-    def set_ratio(self, loaded_images, game_functions):
-        bg_width, bg_height = loaded_images[0].get_size()
-        screen_width, screen_height = pygame.display.get_surface().get_size()
-
-        self.ratio = screen_width / bg_width
-        game_functions.ratio = self.ratio
+    def set_ratio(self):
+        with open("settings.json", 'r') as file: 
+            data = json.load(file)
+            self.ratio = data["ratio"]
 
     def init_game(self, game_functions):
         pygame.init()
@@ -32,7 +30,7 @@ class Controls:
             "mute.png"
         ]
         loaded_images = game_functions.load_images(images)
-        self.set_ratio(loaded_images, game_functions)
+        self.set_ratio()
         self.images = game_functions.scale_images(loaded_images)
 
         # Start music
@@ -70,8 +68,7 @@ class Controls:
             if data["music"] == "false": game_functions.display_image(self.images[1], -720 * self.ratio, 90 * self.ratio, self.win)
         
 
-    def main(self):
-        game_functions = global_game_functions()
+    def main(self, game_functions):
         self.init_game(game_functions)
 
         while self.running:

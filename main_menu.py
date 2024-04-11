@@ -130,7 +130,7 @@ while True:
                     game_1.update_entered_number(-1)
 
                 elif event.key == pygame.K_q: pygame.quit(); sys.exit(0)
-                elif event.key == pygame.K_c: obj = Controls(); obj.main()
+                elif event.key == pygame.K_c: obj = Controls(); obj.main(game_functions)
                 elif event.key == pygame.K_s: game_functions.mute_sound_toggle()
 
                 elif event.key == pygame.K_RETURN:
