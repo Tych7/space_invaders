@@ -2,10 +2,11 @@ import pygame
 import sys
 import os
 import json
+import csv
 
-from classes import global_game_functions,alien_1, projectile, player
+from classes import global_game_functions,alien, projectile, player
 
-class level_1:
+class level:
 
     #global static data
     images = []
@@ -14,7 +15,7 @@ class level_1:
     player_objects = [] 
     alien_1_objects = []
     ratio = 0
-    level_string = "level 1"
+    level_string = ""
     alien_rows = []
     alien_collums = []
 
@@ -105,26 +106,28 @@ class level_1:
         #display projectiles
         for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
 
-    def init_objects(self):
+    def init_objects(self, lvl_lable, lvl_structure):
         self.player_objects.clear()
         self.alien_1_objects.clear()
         self.winner = False
         self.lose = False
         self.pauze = False
         self.score = 0
+        self.level_string = lvl_lable
         
-        index = 0
-        while index < 5: self.alien_rows.append(160 + (index * 50)); index += 1
-        index = 0
-        while index < 5: self.alien_collums.append(525 + (index * 160)); index += 1
-        
-        player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio); self.player_objects.append(player_1)
+        # Read the CSV file
+        with open(lvl_structure, newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            for row_idx, row in enumerate(reader):
+                for col_idx, value in enumerate(row):
+                    x = col_idx
+                    y = row_idx
+                    if value == '1':
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (160 + y * 50), self.ratio))
 
-        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[0],self.ratio * self.alien_rows[0], self.ratio, 2))
-        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[1],self.ratio * self.alien_rows[0], self.ratio, 2))
-        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[2],self.ratio * self.alien_rows[0], self.ratio, 2))
-        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[3],self.ratio * self.alien_rows[0], self.ratio, 2))
-        self.alien_1_objects.append(alien_1(self.ratio * self.alien_collums[4],self.ratio * self.alien_rows[0], self.ratio, 2))
+        # Example player object creation
+        player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
+        self.player_objects.append(player_1)
         
         
     def keyboard_inputs(self):
@@ -138,9 +141,9 @@ class level_1:
             self.running = False
 
 
-    def main(self, game_functions):
+    def main(self, game_functions, lvl_lable, lvl_structure):
         self.init_lvl(global_game_functions)
-        self.init_objects()
+        self.init_objects(lvl_lable, lvl_structure)
 
         move_down = False
         self.running = True

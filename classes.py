@@ -85,15 +85,15 @@ class global_game_functions:
 		return False
 	
 
-class alien_1(object):
-	def __init__(self,x,y, ratio, vel):
+class alien(object):
+	def __init__(self,x,y, ratio):
 		self.x = x
 		self.y = y
 		self.width = 60 * ratio
 		self.height = 45 * ratio
 		self.end = self.x + (800 * ratio)
 		self.path = [self.x , self.end]
-		self.vel = vel * ratio
+		self.vel = 2 * ratio
 		self.hitbox = (self.x, self.y, 60 * ratio, 45 * ratio)
 		self.health = 0
 		self.visible = True

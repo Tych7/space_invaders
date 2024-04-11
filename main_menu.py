@@ -6,9 +6,7 @@ import json
 
 from classes import global_game_functions
 from controls import Controls
-from lvl_01 import level_1
-from lvl_02 import level_2
-from lvl_03 import level_3
+from level_template import level
 
 
 class Game:
@@ -134,9 +132,7 @@ while True:
                 elif event.key == pygame.K_s: game_functions.mute_sound_toggle()
 
                 elif event.key == pygame.K_RETURN:
-                    if game_1.entered_number == 1: obj = level_1(); obj.main(game_functions)
-                    elif game_1.entered_number == 2: obj = level_2(); obj.main(game_functions)
-                    elif game_1.entered_number == 3: obj = level_3(); obj.main(game_functions)
+                    obj = level(); obj.main(game_functions, "Level " + str(game_1.entered_number), "levels/lvl_" + str(game_1.entered_number) + ".csv")
 
 
                
