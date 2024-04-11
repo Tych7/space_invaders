@@ -1,6 +1,7 @@
 import pygame
 import sys
 import os
+import json
 
 from classes import global_game_functions,alien_1, projectile, player
 
@@ -95,9 +96,9 @@ class level_2:
             game_functions.display_image(self.images[5], 0 , 640 * self.ratio, self.win)
 
         #display mute icon
-        with open('mute.txt', 'r') as file:
-            content = file.read()
-            if content.strip() == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["music"] == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
             
         #display projectiles
         for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
@@ -190,9 +191,9 @@ class level_2:
                         self.player_objects[0].bullets.append(projectile(
                             round(self.player_objects[0].x + self.player_objects[0].width //2), 
                             round(self.player_objects[0].y + self.player_objects[0].height//2), 10, (0,255,255), self.ratio))
-                        with open('mute.txt', 'r') as file:
-                            content = file.read()
-                            if content.strip() == "true": self.sounds[0].play()
+                        with open("settings.json", 'r') as file:
+                            data = json.load(file)
+                            if data["music"] == "true": self.sounds[0].play()
                     
                         
             if keys[pygame.K_LEFT] and self.player_objects[0].x > 480 * self.ratio:
@@ -232,9 +233,9 @@ class level_2:
                 if obj.y + obj.height > self.player_objects[0].y:
                     alien_to_low = True
             if alien_to_low == True:
-                with open('mute.txt', 'r') as file:
-                            content = file.read()
-                            if content.strip() == "true": self.sounds[1].play()
+                with open("settings.json", 'r') as file:
+                    data = json.load(file)
+                    if data["music"] == "true": self.sounds[1].play()
                 for obj in self.alien_1_objects: obj.vel = 0                
                 self.lose = True
                 self.keyboard_inputs()

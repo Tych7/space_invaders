@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import json
 
 
 from classes import global_game_functions
@@ -81,9 +82,9 @@ class Game:
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        with open('mute.txt', 'r') as file:
-            content = file.read()
-            if content.strip() == "false": game_functions.display_image(self.images[4], -720 * self.ratio, 100 * self.ratio, self.win)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["music"] == "false": game_functions.display_image(self.images[4], -720 * self.ratio, 100 * self.ratio, self.win)
 
     
 #MAIN LOOP
@@ -91,10 +92,11 @@ while True:
     game_1 = Game()
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
-
-    with open('mute.txt', 'w') as file:
-        file.write("true")
-
+    
+    with open("settings.json", 'r') as file: data = json.load(file)
+    data["music"] = "true"
+    with open("settings.json", 'w') as file: json.dump(data, file)
+        
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import json
 
 
 from classes import global_game_functions
@@ -64,9 +65,9 @@ class Controls:
         game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
         game_functions.display_text(40, '[Q] - Quit      '             , 320 * self.ratio, 1200 * self.ratio, self.win)
         
-        with open('mute.txt', 'r') as file:
-            content = file.read()
-            if content.strip() == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["music"] == "false": game_functions.display_image(self.images[1], -720 * self.ratio, 90 * self.ratio, self.win)
         
 
     def main(self):

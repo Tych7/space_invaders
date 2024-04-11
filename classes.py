@@ -1,18 +1,21 @@
 import pygame
 import os
 import sys
+import json
 
 class global_game_functions:
 	def mute_sound_toggle(self):
-		with open('mute.txt', 'r') as file:
-			content = file.read()
-			if content.strip() == "false":
-				with open('mute.txt', 'w') as file:
-					file.write("true")
+		with open("settings.json", 'r') as file: 
+			data = json.load(file)
+			if data["music"] == "false":
+				with open("settings.json", 'w') as file:
+					data["music"] = "true"
+					json.dump(data, file)
 				pygame.mixer.music.unpause()
-			elif content.strip() == "true":
-				with open('mute.txt', 'w') as file:
-					file.write("false")
+			else:
+				with open("settings.json", 'w') as file:
+					data["music"] = "false"
+					json.dump(data, file)
 				pygame.mixer.music.pause()
 
 	def load_images(self, unloaded_images):
@@ -118,9 +121,9 @@ class alien_1(object):
 		else:
 			self.visible = False
 			win.blit(image, (self.x,self.y))
-			with open('mute.txt', 'r') as file:
-				content = file.read()
-				if content.strip() == "true": sound.play()
+			with open("settings.json", 'r') as file:
+				data = json.load(file)
+				if data["music"] == "true": sound.play()
 			print('hit')
 
 class projectile(object):
