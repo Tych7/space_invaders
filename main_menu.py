@@ -25,8 +25,12 @@ class Game:
         screen_width = pygame.display.get_surface().get_size()[0]
 
         self.ratio = screen_width / bg_width
-        game_functions.ratio = self.ratio
-
+        with open("settings.json", 'r') as file: data = json.load(file)
+        data["ratio"] = self.ratio
+        with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
+        game_functions.set_ratio()
+        
+        
     def init_game(self, game_functions):
         pygame.init()
 
@@ -95,7 +99,7 @@ while True:
     
     with open("settings.json", 'r') as file: data = json.load(file)
     data["music"] = "true"
-    with open("settings.json", 'w') as file: json.dump(data, file)
+    with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
         
     while True:
         for event in pygame.event.get():
@@ -130,9 +134,9 @@ while True:
                 elif event.key == pygame.K_s: game_functions.mute_sound_toggle()
 
                 elif event.key == pygame.K_RETURN:
-                    if game_1.entered_number == 1: obj = level_1(); obj.main()
-                    elif game_1.entered_number == 2: obj = level_2(); obj.main()
-                    elif game_1.entered_number == 3: obj = level_3(); obj.main()
+                    if game_1.entered_number == 1: obj = level_1(); obj.main(game_functions)
+                    elif game_1.entered_number == 2: obj = level_2(); obj.main(game_functions)
+                    elif game_1.entered_number == 3: obj = level_3(); obj.main(game_functions)
 
 
                

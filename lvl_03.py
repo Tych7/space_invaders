@@ -25,12 +25,10 @@ class level_3:
     lose = False
     running = True
 
-    def set_ratio(self, loaded_images, game_functions):
-        bg_width = loaded_images[0].get_size()[0]
-        screen_width = pygame.display.get_surface().get_size()[0]
-
-        self.ratio = screen_width / bg_width
-        game_functions.ratio = self.ratio
+    def set_ratio(self):
+        with open("settings.json", 'r') as file: 
+            data = json.load(file)
+            self.ratio = data["ratio"]
 
     def init_lvl(self, game_functions):
         pygame.init()
@@ -145,8 +143,7 @@ class level_3:
             self.running = False
 
 
-    def main(self):
-        game_functions = global_game_functions()
+    def main(self, game_functions):
         self.init_lvl(global_game_functions)
         self.init_objects()
 

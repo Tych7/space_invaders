@@ -25,12 +25,10 @@ class level_1:
     lose = False
     running = True
 
-    def set_ratio(self, loaded_images, game_functions):
-        bg_width = loaded_images[0].get_size()[0]
-        screen_width = pygame.display.get_surface().get_size()[0]
-
-        self.ratio = screen_width / bg_width
-        game_functions.ratio = self.ratio
+    def set_ratio(self):
+        with open("settings.json", 'r') as file: 
+            data = json.load(file)
+            self.ratio = data["ratio"]
 
     def init_lvl(self, game_functions):
         pygame.init()
@@ -51,7 +49,7 @@ class level_1:
             "alien_A.png",
         ]
         loaded_images = game_functions.load_images(self, images)
-        self.set_ratio(loaded_images, game_functions)
+        self.set_ratio()
         self.images = game_functions.scale_images(self, loaded_images)
         
         sounds = [
@@ -136,8 +134,7 @@ class level_1:
             self.running = False
 
 
-    def main(self):
-        game_functions = global_game_functions()
+    def main(self, game_functions):
         self.init_lvl(global_game_functions)
         self.init_objects()
 

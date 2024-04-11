@@ -4,18 +4,25 @@ import sys
 import json
 
 class global_game_functions:
+	ratio = 0
+ 
+	def set_ratio(self):
+		with open("settings.json", 'r') as file: 
+			data = json.load(file)
+			self.ratio = data["ratio"]
+    
 	def mute_sound_toggle(self):
 		with open("settings.json", 'r') as file: 
 			data = json.load(file)
 			if data["music"] == "false":
 				with open("settings.json", 'w') as file:
 					data["music"] = "true"
-					json.dump(data, file)
+					json.dump(data, file, indent=4)
 				pygame.mixer.music.unpause()
 			else:
 				with open("settings.json", 'w') as file:
 					data["music"] = "false"
-					json.dump(data, file)
+					json.dump(data, file, indent=4)
 				pygame.mixer.music.pause()
 
 	def load_images(self, unloaded_images):
@@ -31,7 +38,7 @@ class global_game_functions:
 		for x in unloaded_sounds:
 			loaded_sounds.append(pygame.mixer.Sound(directory + x))
 		self.sounds = loaded_sounds
-    
+
 	def scale_images(self, loaded_images):
 		scaled_images = []
 		for x in loaded_images:
@@ -50,7 +57,7 @@ class global_game_functions:
 			image_width = screen_center + width
 
 		win.blit(image, (image_width, height))
-	
+  
 	def display_text(self, size, text, width, height, win):
 		font_size = int(size * min(self.ratio, self.ratio))
 		font = pygame.font.SysFont('couriernew', font_size, True)
