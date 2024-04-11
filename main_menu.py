@@ -38,7 +38,7 @@ class Game:
         pygame.display.set_caption("Main Menu")
 
         images = [
-            "bgA.jpg",
+            "bgB.png",
             "mainmenu.png",
             "selected_lvl.png",
             "alien_a.png",

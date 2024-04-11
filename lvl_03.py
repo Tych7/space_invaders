@@ -37,7 +37,7 @@ class level_3:
         pygame.display.set_caption(self.level_string)
 
         images = [
-            "bgA.jpg",
+            "bgA.png",
             "lvl_select.png",
             "ship.png",
             "shipright.png",
@@ -73,8 +73,10 @@ class level_3:
         for x in self.player_objects: x.draw(self.win, player_images)
 
         #display text
-        game_functions.display_text(50,'Score: ' + str(self.score), 520 * self.ratio, 100 * self.ratio, self.win)
-        game_functions.display_text(50,self.level_string, -700 * self.ratio, 1325 * self.ratio, self.win)
+        game_functions.display_text(60,'SCORE:', 950 * self.ratio, 675 * self.ratio, self.win)
+        if self.score < 10: score_alignment = 1040
+        else: score_alignment = 1020
+        game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
         
         if self.pauze:
             game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
