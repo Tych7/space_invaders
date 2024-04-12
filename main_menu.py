@@ -41,7 +41,8 @@ class Game:
             "mainmenu.png",
             "selected_lvl.png",
             "alien_A.png",
-            "mute.png",
+            "SFX.png",
+            "music.png",
             "button.png",
         ]
         loaded_images = game_functions.load_images(images)
@@ -83,7 +84,7 @@ class Game:
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        for button in self.buttons: button.draw(self.win, self.images[5])
+        for button in self.buttons: button.draw(self.win, self.images[6])
 
         with open("settings.json", 'r') as file:
             data = json.load(file)

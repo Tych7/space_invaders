@@ -7,7 +7,7 @@ import json
 from classes import global_game_functions, Button
 
 
-class Controls:
+class Settings:
     images = []
     win = None
     ratio = 0
@@ -24,7 +24,7 @@ class Controls:
         pygame.init()
 
         self.win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        pygame.display.set_caption("Controls")
+        pygame.display.set_caption("Settings")
 
         images = [
             "keyboard_controls.png",

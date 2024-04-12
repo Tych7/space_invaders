@@ -18,6 +18,7 @@ class level:
     level_string = ""
     alien_rows = []
     alien_collums = []
+    pauze_buttons = []
 
     #global variable data
     score = 0
@@ -46,7 +47,10 @@ class level:
             "gameover.png",
             "win.png",
             "explo.png",
-            "mute.png",
+            "SFX.png",
+            "music.png",
+            "button.png",
+            "pauze_menu.png",
             "alien_A.png",
         ]
         loaded_images = game_functions.load_images(self, images)
@@ -80,11 +84,14 @@ class level:
         game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
         
         game_functions.display_text(50,self.level_string, -700 * self.ratio, 1325 * self.ratio, self.win)
+
+        #display projectiles
+        for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
         
         if self.pauze:
-            game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
-            game_functions.display_text(40, '[R] - Restart   '             , -240 * self.ratio, 1240 * self.ratio, self.win)
-            game_functions.display_text(40, '[Q] - Quit      '             , 320 * self.ratio, 1200 * self.ratio, self.win)
+            game_functions.display_image(self.images[11], 0 , 500 * self.ratio, self.win)
+            game_functions.display_text(35, 'PAUZE MENU', 0 , 515 * self.ratio, self.win)
+            for button in self.pauze_buttons: button.draw(self.win, self.images[10])
             
         if self.winner:
             game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
@@ -103,8 +110,6 @@ class level:
             data = json.load(file)
             if data["music"] == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
             
-        #display projectiles
-        for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
 
     def init_objects(self, lvl_lable, lvl_structure):
         self.player_objects.clear()
@@ -123,9 +128,9 @@ class level:
                     x = col_idx
                     y = row_idx
                     if value == '1':                     #|            x              |               y            |widht|height|vel|   image      |  ratio    |
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[9], self.ratio))
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[12], self.ratio))
                     if value == '2':
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[9], self.ratio))
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[12], self.ratio))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
@@ -147,6 +152,13 @@ class level:
         self.init_lvl(global_game_functions)
         self.init_objects(lvl_lable, lvl_structure)
 
+        
+        main_button = Button(1130, 580, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
+        restart_button = Button(1130, 660, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        settings_button = Button(1130, 740, 300, 60, "Settings", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        quit_button = Button(1130, 820, 300, 60, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+        self.pauze_buttons = [main_button, restart_button, settings_button, quit_button]
+
         move_down = False
         self.running = True
 
@@ -157,7 +169,11 @@ class level:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
-                elif event.type == pygame.KEYDOWN:
+                main_button.handle_event(event)
+                restart_button.handle_event(event)
+                settings_button.handle_event(event)
+                quit_button.handle_event(event)
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_s: game_functions.mute_sound_toggle()
             
         #Moving the aliens down
@@ -214,7 +230,6 @@ class level:
 
             if self.pauze:
                 for obj in self.alien_1_objects: obj.vel = 0
-                self.keyboard_inputs()
                     
         #Check for win
             all_aliens_invisible = True
