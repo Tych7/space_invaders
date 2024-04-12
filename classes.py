@@ -23,8 +23,13 @@ class Button:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.font_size = font_size
 	
-    def draw(self, screen):
-        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
+    def draw(self, win, image):
+        win.blit(image, (self.x , self.y))
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_over = self.rect.collidepoint(mouse_pos)
+        
+        if mouse_over:
+            pygame.draw.rect(win, (4, 245, 4), self.rect, 6, border_radius=22)
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
         renderd_text = font.render(self.text, 1, (4, 245, 4))
@@ -32,7 +37,8 @@ class Button:
         text_x = (self.width / 2) - (font.size(self.text)[0] / 2)
         text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
 
-        screen.blit(renderd_text, (self.x + text_x, self.y + text_y))
+        win.blit(renderd_text, (self.x + text_x, self.y + text_y))
+
     
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:

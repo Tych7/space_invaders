@@ -40,8 +40,9 @@ class Game:
             "bgB.png",
             "mainmenu.png",
             "selected_lvl.png",
-            "alien_a.png",
+            "alien_A.png",
             "mute.png",
+            "button.png",
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -82,7 +83,7 @@ class Game:
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        for button in self.buttons: button.draw(self.win)
+        for button in self.buttons: button.draw(self.win, self.images[5])
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -95,8 +96,8 @@ while True:
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
 
-    quit_button = Button(1625, 1200, 200, 50, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
-    controls_button = Button(735, 1200, 200, 50, "Controls", 40, lambda: Controls().main(game_functions))
+    quit_button = Button(1625, 1200, 300, 60, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+    controls_button = Button(635, 1200, 300, 60, "Controls", 40, lambda: Controls().main(game_functions))
     game_1.buttons = [quit_button, controls_button]
     
     with open("settings.json", 'r') as file: data = json.load(file)
@@ -132,9 +133,7 @@ while True:
                     game_1.update_entered_number(0)
                 elif event.key == pygame.K_BACKSPACE:
                     game_1.update_entered_number(-1)
-
-                elif event.key == pygame.K_q: pygame.quit(); sys.exit(0)
-                elif event.key == pygame.K_c: obj = Controls(); obj.main(game_functions)
+                    
                 elif event.key == pygame.K_s: game_functions.mute_sound_toggle()
 
                 elif event.key == pygame.K_RETURN:

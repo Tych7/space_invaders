@@ -4,13 +4,14 @@ import sys
 import json
 
 
-from classes import global_game_functions
+from classes import global_game_functions, Button
 
 
 class Controls:
     images = []
     win = None
     ratio = 0
+    buttons = []
 
     running = True
 
@@ -27,7 +28,8 @@ class Controls:
 
         images = [
             "keyboard_controls.png",
-            "mute.png"
+            "mute.png",
+            "button.png",
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio()
@@ -60,9 +62,9 @@ class Controls:
         game_functions.display_image(self.images[0], 0 , 0, self.win)
 
         game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
-        game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
-        game_functions.display_text(40, '[Q] - Quit      '             , 320 * self.ratio, 1200 * self.ratio, self.win)
-        
+
+        for button in self.buttons: button.draw(self.win, self.images[2])
+
         with open("settings.json", 'r') as file:
             data = json.load(file)
             if data["music"] == "false": game_functions.display_image(self.images[1], -720 * self.ratio, 90 * self.ratio, self.win)
@@ -71,11 +73,17 @@ class Controls:
     def main(self, game_functions):
         self.init_game(game_functions)
 
+        quit_button = Button(1625, 1200, 300, 60, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+        main_button = Button(635, 1200, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
+        self.buttons = [main_button, quit_button]
+
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
-                elif event.type == pygame.KEYDOWN:
+                main_button.handle_event(event)
+                quit_button.handle_event(event)
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_s: game_functions.mute_sound_toggle()
             
             keys = pygame.key.get_pressed()

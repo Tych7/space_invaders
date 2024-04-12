@@ -16,7 +16,11 @@ class Button:
         self.font_size = font_size
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_over = self.rect.collidepoint(mouse_pos)
+        
+        if mouse_over:
+            pygame.draw.rect(screen, (255, 0, 0), self.rect, 3, border_radius=10)
         font = pygame.font.SysFont('couriernew', self.font_size, True)
         renderd_text = font.render(self.text, 1, (4, 245, 4))
 
