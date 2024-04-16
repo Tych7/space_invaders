@@ -88,7 +88,7 @@ class Game:
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["music"] == "false": game_functions.display_image(self.images[4], -720 * self.ratio, 100 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[4], -720 * self.ratio, 100 * self.ratio, self.win)
 
     
 #MAIN LOOP
@@ -97,12 +97,13 @@ while True:
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
 
-    quit_button = Button(1625, 1200, 300, 60, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+    quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
     controls_button = Button(635, 1200, 300, 60, "Controls", 40, lambda: Controls().main(game_functions))
     game_1.buttons = [quit_button, controls_button]
     
     with open("settings.json", 'r') as file: data = json.load(file)
     data["music"] = "true"
+    data["SFX"] = "true"
     with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
         
     while True:
@@ -135,7 +136,7 @@ while True:
                 elif event.key == pygame.K_BACKSPACE:
                     game_1.update_entered_number(-1)
                     
-                elif event.key == pygame.K_s: game_functions.mute_sound_toggle()
+                elif event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
 
                 elif event.key == pygame.K_RETURN:
                     obj = level(); obj.main(game_functions, "Level " + str(game_1.entered_number), "levels/lvl_" + str(game_1.entered_number) + ".csv")

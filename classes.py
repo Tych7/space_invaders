@@ -3,6 +3,48 @@ import os
 import sys
 import json
 
+class Switch:
+    ratio = 0
+
+    def set_ratio(self):
+        with open("settings.json", 'r') as file: 
+            data = json.load(file)
+            self.ratio = data["ratio"]
+
+    def __init__(self, x, y, width, height, setting, font_size, action):
+        self.set_ratio()
+        self.action = action
+        self.x = x * self.ratio
+        self.y = y * self.ratio
+        self.width = width * self.ratio
+        self.height = height * self.ratio
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.font_size = font_size
+        self.setting = setting
+	
+    def draw(self, win, image):
+        win.blit(image, (self.x , self.y))
+        font_size = int(self.font_size * min(self.ratio, self.ratio))
+        font = pygame.font.SysFont('couriernew', font_size, True)
+        text = ""
+
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data[self.setting] == "true": 
+                text = "ON"
+                renderd_text = font.render(text, 1, (4, 245, 4))
+            else: 
+                text = "OFF"
+                renderd_text = font.render(text, 1, (255, 0, 0))
+
+        win.blit(renderd_text, (self.x , self.y))
+
+    
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.action()
+
 
 class Button:
     ratio = 0
@@ -29,14 +71,13 @@ class Button:
         mouse_over = self.rect.collidepoint(mouse_pos)
         
         if mouse_over:
-            pygame.draw.rect(win, (4, 245, 4), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+            pygame.draw.rect(win, (4, 245, 4), self.rect, int((self.height/8) * self.ratio), border_radius=int((self.height/2.75) * self.ratio))
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
-        renderd_text = font.render(self.text, 1, (4, 245, 4))
 
+        renderd_text = font.render(self.text, 1, (4, 245, 4))
         text_x = (self.width / 2) - (font.size(self.text)[0] / 2)
         text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
-
         win.blit(renderd_text, (self.x + text_x, self.y + text_y))
 
     
@@ -54,19 +95,22 @@ class global_game_functions:
 			data = json.load(file)
 			self.ratio = data["ratio"]
     
-	def mute_sound_toggle(self):
+	def mute_sound_toggle(self, setting):
 		with open("settings.json", 'r') as file: 
 			data = json.load(file)
-			if data["music"] == "false":
+
+			if data[setting] == "false":
 				with open("settings.json", 'w') as file:
-					data["music"] = "true"
+					data[setting] = "true"
 					json.dump(data, file, indent=4)
-				pygame.mixer.music.unpause()
+				if setting == "music":
+					pygame.mixer.music.unpause()
 			else:
 				with open("settings.json", 'w') as file:
-					data["music"] = "false"
+					data[setting] = "false"
 					json.dump(data, file, indent=4)
-				pygame.mixer.music.pause()
+				if setting == "music":
+					pygame.mixer.music.pause()
 
 	def load_images(self, unloaded_images):
 		loaded_images = []
@@ -174,7 +218,7 @@ class alien(object):
 			win.blit(image, (self.x,self.y))
 			with open("settings.json", 'r') as file:
 				data = json.load(file)
-				if data["music"] == "true": sound.play()
+				if data["SFX"] == "true": sound.play()
 			print('hit')
 
 class projectile(object):

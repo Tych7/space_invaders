@@ -4,7 +4,7 @@ import os
 import json
 import csv
 
-from classes import global_game_functions,alien, projectile, player, Button
+from classes import global_game_functions,alien, projectile, player, Button, Switch
 
 class level:
 
@@ -18,7 +18,11 @@ class level:
     level_string = ""
     alien_rows = []
     alien_collums = []
+
     pauze_buttons = []
+    settings_buttons = []
+    settings_switches = []
+
 
     #global variable data
     score = 0
@@ -26,6 +30,8 @@ class level:
     winner = False
     lose = False
     running = True
+    settings_open = False
+
 
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
@@ -39,19 +45,20 @@ class level:
         pygame.display.set_caption(self.level_string)
 
         images = [
-            "bgA.png",
-            "lvl_select.png",
-            "ship.png",
-            "shipright.png",
-            "shipleft.png",
-            "gameover.png",
-            "win.png",
-            "explo.png",
-            "SFX.png",
-            "music.png",
-            "button.png",
-            "pauze_menu.png",
-            "alien_A.png",
+            "bgA.png",          #0
+            "lvl_select.png",   #1
+            "ship.png",         #2
+            "shipright.png",    #3
+            "shipleft.png",     #4
+            "gameover.png",     #5
+            "win.png",          #6
+            "explo.png",        #7
+            "SFX.png",          #8
+            "music.png",        #9
+            "button.png",       #10
+            "switch.png",       #11
+            "pauze_menu.png",   #12
+            "alien_A.png",      #13
         ]
         loaded_images = game_functions.load_images(self, images)
         self.set_ratio()
@@ -87,9 +94,15 @@ class level:
 
         #display projectiles
         for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
-        
-        if self.pauze:
-            game_functions.display_image(self.images[11], 0 , 500 * self.ratio, self.win)
+
+        if self.settings_open:
+            game_functions.display_image(self.images[12], 0 , 500 * self.ratio, self.win)
+            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
+            for button in self.settings_buttons: button.draw(self.win, self.images[10])
+            for switch in self.settings_switches: switch.draw(self.win, self.images[11])
+
+        elif self.pauze:
+            game_functions.display_image(self.images[12], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'PAUZE MENU', 0 , 515 * self.ratio, self.win)
             for button in self.pauze_buttons: button.draw(self.win, self.images[10])
             
@@ -108,7 +121,7 @@ class level:
         #display mute icon
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["music"] == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
             
 
     def init_objects(self, lvl_lable, lvl_structure):
@@ -128,9 +141,9 @@ class level:
                     x = col_idx
                     y = row_idx
                     if value == '1':                     #|            x              |               y            |widht|height|vel|   image      |  ratio    |
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[12], self.ratio))
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[13], self.ratio))
                     if value == '2':
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[12], self.ratio))
+                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[13], self.ratio))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
@@ -148,16 +161,23 @@ class level:
             self.running = False
 
 
+
     def main(self, game_functions, lvl_lable, lvl_structure):
         self.init_lvl(global_game_functions)
         self.init_objects(lvl_lable, lvl_structure)
 
-        
         main_button = Button(1130, 580, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
         restart_button = Button(1130, 660, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
-        settings_button = Button(1130, 740, 300, 60, "Settings", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
-        quit_button = Button(1130, 820, 300, 60, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+        settings_button = Button(1130, 740, 300, 60, "Settings", 40, lambda: setattr(self, 'settings_open', True))
+        quit_button = Button(1130, 820, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
+
+        sfx_button = Switch(1130, 740, 100, 40, "SFX", 20, lambda: game_functions.mute_sound_toggle("SFX"))
+        back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
+
         self.pauze_buttons = [main_button, restart_button, settings_button, quit_button]
+        self.settings_buttons = [back_button]
+        self.settings_switches = [sfx_button]
+
 
         move_down = False
         self.running = True
@@ -169,12 +189,16 @@ class level:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
-                main_button.handle_event(event)
-                restart_button.handle_event(event)
-                settings_button.handle_event(event)
-                quit_button.handle_event(event)
+                if self.settings_open:
+                    back_button.handle_event(event)
+                    sfx_button.handle_event(event)
+                elif self.pauze:
+                    main_button.handle_event(event)
+                    restart_button.handle_event(event)
+                    settings_button.handle_event(event)
+                    quit_button.handle_event(event)
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_s: game_functions.mute_sound_toggle()
+                    if event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
             
         #Moving the aliens down
             if self.alien_1_objects[0].x < (1280 * self.ratio):
@@ -208,7 +232,7 @@ class level:
                             round(self.player_objects[0].y + self.player_objects[0].height//2), 10, (0,255,255), self.ratio))
                         with open("settings.json", 'r') as file:
                             data = json.load(file)
-                            if data["music"] == "true": self.sounds[0].play()
+                            if data["SFX"] == "true": self.sounds[0].play()
                     
                         
             if keys[pygame.K_LEFT] and self.player_objects[0].x > 480 * self.ratio:
@@ -230,6 +254,7 @@ class level:
 
             if self.pauze:
                 for obj in self.alien_1_objects: obj.vel = 0
+                
                     
         #Check for win
             all_aliens_invisible = True
@@ -249,7 +274,7 @@ class level:
             if alien_to_low == True:
                 with open("settings.json", 'r') as file:
                     data = json.load(file)
-                    if data["music"] == "true": self.sounds[1].play()
+                    if data["SFX"] == "true": self.sounds[1].play()
                 for obj in self.alien_1_objects: obj.vel = 0                
                 self.lose = True
                 self.keyboard_inputs()

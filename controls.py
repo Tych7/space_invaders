@@ -44,13 +44,13 @@ class Controls:
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["music"] == "false": game_functions.display_image(self.images[1], -720 * self.ratio, 90 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[1], -720 * self.ratio, 90 * self.ratio, self.win)
         
 
     def main(self, game_functions):
         self.init_game(game_functions)
 
-        quit_button = Button(1625, 1200, 300, 60, "Quit", 40, lambda: (pygame.quit(), sys.exit(0)))
+        quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
         main_button = Button(635, 1200, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
         self.buttons = [main_button, quit_button]
 
@@ -61,7 +61,7 @@ class Controls:
                 main_button.handle_event(event)
                 quit_button.handle_event(event)
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_s: game_functions.mute_sound_toggle()
+                    if event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
             
             keys = pygame.key.get_pressed()
             if keys[pygame.K_q]:
