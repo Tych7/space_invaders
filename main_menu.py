@@ -13,7 +13,7 @@ class Game:
     images = []
     win = None
     ratio = 0
-    buttons = []
+    pushbuttons = []
 
     entered_number = 0
     first_order_entered = False
@@ -84,7 +84,7 @@ class Game:
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        for button in self.buttons: button.draw(self.win, self.images[6])
+        for button in self.pushbuttons: button.draw_pushbutton(self.win, self.images[6])
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -99,10 +99,10 @@ while True:
 
     quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
     controls_button = Button(635, 1200, 300, 60, "Controls", 40, lambda: Controls().main(game_functions))
-    game_1.buttons = [quit_button, controls_button]
+    game_1.pushbuttons = [quit_button, controls_button]
     
     with open("settings.json", 'r') as file: data = json.load(file)
-    data["music"] = "true"
+    data["Music"] = "true"
     data["SFX"] = "true"
     with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
         

@@ -4,7 +4,7 @@ import os
 import json
 import csv
 
-from classes import global_game_functions,alien, projectile, player, Button, Switch
+from classes import global_game_functions,alien, projectile, player, Button
 
 class level:
 
@@ -19,8 +19,8 @@ class level:
     alien_rows = []
     alien_collums = []
 
-    pauze_buttons = []
-    settings_buttons = []
+    pauze_pushbuttons = []
+    settings_pushbuttons = []
     settings_switches = []
 
 
@@ -98,13 +98,13 @@ class level:
         if self.settings_open:
             game_functions.display_image(self.images[12], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
-            for button in self.settings_buttons: button.draw(self.win, self.images[10])
-            for switch in self.settings_switches: switch.draw(self.win, self.images[11])
+            for button in self.settings_pushbuttons: button.draw_pushbutton(self.win, self.images[10])
+            for switch in self.settings_switches: switch.draw_switch(self.win, self.images[11])
 
         elif self.pauze:
             game_functions.display_image(self.images[12], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'PAUZE MENU', 0 , 515 * self.ratio, self.win)
-            for button in self.pauze_buttons: button.draw(self.win, self.images[10])
+            for button in self.pauze_pushbuttons: button.draw_pushbutton(self.win, self.images[10])
             
         if self.winner:
             game_functions.display_text(40, '[M] - Main Menu '             , -240 * self.ratio, 1200 * self.ratio, self.win)
@@ -171,12 +171,13 @@ class level:
         settings_button = Button(1130, 740, 300, 60, "Settings", 40, lambda: setattr(self, 'settings_open', True))
         quit_button = Button(1130, 820, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
 
-        sfx_button = Switch(1130, 740, 100, 40, "SFX", 20, lambda: game_functions.mute_sound_toggle("SFX"))
+        music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
+        sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
         back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
-        self.pauze_buttons = [main_button, restart_button, settings_button, quit_button]
-        self.settings_buttons = [back_button]
-        self.settings_switches = [sfx_button]
+        self.pauze_pushbuttons = [main_button, restart_button, settings_button, quit_button]
+        self.settings_pushbuttons = [back_button]
+        self.settings_switches = [sfx_switch, music_switch]
 
 
         move_down = False
@@ -191,7 +192,8 @@ class level:
                     sys.exit(0)
                 if self.settings_open:
                     back_button.handle_event(event)
-                    sfx_button.handle_event(event)
+                    sfx_switch.handle_event(event)
+                    music_switch.handle_event(event)
                 elif self.pauze:
                     main_button.handle_event(event)
                     restart_button.handle_event(event)

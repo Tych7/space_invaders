@@ -3,48 +3,6 @@ import os
 import sys
 import json
 
-class Switch:
-    ratio = 0
-
-    def set_ratio(self):
-        with open("settings.json", 'r') as file: 
-            data = json.load(file)
-            self.ratio = data["ratio"]
-
-    def __init__(self, x, y, width, height, setting, font_size, action):
-        self.set_ratio()
-        self.action = action
-        self.x = x * self.ratio
-        self.y = y * self.ratio
-        self.width = width * self.ratio
-        self.height = height * self.ratio
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.font_size = font_size
-        self.setting = setting
-	
-    def draw(self, win, image):
-        win.blit(image, (self.x , self.y))
-        font_size = int(self.font_size * min(self.ratio, self.ratio))
-        font = pygame.font.SysFont('couriernew', font_size, True)
-        text = ""
-
-        with open("settings.json", 'r') as file:
-            data = json.load(file)
-            if data[self.setting] == "true": 
-                text = "ON"
-                renderd_text = font.render(text, 1, (4, 245, 4))
-            else: 
-                text = "OFF"
-                renderd_text = font.render(text, 1, (255, 0, 0))
-
-        win.blit(renderd_text, (self.x , self.y))
-
-    
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.action()
-
 
 class Button:
     ratio = 0
@@ -65,7 +23,7 @@ class Button:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.font_size = font_size
 	
-    def draw(self, win, image):
+    def draw_pushbutton(self, win, image):
         win.blit(image, (self.x , self.y))
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
@@ -80,7 +38,29 @@ class Button:
         text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
         win.blit(renderd_text, (self.x + text_x, self.y + text_y))
 
-    
+    def draw_switch(self, win, image):
+        win.blit(image, (self.x , self.y))
+        font_size = int(self.font_size * min(self.ratio, self.ratio))
+        font = pygame.font.SysFont('couriernew', font_size, True)
+        text = ""
+        text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
+
+        lable_text = font.render(self.text + ":", 1, (4, 245, 4))
+        win.blit(lable_text, (self.x - (100 * self.ratio), self.y + text_y))
+
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data[self.text] == "true": 
+                text = "ON"
+                renderd_text = font.render(text, 1, (4, 245, 4))
+                pygame.draw.circle(win, (195, 195, 195), (self.x + (20 * self.ratio), self.y + self.height/2), (13 * self.ratio))
+                win.blit(renderd_text, (self.x + (50 * self.ratio), self.y + text_y))
+            else: 
+                text = "OFF"
+                renderd_text = font.render(text, 1, (255, 0, 0))
+                pygame.draw.circle(win, (195, 195, 195), (self.x + (80 * self.ratio), self.y + self.height/2), (13 * self.ratio))
+                win.blit(renderd_text, (self.x + (10 * self.ratio), self.y + text_y + (3 * self.ratio)))
+
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -103,13 +83,13 @@ class global_game_functions:
 				with open("settings.json", 'w') as file:
 					data[setting] = "true"
 					json.dump(data, file, indent=4)
-				if setting == "music":
+				if setting == "Music":
 					pygame.mixer.music.unpause()
 			else:
 				with open("settings.json", 'w') as file:
 					data[setting] = "false"
 					json.dump(data, file, indent=4)
-				if setting == "music":
+				if setting == "Music":
 					pygame.mixer.music.pause()
 
 	def load_images(self, unloaded_images):

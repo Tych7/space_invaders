@@ -11,7 +11,7 @@ class Controls:
     images = []
     win = None
     ratio = 0
-    buttons = []
+    pushbuttons = []
 
     running = True
 
@@ -40,7 +40,7 @@ class Controls:
 
         game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
 
-        for button in self.buttons: button.draw(self.win, self.images[2])
+        for button in self.pushbuttons: button.draw_pushbutton(self.win, self.images[2])
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -52,7 +52,7 @@ class Controls:
 
         quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
         main_button = Button(635, 1200, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
-        self.buttons = [main_button, quit_button]
+        self.pushbuttons = [main_button, quit_button]
 
         while self.running:
             for event in pygame.event.get():
