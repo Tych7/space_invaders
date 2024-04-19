@@ -29,7 +29,7 @@ class Button:
         mouse_over = self.rect.collidepoint(mouse_pos)
         
         if mouse_over:
-            pygame.draw.rect(win, (4, 245, 4), self.rect, int((self.height/8) * self.ratio), border_radius=int((self.height/2.75) * self.ratio))
+            pygame.draw.rect(win, (4, 245, 4), self.rect, int((self.height/6) * self.ratio), border_radius=int((self.height/2) * self.ratio))
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
 
