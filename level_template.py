@@ -13,7 +13,7 @@ class level:
     sounds = []
     win = None
     player_objects = [] 
-    alien_1_objects = []
+    alien_objects = []
     ratio = 0
     level_string = ""
     alien_rows = []
@@ -78,7 +78,7 @@ class level:
         game_functions.display_image(self.images[1], -640 * self.ratio, 1300 * self.ratio, self.win)
 
         #display aliens type A
-        for x in self.alien_1_objects: x.draw(self.win)
+        for x in self.alien_objects: x.draw(self.win)
 
         #display player
         player_images = [self.images[2], self.images[3], self.images[4]]
@@ -129,7 +129,7 @@ class level:
 
     def init_objects(self, lvl_lable, lvl_structure):
         self.player_objects.clear()
-        self.alien_1_objects.clear()
+        self.alien_objects.clear()
         self.winner = False
         self.lose = False
         self.pauze = False
@@ -143,10 +143,10 @@ class level:
                 for col_idx, value in enumerate(row):
                     x = col_idx
                     y = row_idx
-                    if value == '1':                     #|            x              |               y            |widht|height|vel|   image      |  ratio    |
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[13], self.ratio))
+                    if value == '1':                    #|            x              |               y            |widht|height|vel|   image      |  ratio    |
+                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[13], self.ratio, value))
                     if value == '2':
-                        self.alien_1_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[13], self.ratio))
+                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[13], self.ratio, value))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
@@ -165,7 +165,9 @@ class level:
             
     def resume_game(self):
         self.pauze = False
-        for obj in self.alien_1_objects: obj.vel = 2
+        for obj in self.alien_objects: 
+            if obj.type == '1': obj.vel = 2 * self.ratio
+            if obj.type == '2': obj.vel = 4 * self.ratio
 
 
     def main(self, game_functions, lvl_lable, lvl_structure):
@@ -173,25 +175,27 @@ class level:
         self.init_objects(lvl_lable, lvl_structure)
 
         main_button = Button(1130, 580, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
-        restart_button = Button(1130, 660, 300, 60, "Resume", 40, lambda: self.resume_game())
-        settings_button = Button(1130, 740, 300, 60, "Settings", 40, lambda: setattr(self, 'settings_open', True))
-        quit_button = Button(1130, 820, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
+        resume_button = Button(1130, 660, 300, 60, "Resume", 40, lambda: self.resume_game())
+        restart_button = Button(1130, 740, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        settings_button = Button(1130, 820, 300, 60, "Settings", 40, lambda: setattr(self, 'settings_open', True))
 
         music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
         sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
         back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
-        self.pauze_pushbuttons = [main_button, restart_button, settings_button, quit_button]
+        self.pauze_pushbuttons = [main_button, resume_button, settings_button, restart_button]
         self.settings_pushbuttons = [back_button]
         self.settings_switches = [sfx_switch, music_switch]
 
 
         move_down = False
         self.running = True
+        
+        clock = pygame.time.Clock()
 
         #Start Main Loop
         while self.running:
-            pygame.time.delay(11)
+            clock.tick(60)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -202,21 +206,21 @@ class level:
                     music_switch.handle_event(event)
                 elif self.pauze:
                     main_button.handle_event(event)
-                    restart_button.handle_event(event)
+                    resume_button.handle_event(event)
                     settings_button.handle_event(event)
-                    quit_button.handle_event(event)
+                    restart_button.handle_event(event)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
             
         #Moving the aliens down
-            if self.alien_1_objects[0].x < (1280 * self.ratio):
+            if self.alien_objects[0].x < (1280 * self.ratio):
                  move_down = True
-            if (self.alien_1_objects[0].x > 1280 * self.ratio) and move_down:
-                for obj in self.alien_1_objects: obj.y += (50 * self.ratio)
+            if (self.alien_objects[0].x > 1280 * self.ratio) and move_down:
+                for obj in self.alien_objects: obj.y += (50 * self.ratio)
                 move_down = False
                     
         #Check if aliens get hit
-            for obj in self.alien_1_objects:
+            for obj in self.alien_objects:
                 if game_functions.alien_hit(obj, self.player_objects[0].bullets, self.images[7], self.sounds[2], self.win) == True:
                     self.score += 1
                     
@@ -261,29 +265,29 @@ class level:
                 self.pauze = True
 
             if self.pauze:
-                for obj in self.alien_1_objects: obj.vel = 0
+                for obj in self.alien_objects: obj.vel = 0
                 
                     
         #Check for win
             all_aliens_invisible = True
-            for obj in self.alien_1_objects:
+            for obj in self.alien_objects:
                 if obj.visible == True:
                     all_aliens_invisible = False
             if all_aliens_invisible == True:
-                for obj in self.alien_1_objects: obj.vel = 0
+                for obj in self.alien_objects: obj.vel = 0
                 self.winner = True
                 self.keyboard_inputs()
         
         #Check for lose
             alien_to_low = False
-            for obj in self.alien_1_objects:
+            for obj in self.alien_objects:
                 if obj.y + obj.height > self.player_objects[0].y:
                     alien_to_low = True
             if alien_to_low == True:
                 with open("settings.json", 'r') as file:
                     data = json.load(file)
                     if data["SFX"] == "true": self.sounds[1].play()
-                for obj in self.alien_1_objects: obj.vel = 0                
+                for obj in self.alien_objects: obj.vel = 0                
                 self.lose = True
                 self.keyboard_inputs()
 

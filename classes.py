@@ -153,7 +153,7 @@ class global_game_functions:
 	
 
 class alien(object):
-	def __init__(self, x, y, width, height, vel, alien_image, ratio):
+	def __init__(self, x, y, width, height, vel, alien_image, ratio, type):
 		self.x = x
 		self.y = y
 		self.width = width * ratio
@@ -167,6 +167,8 @@ class alien(object):
 		self.shootloop = 0
 		self.ratio = ratio
 		self.image = alien_image
+		self.type = type
+		self.direction = ""
 
 	def draw(self, win):
 		if self.y < (1080 * self.ratio):
@@ -179,16 +181,17 @@ class alien(object):
 				# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 	def move(self):
-		if self.vel > 0:
+		if self.direction == 'right':
 			if self.x + self.vel < self.path[1]:
 				self.x += self.vel
 			else:
-				self.vel = self.vel * -1
+				self.direction = 'left'
 		else:
 			if self.x - self.vel > self.path[0]:
-				self.x += self.vel
+				self.x -= self.vel
 			else:
-				self.vel = self.vel * -1
+				self.direction = 'right'
+
 
 	def hit(self, win, image, sound):
 		if self.health > 0:
