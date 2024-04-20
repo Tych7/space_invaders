@@ -29,7 +29,7 @@ class Button:
         mouse_over = self.rect.collidepoint(mouse_pos)
         
         if mouse_over:
-            pygame.draw.rect(win, (4, 245, 4), self.rect, int((self.height/6) * self.ratio), border_radius=int((self.height/2) * self.ratio))
+            pygame.draw.rect(win, (4, 245, 4), self.rect, int((self.height/4) * self.ratio), border_radius=int((self.height/1.75) * self.ratio))
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
 
@@ -53,12 +53,12 @@ class Button:
             if data[self.text] == "true": 
                 text = "ON"
                 renderd_text = font.render(text, 1, (4, 245, 4))
-                pygame.draw.circle(win, (195, 195, 195), (self.x + (20 * self.ratio), self.y + self.height/2), (13 * self.ratio))
+                pygame.draw.circle(win, (195, 195, 195), (self.x + (20 * self.ratio), self.y + self.height/2), (12 * self.ratio))
                 win.blit(renderd_text, (self.x + (50 * self.ratio), self.y + text_y))
             else: 
                 text = "OFF"
                 renderd_text = font.render(text, 1, (255, 0, 0))
-                pygame.draw.circle(win, (195, 195, 195), (self.x + (80 * self.ratio), self.y + self.height/2), (13 * self.ratio))
+                pygame.draw.circle(win, (195, 195, 195), (self.x + (80 * self.ratio), self.y + self.height/2), (12 * self.ratio))
                 win.blit(renderd_text, (self.x + (10 * self.ratio), self.y + text_y + (3 * self.ratio)))
 
     def handle_event(self, event):

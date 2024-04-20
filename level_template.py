@@ -118,10 +118,13 @@ class level:
             game_functions.display_text(40, '[Q] - Quit      '             , 320 * self.ratio, 1200 * self.ratio, self.win)
             game_functions.display_image(self.images[5], 0 , 640 * self.ratio, self.win)
 
-        #display mute icon
+        #display icons
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["SFX"] == "false": game_functions.display_image(self.images[8], -720 * self.ratio, 90 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[8], -700 * self.ratio, 90 * self.ratio, self.win)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["Music"] == "false": game_functions.display_image(self.images[9], -750 * self.ratio, 90 * self.ratio, self.win)
             
 
     def init_objects(self, lvl_lable, lvl_structure):
@@ -159,7 +162,10 @@ class level:
             self.init_objects()
         elif keys[pygame.K_m]:
             self.running = False
-
+            
+    def resume_game(self):
+        self.pauze = False
+        for obj in self.alien_1_objects: obj.vel = 2
 
 
     def main(self, game_functions, lvl_lable, lvl_structure):
@@ -167,7 +173,7 @@ class level:
         self.init_objects(lvl_lable, lvl_structure)
 
         main_button = Button(1130, 580, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
-        restart_button = Button(1130, 660, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        restart_button = Button(1130, 660, 300, 60, "Resume", 40, lambda: self.resume_game())
         settings_button = Button(1130, 740, 300, 60, "Settings", 40, lambda: setattr(self, 'settings_open', True))
         quit_button = Button(1130, 820, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
 

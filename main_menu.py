@@ -88,7 +88,10 @@ class Game:
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["SFX"] == "false": game_functions.display_image(self.images[4], -720 * self.ratio, 100 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[4], -700 * self.ratio, 100 * self.ratio, self.win)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["Music"] == "false": game_functions.display_image(self.images[5], -750 * self.ratio, 90 * self.ratio, self.win)
 
     
 #MAIN LOOP

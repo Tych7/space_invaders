@@ -44,7 +44,10 @@ class Controls:
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["SFX"] == "false": game_functions.display_image(self.images[1], -720 * self.ratio, 90 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[1], -700 * self.ratio, 90 * self.ratio, self.win)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["Music"] == "false": game_functions.display_image(self.images[9], -750 * self.ratio, 90 * self.ratio, self.win)
         
 
     def main(self, game_functions):
