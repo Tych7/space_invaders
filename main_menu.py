@@ -13,11 +13,17 @@ class Game:
     images = []
     win = None
     ratio = 0
-    pushbuttons = []
+    lvl_count = 0
+    home_pushbuttons_rect = []
+    home_pushbuttons_circle = []
 
     entered_number = 0
     first_order_entered = False
     second_order_entered = False
+
+    settings_open = False
+    settings_pushbuttons = []
+    settings_switches = []
 
     def set_ratio(self, loaded_images, game_functions):
         bg_width = loaded_images[0].get_size()[0]
@@ -37,13 +43,14 @@ class Game:
         pygame.display.set_caption("Main Menu")
 
         images = [
-            "bgB.png",
-            "mainmenu.png",
-            "selected_lvl.png",
-            "alien_A.png",
-            "SFX.png",
-            "music.png",
-            "button.png",
+            "bgB.png",              #0
+            "mainmenu.png",         #1
+            "selected_lvl.png",     #2
+            "alien_A.png",          #3
+            "SFX.png",              #4
+            "music.png",            #5
+            "pauze_menu.png",       #6
+            "settings_icon.png",    #7
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -52,6 +59,10 @@ class Game:
         # load mixer with music
         pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
         pygame.mixer.music.play(-1)
+        with open("settings.json", 'r') as file:
+            data = json.load(file)
+            if data["Music"] == "false": pygame.mixer.music.pause()
+
 
     def update_entered_number(self, number):
         if number == -1:
@@ -80,20 +91,32 @@ class Game:
         game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
         game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
         game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 995 * self.ratio, self.win)
+        game_functions.display_text(30, 'Max lvl: ' + str(game_1.lvl_count), 580 * self.ratio, 90 * game_1.ratio, game_1.win)
         
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        for button in self.pushbuttons: button.draw_pushbutton(self.win, self.images[6])
+        for button in self.home_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
+        for button in self.home_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["SFX"] == "false": game_functions.display_image(self.images[4], -700 * self.ratio, 100 * self.ratio, self.win)
+            if data["SFX"] == "false": game_functions.display_image(self.images[4], -700 * self.ratio, 90 * self.ratio, self.win)
         with open("settings.json", 'r') as file:
             data = json.load(file)
             if data["Music"] == "false": game_functions.display_image(self.images[5], -750 * self.ratio, 90 * self.ratio, self.win)
+        
+        if self.settings_open:
+            overlay_color = (0, 0, 0, 170)
+            overlay = pygame.Surface((self.win.get_width(), self.win.get_height()), pygame.SRCALPHA)
+            overlay.fill(overlay_color)
+            self.win.blit(overlay, (0, 0))
 
-    
+            game_functions.display_image(self.images[6], 0 , 500 * self.ratio, self.win)
+            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
+            for button in self.settings_pushbuttons: button.draw_pushbutton_rect(self.win)
+            for switch in self.settings_switches: switch.draw_switch(self.win)
+
 #MAIN LOOP
 while True:
     game_1 = Game()
@@ -102,19 +125,38 @@ while True:
 
     quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
     controls_button = Button(635, 1200, 300, 60, "Controls", 40, lambda: Controls().main(game_functions))
-    game_1.pushbuttons = [quit_button, controls_button]
-    
+    game_1.home_pushbuttons_rect = [quit_button, controls_button]
+
+    settings_button = Button(1280, 1225, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
+    game_1.home_pushbuttons_circle = [settings_button]
+
+    music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
+    sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
+    back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
+    game_1.settings_pushbuttons = [back_button]
+    game_1.settings_switches = [sfx_switch, music_switch]
+
     with open("settings.json", 'r') as file: data = json.load(file)
-    data["Music"] = "true"
-    data["SFX"] = "true"
+    data["Music"] = "false"
+    data["SFX"] = "false"
     with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
+
+    #Show amount of levels
+    files = os.listdir("levels/")
+    game_1.lvl_count = len(files)
         
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
-            quit_button.handle_event(event)
-            controls_button.handle_event(event)
+            if game_1.settings_open:
+                music_switch.handle_event(event)
+                sfx_switch.handle_event(event)
+                back_button.handle_event(event)
+            else:
+                quit_button.handle_event(event)
+                controls_button.handle_event(event)
+                settings_button.handle_event(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)
@@ -138,15 +180,13 @@ while True:
                     game_1.update_entered_number(0)
                 elif event.key == pygame.K_BACKSPACE:
                     game_1.update_entered_number(-1)
-                    
-                elif event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
-
                 elif event.key == pygame.K_RETURN:
-                    obj = level(); obj.main(game_functions, "Level " + str(game_1.entered_number), "levels/lvl_" + str(game_1.entered_number) + ".csv")
+                    file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
+                    if os.path.exists(file_path):
+                        obj = level()
+                        obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
+                    else:
+                        print("Error: File not found:", file_path)
                 
-                
-
-
-               
         pygame.display.update()
         game_1.update_screen(game_functions)

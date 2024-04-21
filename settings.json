@@ -1,5 +1,5 @@
 {
-    "Music": "true",
-    "SFX": "true",
-    "ratio": 0.625
+    "Music": "false",
+    "SFX": "false",
+    "ratio": 1.0
 }

@@ -29,7 +29,7 @@ class Controls:
         images = [
             "keyboard_controls.png",
             "SFX.png",
-            "button.png",
+            "music.png",
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio()
@@ -40,14 +40,14 @@ class Controls:
 
         game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
 
-        for button in self.pushbuttons: button.draw_pushbutton(self.win, self.images[2])
+        for button in self.pushbuttons: button.draw_pushbutton_rect(self.win)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
             if data["SFX"] == "false": game_functions.display_image(self.images[1], -700 * self.ratio, 90 * self.ratio, self.win)
         with open("settings.json", 'r') as file:
             data = json.load(file)
-            if data["Music"] == "false": game_functions.display_image(self.images[9], -750 * self.ratio, 90 * self.ratio, self.win)
+            if data["Music"] == "false": game_functions.display_image(self.images[2], -750 * self.ratio, 90 * self.ratio, self.win)
         
 
     def main(self, game_functions):

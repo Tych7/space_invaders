@@ -2,6 +2,7 @@ import pygame
 import os
 import sys
 import json
+import math
 
 
 class Button:
@@ -12,7 +13,7 @@ class Button:
             data = json.load(file)
             self.ratio = data["ratio"]
 
-    def __init__(self, x, y, width, height, text, font_size, action):
+    def __init__(self, x, y, width, height, text, font_size, action, image=None):
         self.set_ratio()
         self.text = text
         self.action = action
@@ -22,14 +23,16 @@ class Button:
         self.height = height * self.ratio
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.font_size = font_size
+        self.image = image
 	
-    def draw_pushbutton(self, win, image):
-        win.blit(image, (self.x , self.y))
+    def draw_pushbutton_rect(self, win):
+        pygame.draw.rect(win, (0, 0, 0), self.rect, 0, border_radius=int(22 * self.ratio))
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
         
-        if mouse_over:
-            pygame.draw.rect(win, (4, 245, 4), self.rect, int((self.height/4) * self.ratio), border_radius=int((self.height/1.75) * self.ratio))
+        if mouse_over: pygame.draw.rect(win, (4, 245, 4), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+        else: pygame.draw.rect(win, (195, 195, 195), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
 
@@ -38,8 +41,22 @@ class Button:
         text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
         win.blit(renderd_text, (self.x + text_x, self.y + text_y))
 
-    def draw_switch(self, win, image):
-        win.blit(image, (self.x , self.y))
+    def draw_pushbutton_circle(self, win):
+        pygame.draw.circle(win, (0, 0, 0), (self.x, self.y), self.width)
+        image_width, image_height = self.image.get_size()
+        centered_x = self.x - (image_width / 2)
+        centered_y = self.y - (image_height / 2)
+        win.blit(self.image, (centered_x, centered_y))
+
+        mouse_pos = pygame.mouse.get_pos()
+        distance = math.sqrt((mouse_pos[0] - self.x)**2 + (mouse_pos[1] - self.y)**2)
+        mouse_over = distance <= self.width
+        if mouse_over: pygame.draw.circle(win, (4, 245, 4), (self.x, self.y), self.width, int(6 * self.ratio))
+        else: pygame.draw.circle(win, (195, 195, 195), (self.x, self.y), self.width, int(6 * self.ratio))
+
+    def draw_switch(self, win):
+        pygame.draw.rect(win, (0, 0, 0), self.rect, 0, border_radius=int(22 * self.ratio))
+        pygame.draw.rect(win, (195, 195, 195), self.rect, int(5 * self.ratio), border_radius=int(22 * self.ratio))
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
         text = ""
@@ -63,8 +80,14 @@ class Button:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.action()
+            if self.image != None:
+                mouse_pos = pygame.mouse.get_pos()
+                distance = math.sqrt((mouse_pos[0] - self.x)**2 + (mouse_pos[1] - self.y)**2)
+                if distance <= self.width:	
+                    self.action()
+            else:
+               if self.rect.collidepoint(event.pos):
+                    self.action()
 
 
 class global_game_functions:
@@ -94,7 +117,7 @@ class global_game_functions:
 
 	def load_images(self, unloaded_images):
 		loaded_images = []
-		directory = "upscaled_images/"
+		directory = "images/"
 		for x in unloaded_images:
 			loaded_images.append(pygame.image.load(directory + x).convert_alpha())
 		return loaded_images
@@ -113,17 +136,17 @@ class global_game_functions:
 			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
 		return scaled_images
 
-	def display_image(self, image, width, height, win):
+	def display_image(self, image, x, y, win):
 		screen_center  = ((pygame.display.get_surface().get_size()[0])/2)
 		image_width = 0
-		if width == 0:
+		if x == 0:
 			image_width = screen_center - ((image.get_size()[0]) / 2)	
-		elif width < 0:
-			image_width = screen_center - image.get_size()[0] + width
+		elif x < 0:
+			image_width = screen_center - image.get_size()[0] + x
 		else:
-			image_width = screen_center + width
+			image_width = screen_center + x
 
-		win.blit(image, (image_width, height))
+		win.blit(image, (image_width, y))
   
 	def display_text(self, size, text, width, height, win):
 		font_size = int(size * min(self.ratio, self.ratio))
