@@ -14,7 +14,6 @@ class Game:
     win = None
     ratio = 0
     lvl_count = 0
-    home_pushbuttons_rect = []
     home_pushbuttons_circle = []
 
     entered_number = 0
@@ -50,7 +49,10 @@ class Game:
             "SFX.png",              #4
             "music.png",            #5
             "pauze_menu.png",       #6
-            "settings_icon.png",    #7
+            "icon_settings.png",    #7
+            "icon_controls.png",    #8
+            "icon_quit.png",        #9
+            "button_border.png",    #10
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -87,6 +89,7 @@ class Game:
         game_functions.display_image(self.images[0], 0 , 0, self.win)
         game_functions.display_image(self.images[1], 0 , 240 * self.ratio, self.win)
         game_functions.display_image(self.images[2], 0 , 975 * self.ratio, self.win)
+        game_functions.display_image(self.images[10], 0 , 1210, self.win)
 
         game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
         game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
@@ -96,7 +99,6 @@ class Game:
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        for button in self.home_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
         for button in self.home_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
 
         with open("settings.json", 'r') as file:
@@ -123,12 +125,10 @@ while True:
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
 
-    quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
-    controls_button = Button(635, 1200, 300, 60, "Controls", 40, lambda: Controls().main(game_functions))
-    game_1.home_pushbuttons_rect = [quit_button, controls_button]
-
-    settings_button = Button(1280, 1225, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
-    game_1.home_pushbuttons_circle = [settings_button]
+    settings_button = Button(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
+    controls_button = Button(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
+    quit_button = Button(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
+    game_1.home_pushbuttons_circle = [settings_button, controls_button, quit_button]
 
     music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
     sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))

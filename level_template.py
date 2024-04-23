@@ -102,25 +102,25 @@ class level:
         
 
         if self.pauze or self.winner or self.lose:
-            overlay_color = (0, 0, 0, 170)  # Black with 50% opacity
+            overlay_color = (0, 0, 0, 200) 
             overlay = pygame.Surface((self.win.get_width(), self.win.get_height()), pygame.SRCALPHA)
             overlay.fill(overlay_color)
             self.win.blit(overlay, (0, 0))
 
         if self.pauze:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, 'PAUZE MENU', 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.pauze_pushbuttons: button.draw_pushbutton_rect(self.win)
      
         if self.winner:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, 'MENU', 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.pauze_pushbuttons: button.draw_pushbutton_rect(self.win)
             game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, 'MENU', 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.pauze_pushbuttons: button.draw_pushbutton_rect(self.win)
             game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
             

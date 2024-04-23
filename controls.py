@@ -27,9 +27,13 @@ class Controls:
         pygame.display.set_caption("Controls")
 
         images = [
-            "keyboard_controls.png",
-            "SFX.png",
-            "music.png",
+            "keyboard_controls.png",    #0
+            "SFX.png",                  #1
+            "music.png",                #2
+            "icon_home.png",            #3
+            "icon_quit.png",            #4
+            "button_border.png",        #5
+
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio()
@@ -37,10 +41,11 @@ class Controls:
 
     def update_screen(self, game_functions):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
+        game_functions.display_image(self.images[5], 0 , 1210, self.win)
 
         game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
 
-        for button in self.pushbuttons: button.draw_pushbutton_rect(self.win)
+        for button in self.pushbuttons: button.draw_pushbutton_circle(self.win)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -53,8 +58,8 @@ class Controls:
     def main(self, game_functions):
         self.init_game(game_functions)
 
-        quit_button = Button(1625, 1200, 300, 60, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)))
-        main_button = Button(635, 1200, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
+        quit_button = Button(1410, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[4])
+        main_button = Button(1150, 1290, 50, 50, "Main Menu", 40, lambda: setattr(self, 'running', False), self.images[3])
         self.pushbuttons = [main_button, quit_button]
 
         while self.running:
