@@ -12,6 +12,7 @@ from level_template import level
 class Game:
     images = []
     win = None
+    controller = None
     ratio = 0
     lvl_count = 0
     home_pushbuttons_circle = []
@@ -37,6 +38,8 @@ class Game:
         
     def init_game(self, game_functions):
         pygame.init()
+        if pygame.joystick.get_count() > 0:
+            self.controller = pygame.joystick.Joystick(0)
 
         self.win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Main Menu")
@@ -141,6 +144,9 @@ while True:
     data["SFX"] = "false"
     with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
 
+    button_9_pressed = False
+    button_10_pressed = False
+
     #Show amount of levels
     files = os.listdir("levels/")
     game_1.lvl_count = len(files)
@@ -187,6 +193,18 @@ while True:
                         obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
                     else:
                         print("Error: File not found:", file_path)
-                
+                        
+            elif event.type == pygame.JOYBUTTONDOWN:
+                if game_1.controller.get_button(9) and game_1.entered_number > 0: 
+                    game_1.entered_number -= 1
+                elif game_1.controller.get_button(10): game_1.entered_number += 1
+                if game_1.controller.get_button(5):
+                    file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
+                    if os.path.exists(file_path):
+                        obj = level()
+                        obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
+                    else:
+                        print("Error: File not found:", file_path)
+        
         pygame.display.update()
         game_1.update_screen(game_functions)

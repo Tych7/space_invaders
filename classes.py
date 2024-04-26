@@ -12,7 +12,9 @@ class Button:
         with open("settings.json", 'r') as file: 
             data = json.load(file)
             self.ratio = data["ratio"]
-
+        if pygame.joystick.get_count() > 0:
+            self.controller = pygame.joystick.Joystick(0)
+			
     def __init__(self, x, y, width, height, text, font_size, action, image=None):
         self.set_ratio()
         self.text = text
@@ -24,6 +26,7 @@ class Button:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.font_size = font_size
         self.image = image
+        self.controller
 	
     def draw_pushbutton_rect(self, win):
         pygame.draw.rect(win, (0, 0, 0), self.rect, 0, border_radius=int(22 * self.ratio))
@@ -88,7 +91,8 @@ class Button:
             else:
                if self.rect.collidepoint(event.pos):
                     self.action()
-
+        elif event.type == pygame.JOYBUTTONDOWN:
+            if self.controller.get_button(0): self.action()
 
 class global_game_functions:
 	ratio = 0

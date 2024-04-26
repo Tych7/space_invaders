@@ -1,68 +1,51 @@
 import pygame
-import sys
 
-# Define some colors
-
-
-class Button:
-    def __init__(self, x, y, width, height, text, font_size, action):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.text = text
-        self.action = action
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.font_size = font_size
-
-    def draw(self, screen):
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_over = self.rect.collidepoint(mouse_pos)
-        
-        if mouse_over:
-            pygame.draw.rect(screen, (255, 0, 0), self.rect, 3, border_radius=10)
-        font = pygame.font.SysFont('couriernew', self.font_size, True)
-        renderd_text = font.render(self.text, 1, (4, 245, 4))
-
-        text_x = (self.width / 2) - (font.size(self.text)[0] / 2)
-        text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
-
-        screen.blit(renderd_text, (self.x + text_x, self.y + text_y))
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.action()
-
-# Initialize Pygame
 pygame.init()
 
-# Set up the screen
-screen_width, screen_height = 800, 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Clickable Buttons in Pygame")
+window = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Controller")
 
-# Create buttons
-button1 = Button(100, 100, 200, 50, "Button 1", 30, lambda: print("Button 1 clicked"))
-button2 = Button(100, 200, 200, 50, "Button 2", 30, lambda: print("Button 2 clicked"))
+controller = pygame.joystick.Joystick(0)
 
-buttons = [button1, button2]
+done = False
 
-# Main loop
-while True:
+# Create a red block
+block_width = 50
+block_height = 50
+block_x = 375
+block_y = 275
+
+clock = pygame.time.Clock()
+
+while not done:
+    window.fill((255, 255, 255))  # Clear the window
+
+    # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        for button in buttons:
-            button.handle_event(event)
+            done = True
 
-    # Fill the screen with background color
-    screen.fill((255,255,255))
+    # Update block position based on joystick axes
+    block_x += controller.get_axis(0) * 5  # Left stick horizontal axis
+    block_y += controller.get_axis(1) * 5  # Left stick vertical axis
 
-    # Draw buttons
-    for button in buttons:
-        button.draw(screen)
+    if controller.get_button(15): pygame.draw.rect(window, (255, 0, 0), [0, 0, 800, 600]) #RED
+    if controller.get_button(16): pygame.draw.rect(window, (0, 255, 0), [0, 0, 800, 600]) #GREEN
+    # if controller.get_button(17): pygame.draw.rect(window, (0, 0, 255), [0, 0, 800, 600]) #BLUE
+    # if controller.get_button(18): pygame.draw.rect(window, (0, 0, 0), [0, 0, 800, 600]) #BLACK
+    # if controller.get_button(19): pygame.draw.rect(window, (255, 255, 0), [0, 0, 800, 600]) #YELLOW
+
+    # Clamp block position within window bounds
+    block_x = max(0, min(block_x, 800 - block_width))
+    block_y = max(0, min(block_y, 600 - block_height))
+
+    # Draw the block
+    pygame.draw.rect(window, (255, 0, 0), [block_x, block_y, block_width, block_height])
 
     # Update the display
-    pygame.display.flip()
+    pygame.display.update()
+
+    # Cap the frame rate
+    clock.tick(60)
+
+pygame.quit()

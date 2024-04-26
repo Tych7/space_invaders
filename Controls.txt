@@ -1,0 +1,17 @@
+0 = X
+1 = O
+2 = □
+3 = △
+4 = share
+5 = PS button
+6 = options
+7 = L3
+8 = R3
+9 = L1
+10 = R1
+11 = ^
+12 = v
+13 = <
+14 = >
+15 = touchpad click
+16 = mic button
