@@ -7,9 +7,9 @@ import csv
 from classes import global_game_functions,alien, projectile, player, Button
 
 class level:
-
     #global static data
     images = []
+    alien_images = []
     sounds = []
     win = None
     player_objects = [] 
@@ -19,11 +19,16 @@ class level:
     alien_rows = []
     alien_collums = []
 
-    pauze_pushbuttons = []
-    settings_pushbuttons = []
+    pauze_pushbuttons_rect = []
+    pauze_pushbuttons_circle = []
+
+    settings_pushbuttons_rect = []
     settings_switches = []
 
-
+    win_pushbuttons_rect = []
+    lose_pushbuttons_rect = []
+    end_pushbuttons_circle = []
+    
     #global variable data
     score = 0
     pauze = False
@@ -39,6 +44,7 @@ class level:
 
     def init_lvl(self, game_functions):
         pygame.init()
+        self.set_ratio()
 
         self.win = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption(self.level_string)
@@ -55,12 +61,19 @@ class level:
             "SFX.png",          #8
             "music.png",        #9
             "pauze_menu.png",   #10
-            "alien_A.png",      #11
+            "icon_home.png",    #11
+            "icon_quit.png",    #12
+            "icon_settings.png",#13     
         ]
         loaded_images = game_functions.load_images(self, images)
-        self.set_ratio()
         self.images = game_functions.scale_images(self, loaded_images)
-        
+
+        alien_images = [
+             "alien_A.png",      #0
+        ]
+        loaded_aliens = game_functions.load_images(self, alien_images)
+        self.alien_images = game_functions.scale_images(self, loaded_aliens)
+
         sounds = [
             "laser.wav",
             "gameover.wav",
@@ -110,24 +123,27 @@ class level:
         if self.pauze:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
-            for button in self.pauze_pushbuttons: button.draw_pushbutton_rect(self.win)
+            for button in self.pauze_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
+            for button in self.pauze_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
      
         if self.winner:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
-            for button in self.pauze_pushbuttons: button.draw_pushbutton_rect(self.win)
+            for button in self.win_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
+            for button in self.end_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
             game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
-            for button in self.pauze_pushbuttons: button.draw_pushbutton_rect(self.win)
+            for button in self.lose_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
+            for button in self.end_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
             game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
             
         if self.settings_open:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
-            for button in self.settings_pushbuttons: button.draw_pushbutton_rect(self.win)
+            for button in self.settings_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
             for switch in self.settings_switches: switch.draw_switch(self.win)
             
 
@@ -148,9 +164,9 @@ class level:
                     x = col_idx
                     y = row_idx
                     if value == '1':                    #|            x              |               y            |widht|height|vel|   image      |  ratio    |
-                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.images[11], self.ratio, value))
+                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.alien_images[0], self.ratio, value))
                     if value == '2':
-                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.images[11], self.ratio, value))
+                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.alien_images[0], self.ratio, value))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
@@ -161,24 +177,47 @@ class level:
         for obj in self.alien_objects: 
             if obj.type == '1': obj.vel = 2 * self.ratio
             if obj.type == '2': obj.vel = 4 * self.ratio
+    
+    def next_lvl(self, game_functions):
+        next_lvl = int(self.level_string.split(" ")[1]) + 1
+        file_path = "levels/lvl_" + str(next_lvl) + ".csv"
+        if os.path.exists(file_path):
+            obj = level()
+            obj.main(game_functions, "Level " + str(next_lvl), file_path)
+            self.running = False
+        else:
+            print("Error: File not found:", file_path)
 
 
     def main(self, game_functions, lvl_lable, lvl_structure):
         self.init_lvl(global_game_functions)
         self.init_objects(lvl_lable, lvl_structure)
 
-        main_button = Button(1130, 580, 300, 60, "Main Menu", 40, lambda: setattr(self, 'running', False))
-        resume_button = Button(1130, 660, 300, 60, "Resume", 40, lambda: self.resume_game())
-        restart_button = Button(1130, 740, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
-        settings_button = Button(1130, 820, 300, 60, "Settings", 40, lambda: setattr(self, 'settings_open', True))
+        #Pauze buttons
+        home_button = Button(1170, 825, 50, 50, "Controls", 40, lambda: setattr(self, 'running', False), self.images[11])
+        settings_button = Button(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
+        quit_button = Button(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
+        resume_button = Button(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_game())
+        restart_button = Button(1130, 600, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
 
+        #Settings buttons
         music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
         sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
         back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
-        self.pauze_pushbuttons = [main_button, resume_button, settings_button, restart_button]
-        self.settings_pushbuttons = [back_button]
+        #Win/lose buttons
+        next_lvl_button = Button(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl(game_functions))
+        big_restart_button = Button(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+
+        self.pauze_pushbuttons_rect = [resume_button, restart_button]
+        self.pauze_pushbuttons_circle = [settings_button, home_button, quit_button]
+
+        self.settings_pushbuttons_rect = [back_button]
         self.settings_switches = [sfx_switch, music_switch]
+
+        self.win_pushbuttons_rect = [next_lvl_button, restart_button]
+        self.lose_pushbuttons_rect = [big_restart_button]
+        self.end_pushbuttons_circle = [settings_button, home_button, quit_button]
 
 
         move_down = False
@@ -198,19 +237,24 @@ class level:
                     sfx_switch.handle_event(event)
                     music_switch.handle_event(event)
                 elif self.pauze:
-                    main_button.handle_event(event)
+                    home_button.handle_event(event)
                     resume_button.handle_event(event)
                     settings_button.handle_event(event)
                     restart_button.handle_event(event)
+                    quit_button.handle_event(event)
                 elif self.winner or self.lose:
-                    main_button.handle_event(event)
-                    resume_button.handle_event(event)
+                    home_button.handle_event(event)
                     settings_button.handle_event(event)
-                    restart_button.handle_event(event)
+                    quit_button.handle_event(event)
+                    if self.winner:
+                        restart_button.handle_event(event)
+                        next_lvl_button.handle_event(event)
+                    elif self.lose:
+                        big_restart_button.handle_event(event)
             
         #Moving the aliens down
             if self.alien_objects[0].x < (1280 * self.ratio):
-                 move_down = True
+                move_down = True
             if (self.alien_objects[0].x > 1280 * self.ratio) and move_down:
                 for obj in self.alien_objects: obj.y += (50 * self.ratio)
                 move_down = False
@@ -259,7 +303,6 @@ class level:
         #Pauze game         
             if keys[pygame.K_ESCAPE] and not self.winner and not self.lose:
                 self.pauze = True
-
             if self.pauze:
                 for obj in self.alien_objects: obj.vel = 0
                 

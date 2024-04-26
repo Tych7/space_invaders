@@ -194,27 +194,26 @@ class alien(object):
 		self.direction = ""
 
 	def draw(self, win):
-		if self.y < (1080 * self.ratio):
-			self.move()
-			if self.visible == True:
-				win.blit(self.image, (self.x,self.y))
-				pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55 * self.ratio, 5))
-				pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio , (self.hitbox[1] - 8 * self.ratio) , (55 * self.ratio) - (55 * (0 - self.health)), 5))
-				self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
-				# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+		self.move()
+		if self.visible == True:
+			win.blit(self.image, (self.x,self.y))
+			pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55 * self.ratio, 5))
+			pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio , (self.hitbox[1] - 8 * self.ratio) , (55 * self.ratio) - (55 * (0 - self.health)), 5))
+			self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
+			# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 	def move(self):
-		if self.direction == 'right':
-			if self.x + self.vel < self.path[1]:
-				self.x += self.vel
+		if self.visible == True:
+			if self.direction == 'right':
+				if self.x + self.vel < self.path[1]:
+					self.x += self.vel
+				else:
+					self.direction = 'left'
 			else:
-				self.direction = 'left'
-		else:
-			if self.x - self.vel > self.path[0]:
-				self.x -= self.vel
-			else:
-				self.direction = 'right'
-
+				if self.x - self.vel > self.path[0]:
+					self.x -= self.vel
+				else:
+					self.direction = 'right'
 
 	def hit(self, win, image, sound):
 		if self.health > 0:
