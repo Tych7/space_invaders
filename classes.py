@@ -7,6 +7,7 @@ import math
 
 class Button:
     ratio = 0
+    controller = None
 
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
@@ -26,7 +27,6 @@ class Button:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.font_size = font_size
         self.image = image
-        self.controller
 	
     def draw_pushbutton_rect(self, win):
         pygame.draw.rect(win, (0, 0, 0), self.rect, 0, border_radius=int(22 * self.ratio))

@@ -281,7 +281,7 @@ class level:
         #player controls
             keys = pygame.key.get_pressed()
             if not self.pauze:
-                if (keys[pygame.K_SPACE] or self.controller.get_button(0)) and self.player_objects[0].shootloop == 0:
+                if (keys[pygame.K_SPACE] or (self.controller is not None and self.controller.get_button(0))) and self.player_objects[0].shootloop == 0:
                     if len(self.player_objects[0].bullets) < 1:
                         self.player_objects[0].bullets.append(projectile(
                             round(self.player_objects[0].x + self.player_objects[0].width //2), 
@@ -291,11 +291,11 @@ class level:
                             if data["SFX"] == "true": self.sounds[0].play()
                     
                         
-            if (keys[pygame.K_LEFT] or self.controller.get_axis(0) < -0.5) and self.player_objects[0].x > 480 * self.ratio:
+            if (keys[pygame.K_LEFT] or (self.controller is not None and self.controller.get_axis(0) < -0.5)) and self.player_objects[0].x > 480 * self.ratio:
                 self.player_objects[0].x -= self.player_objects[0].vel
                 self.player_objects[0].left = True
                 self.player_objects[0].right = False
-            elif (keys[pygame.K_RIGHT] or self.controller.get_axis(0) > 0.5) and self.player_objects[0].x < 2080 * self.ratio - self.player_objects[0].width:
+            elif (keys[pygame.K_RIGHT] or (self.controller is not None and self.controller.get_axis(0) > 0.5)) and self.player_objects[0].x < 2080 * self.ratio - self.player_objects[0].width:
                 self.player_objects[0].x += self.player_objects[0].vel
                 self.player_objects[0].left = False
                 self.player_objects[0].right = True

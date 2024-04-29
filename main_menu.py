@@ -92,7 +92,7 @@ class Game:
         game_functions.display_image(self.images[0], 0 , 0, self.win)
         game_functions.display_image(self.images[1], 0 , 240 * self.ratio, self.win)
         game_functions.display_image(self.images[2], 0 , 975 * self.ratio, self.win)
-        game_functions.display_image(self.images[10], 0 , 1210, self.win)
+        game_functions.display_image(self.images[10], 0 , 1210 * self.ratio, self.win)
 
         game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
         game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
