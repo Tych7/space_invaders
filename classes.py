@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import math
+from pygame import gfxdraw
 
 
 class Button:
@@ -137,7 +138,7 @@ class global_game_functions:
 		scaled_images = []
 		for x in loaded_images:
 			image_width, image_height = x.get_size()
-			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
+			scaled_images.append(pygame.transform.smoothscale(x, (image_width * self.ratio, image_height * self.ratio)))
 		return scaled_images
 
 	def display_image(self, image, x, y, win):
