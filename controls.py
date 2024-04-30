@@ -4,16 +4,18 @@ import sys
 import json
 
 
-from classes import global_game_functions, Button
+from classes import global_game_functions, Button, CircleButton, RectButton, SwitchButton
 
 
 class Controls:
     images = []
     win = None
     ratio = 0
-    pushbuttons = []
+    home_buttons = []
+    settings_buttons = []
 
     running = True
+    settings_open = False
 
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
@@ -33,6 +35,8 @@ class Controls:
             "icon_home.png",            #3
             "icon_quit.png",            #4
             "button_border.png",        #5
+            "icon_settings.png",        #6
+            "pauze_menu.png",           #7
 
         ]
         loaded_images = game_functions.load_images(images)
@@ -45,7 +49,17 @@ class Controls:
 
         game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
 
-        for button in self.pushbuttons: button.draw_pushbutton_circle(self.win)
+        for button in self.home_buttons: button.draw(self.win)
+
+        if self.settings_open:
+            overlay_color = (0, 0, 0, 170)
+            overlay = pygame.Surface((self.win.get_width(), self.win.get_height()), pygame.SRCALPHA)
+            overlay.fill(overlay_color)
+            self.win.blit(overlay, (0, 0))
+
+            game_functions.display_image(self.images[7], 0 , 500 * self.ratio, self.win)
+            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
+            for button in self.settings_buttons: button.draw(self.win)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -58,16 +72,29 @@ class Controls:
     def main(self, game_functions):
         self.init_game(game_functions)
 
-        quit_button = Button(1410, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[4])
-        main_button = Button(1150, 1290, 50, 50, "Main Menu", 40, lambda: setattr(self, 'running', False), self.images[3])
-        self.pushbuttons = [main_button, quit_button]
+        quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[4])
+        settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[6])
+        main_button = CircleButton(1100, 1290, 50, 50, "Main Menu", 40, lambda: setattr(self, 'running', False), self.images[3])
+
+        music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
+        sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
+        back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
+
+        self.settings_buttons = [music_switch, sfx_switch, back_button]
+        self.home_buttons = [main_button, quit_button, settings_button]
 
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
-                main_button.handle_event(event)
-                quit_button.handle_event(event)
+                if self.settings_open:
+                    music_switch.handle_event(event)
+                    sfx_switch.handle_event(event)
+                    back_button.handle_event(event)
+                else:
+                    main_button.handle_event(event)
+                    quit_button.handle_event(event)
+                    settings_button.handle_event(event)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
             
