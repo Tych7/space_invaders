@@ -4,7 +4,7 @@ import os
 import json
 import csv
 
-from classes import global_game_functions,alien, projectile, player, Button
+from classes import global_game_functions,alien, projectile, player, Button, RectButton, CircleButton, SwitchButton
 
 class level:
     #global static data
@@ -20,16 +20,10 @@ class level:
     alien_rows = []
     alien_collums = []
 
-    pauze_pushbuttons_rect = []
-    pauze_pushbuttons_circle = []
-
-    settings_pushbuttons_rect = []
-    settings_switches = []
-
-    win_pushbuttons_rect = []
-    lose_pushbuttons_rect = []
-    end_pushbuttons_circle = []
-    
+    pauze_buttons = []
+    settings_buttons = []
+    win_buttons = []
+    lose_buttons = []    
     
     #global variable data
     score = 0
@@ -127,28 +121,24 @@ class level:
         if self.pauze:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
-            for button in self.pauze_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
-            for button in self.pauze_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
+            for button in self.pauze_buttons: button.draw(self.win)
      
         if self.winner:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
-            for button in self.win_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
-            for button in self.end_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
+            for button in self.win_buttons: button.draw(self.win)
             game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
-            for button in self.lose_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
-            for button in self.end_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
+            for button in self.lose_buttons: button.draw(self.win)
             game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
             
         if self.settings_open:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
-            for button in self.settings_pushbuttons_rect: button.draw_pushbutton_rect(self.win)
-            for switch in self.settings_switches: switch.draw_switch(self.win)
+            for button in self.settings_buttons: button.draw(self.win)
             
 
     def init_objects(self, lvl_lable, lvl_structure):
@@ -198,30 +188,25 @@ class level:
         self.init_objects(lvl_lable, lvl_structure)
 
         #Pauze buttons
-        home_button = Button(1170, 825, 50, 50, "Controls", 40, lambda: setattr(self, 'running', False), self.images[11])
-        settings_button = Button(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
-        quit_button = Button(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
-        resume_button = Button(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_game())
-        restart_button = Button(1130, 600, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        home_button =   CircleButton(1170, 825, 50, 50, "Controls", 40, lambda: setattr(self, 'running', False), self.images[11])
+        settings_button = CircleButton(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
+        quit_button = CircleButton(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
+        resume_button = RectButton(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_game())
+        restart_button = RectButton(1130, 600, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
 
         #Settings buttons
-        music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
-        sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
-        back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
+        music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
+        sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
+        back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
         #Win/lose buttons
-        next_lvl_button = Button(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl(game_functions))
-        big_restart_button = Button(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl(game_functions))
+        big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
 
-        self.pauze_pushbuttons_rect = [resume_button, restart_button]
-        self.pauze_pushbuttons_circle = [settings_button, home_button, quit_button]
-
-        self.settings_pushbuttons_rect = [back_button]
-        self.settings_switches = [sfx_switch, music_switch]
-
-        self.win_pushbuttons_rect = [next_lvl_button, restart_button]
-        self.lose_pushbuttons_rect = [big_restart_button]
-        self.end_pushbuttons_circle = [settings_button, home_button, quit_button]
+        self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, quit_button]
+        self.settings_buttons = [back_button, sfx_switch, music_switch]
+        self.win_buttons = [settings_button, home_button, quit_button, next_lvl_button, restart_button]
+        self.lose_buttons = [settings_button, home_button, quit_button, big_restart_button]
 
 
         move_down = False
@@ -281,7 +266,7 @@ class level:
         #player controls
             keys = pygame.key.get_pressed()
             if not self.pauze:
-                if (keys[pygame.K_SPACE] or self.controller.get_button(0)) and self.player_objects[0].shootloop == 0:
+                if (keys[pygame.K_SPACE] or (self.controller is not None and self.controller.get_button(0))) and self.player_objects[0].shootloop == 0:
                     if len(self.player_objects[0].bullets) < 1:
                         self.player_objects[0].bullets.append(projectile(
                             round(self.player_objects[0].x + self.player_objects[0].width //2), 
@@ -291,11 +276,11 @@ class level:
                             if data["SFX"] == "true": self.sounds[0].play()
                     
                         
-            if (keys[pygame.K_LEFT] or self.controller.get_axis(0) < -0.5) and self.player_objects[0].x > 480 * self.ratio:
+            if (keys[pygame.K_LEFT] or (self.controller is not None and self.controller.get_axis(0) < -0.5)) and self.player_objects[0].x > 480 * self.ratio:
                 self.player_objects[0].x -= self.player_objects[0].vel
                 self.player_objects[0].left = True
                 self.player_objects[0].right = False
-            elif (keys[pygame.K_RIGHT] or self.controller.get_axis(0) > 0.5) and self.player_objects[0].x < 2080 * self.ratio - self.player_objects[0].width:
+            elif (keys[pygame.K_RIGHT] or (self.controller is not None and self.controller.get_axis(0) > 0.5)) and self.player_objects[0].x < 2080 * self.ratio - self.player_objects[0].width:
                 self.player_objects[0].x += self.player_objects[0].vel
                 self.player_objects[0].left = False
                 self.player_objects[0].right = True

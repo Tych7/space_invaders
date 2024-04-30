@@ -4,7 +4,7 @@ import sys
 import json
 
 
-from classes import global_game_functions, Button
+from classes import global_game_functions, Button, RectButton, CircleButton, SwitchButton
 from controls import Controls
 from level_template import level
 
@@ -15,15 +15,17 @@ class Game:
     controller = None
     ratio = 0
     lvl_count = 0
-    home_pushbuttons_circle = []
 
     entered_number = 0
     first_order_entered = False
     second_order_entered = False
 
     settings_open = False
-    settings_pushbuttons = []
-    settings_switches = []
+
+    #Button Collections
+    settings_buttons = []
+    home_buttons = []
+
 
     def set_ratio(self, loaded_images, game_functions):
         bg_width = loaded_images[0].get_size()[0]
@@ -102,7 +104,7 @@ class Game:
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
 
-        for button in self.home_pushbuttons_circle: button.draw_pushbutton_circle(self.win)
+        for button in self.home_buttons: button.draw(self.win)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -119,8 +121,7 @@ class Game:
 
             game_functions.display_image(self.images[6], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
-            for button in self.settings_pushbuttons: button.draw_pushbutton_rect(self.win)
-            for switch in self.settings_switches: switch.draw_switch(self.win)
+            for button in self.settings_buttons: button.draw(self.win)
 
 #MAIN LOOP
 while True:
@@ -128,16 +129,15 @@ while True:
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
 
-    settings_button = Button(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
-    controls_button = Button(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
-    quit_button = Button(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
-    game_1.home_pushbuttons_circle = [settings_button, controls_button, quit_button]
+    settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
+    controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
+    quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
+    game_1.home_buttons = [settings_button, controls_button, quit_button]
 
-    music_switch = Button(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
-    sfx_switch = Button(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
-    back_button = Button(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
-    game_1.settings_pushbuttons = [back_button]
-    game_1.settings_switches = [sfx_switch, music_switch]
+    music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
+    sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
+    back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
+    game_1.settings_buttons = [sfx_switch, music_switch, back_button]
 
     with open("settings.json", 'r') as file: data = json.load(file)
     data["Music"] = "false"
