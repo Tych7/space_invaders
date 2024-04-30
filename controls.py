@@ -4,7 +4,9 @@ import sys
 import json
 
 
-from classes import global_game_functions, Button, CircleButton, RectButton, SwitchButton
+from classes import global_game_functions
+from GUI import Button, RectButton, CircleButton, SwitchButton
+
 
 
 class Controls:

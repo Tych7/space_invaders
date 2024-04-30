@@ -4,7 +4,8 @@ import sys
 import json
 
 
-from classes import global_game_functions, Button, RectButton, CircleButton, SwitchButton
+from classes import global_game_functions
+from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 from controls import Controls
 from level_template import level
 
@@ -90,7 +91,7 @@ class Game:
             self.second_order_entered = True
         
 
-    def update_screen(self, game_functions):
+    def update_screen(self, game_functions, pointer):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
         game_functions.display_image(self.images[1], 0 , 240 * self.ratio, self.win)
         game_functions.display_image(self.images[2], 0 , 975 * self.ratio, self.win)
@@ -99,11 +100,11 @@ class Game:
         game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
         game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
         game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 995 * self.ratio, self.win)
-        game_functions.display_text(30, 'Max lvl: ' + str(game_1.lvl_count), 580 * self.ratio, 90 * game_1.ratio, game_1.win)
+        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count), 580 * self.ratio, 90 * self.ratio, self.win)
         
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
-
+        
         for button in self.home_buttons: button.draw(self.win)
 
         with open("settings.json", 'r') as file:
@@ -122,6 +123,11 @@ class Game:
             game_functions.display_image(self.images[6], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
             for button in self.settings_buttons: button.draw(self.win)
+            pointer.draw(game_1.win, self.settings_buttons)
+        else:
+            pointer.draw(game_1.win, self.home_buttons)
+
+        
 
 #MAIN LOOP
 while True:
@@ -129,8 +135,11 @@ while True:
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
 
+    pointer = controller_pointer(1280 * game_1.ratio, 1290 * game_1.ratio, 12)
+
     settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
     controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
+
     quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
     game_1.home_buttons = [settings_button, controls_button, quit_button]
 
@@ -159,10 +168,12 @@ while True:
                 music_switch.handle_event(event)
                 sfx_switch.handle_event(event)
                 back_button.handle_event(event)
+                pointer.handle_event(game_1.settings_buttons)
             else:
                 quit_button.handle_event(event)
                 controls_button.handle_event(event)
                 settings_button.handle_event(event)
+                pointer.handle_event(game_1.home_buttons)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)
@@ -205,6 +216,13 @@ while True:
                         obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
                     else:
                         print("Error: File not found:", file_path)
+                
+                elif game_1.controller.get_button(6):
+                    game_1.settings_open = True
+
+                if game_1.settings_open: pointer.move_pointer(game_1.settings_buttons)
+                else: pointer.move_pointer(game_1.home_buttons)
+
         
         pygame.display.update()
-        game_1.update_screen(game_functions)
+        game_1.update_screen(game_functions, pointer)

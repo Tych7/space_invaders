@@ -4,7 +4,8 @@ import os
 import json
 import csv
 
-from classes import global_game_functions,alien, projectile, player, Button, RectButton, CircleButton, SwitchButton
+from classes import global_game_functions,alien, projectile, player
+from GUI import Button, RectButton, CircleButton, SwitchButton
 
 class level:
     #global static data
@@ -290,7 +291,7 @@ class level:
                                 
         
         #Pauze game         
-            if keys[pygame.K_ESCAPE] and not self.winner and not self.lose:
+            if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:
                 self.pauze = True
             if self.pauze:
                 for obj in self.alien_objects: obj.vel = 0
