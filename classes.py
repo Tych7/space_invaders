@@ -27,7 +27,6 @@ class Button:
         self.font_size = font_size
         self.action = action
         self.image = image
-<<<<<<< HEAD
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def handle_event(self, event):
@@ -39,10 +38,6 @@ class Button:
 
 class RectButton(Button):
     def draw(self, win):
-=======
-	
-    def draw_pushbutton_rect(self, win):
->>>>>>> e01a579bb1dd4f7eff017c5603430e169b8ee52c
         pygame.draw.rect(win, (0, 0, 0), self.rect, 0, border_radius=int(22 * self.ratio))
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
