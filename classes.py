@@ -3,9 +3,11 @@ import os
 import sys
 import json
 import math
+from pygame import gfxdraw
 
 class Button:
     ratio = 0
+    controller = None
 
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
@@ -25,6 +27,7 @@ class Button:
         self.font_size = font_size
         self.action = action
         self.image = image
+<<<<<<< HEAD
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def handle_event(self, event):
@@ -36,6 +39,10 @@ class Button:
 
 class RectButton(Button):
     def draw(self, win):
+=======
+	
+    def draw_pushbutton_rect(self, win):
+>>>>>>> e01a579bb1dd4f7eff017c5603430e169b8ee52c
         pygame.draw.rect(win, (0, 0, 0), self.rect, 0, border_radius=int(22 * self.ratio))
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
@@ -153,7 +160,7 @@ class global_game_functions:
 		scaled_images = []
 		for x in loaded_images:
 			image_width, image_height = x.get_size()
-			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
+			scaled_images.append(pygame.transform.smoothscale(x, (image_width * self.ratio, image_height * self.ratio)))
 		return scaled_images
 
 	def display_image(self, image, x, y, win):
