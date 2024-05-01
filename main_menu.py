@@ -134,12 +134,10 @@ while True:
     game_1 = Game()
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
-
     pointer = controller_pointer(1280 * game_1.ratio, 1290 * game_1.ratio, 12)
 
     settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
     controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
-
     quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
     game_1.home_buttons = [settings_button, controls_button, quit_button]
 

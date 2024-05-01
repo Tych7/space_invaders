@@ -16,10 +16,10 @@ class Button:
 
     def __init__(self, x, y, width, height, text, font_size, action, image=None):
         self.set_ratio()
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        self.x = x * self.ratio
+        self.y = y * self.ratio
+        self.width = width * self.ratio
+        self.height = height * self.ratio
         self.text = text
         self.font_size = font_size
         self.action = action
@@ -130,7 +130,7 @@ class controller_pointer():
 
     def draw(self, win, buttons):
         if pygame.joystick.get_count() > 0:
-            pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.radius * self.ratio)) #pointer
+            # pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.radius * self.ratio)) #pointer
             for button in buttons:
                 if isinstance(button, CircleButton):
                     distance = math.sqrt((self.x - button.x) ** 2 + (self.y - button.y) ** 2)
@@ -141,25 +141,50 @@ class controller_pointer():
                         pygame.draw.rect(win, (4, 245, 4), button.rect, int(6 * button.ratio), border_radius=int(22 * button.ratio))
 
     def move_pointer(self, buttons):
-        button_positions = [(button.x + button.width / 2, button.y + button.height / 2) if isinstance(button, (RectButton, SwitchButton)) else (button.x, button.y) for button in buttons]
+        button_positions = []
+        for button in buttons:
+            if isinstance(button, CircleButton):
+                button_positions.append((button.x, button.y))
+            elif isinstance(button, RectButton) or isinstance(button, SwitchButton):
+                x_center = button.x + (button.width / 2)
+                y_center = button.y + (button.height / 2)
+                button_positions.append((x_center, y_center))
 
         if pygame.joystick.get_count() > 0:
-            movement_buttons = {11: 'Up', 12: 'Down', 13: 'Left', 14: 'Right'}
-            direction_map = {'Up': lambda pos: pos[1] < self.y, 'Down': lambda pos: pos[1] > self.y, 'Left': lambda pos: pos[0] < self.x, 'Right': lambda pos: pos[0] > self.x}
             y_dif = float('inf')
             x_dif = float('inf')
-            new_x = self.x
+
             new_y = self.y
-
-            for button, direction in movement_buttons.items():
-                if self.controller.get_button(button):
-                    for position in button_positions:
-                        if direction_map[direction](position):
-                            if abs(position[0] - self.x) + abs(position[1] - self.y) < abs(x_dif) + abs(y_dif):
-                                new_x, new_y = position
-                                x_dif = position[0] - self.x
-                                y_dif = position[1] - self.y
-
+            new_x = self.x
+            
+            if self.controller.get_button(11): # Up
+                for position in button_positions:
+                    if (position[1] < self.y) and ((self.y - position[1]) + abs(self.x - position[0])) < y_dif:  
+                        y_dif = ((self.y - position[1]) + abs(self.x - position[0]))
+                        new_x = position[0]
+                        new_y = position[1]
+            
+            if self.controller.get_button(12): # Down
+                for position in button_positions:
+                    if (position[1] > self.y) and ((position[1] + self.y) + abs(self.x - position[0])) < y_dif:
+                        y_dif = ((position[1] + self.y) + abs(self.x - position[0]))
+                        new_x = position[0]
+                        new_y = position[1]
+            
+            if self.controller.get_button(13): # Left
+                for position in button_positions:
+                    if (position[0] < self.x) and ((self.x - position[0]) + abs(self.y - position[1])) < x_dif:
+                        x_dif = ((self.x - position[0]) + abs(self.y - position[1]))
+                        new_x = position[0]
+                        new_y = position[1]
+                
+            if self.controller.get_button(14): # Right
+                for position in button_positions:
+                    if (position[0] > self.x) and ((position[0] + self.x) + abs(self.y - position[1])) < x_dif:
+                        x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
+                        new_x = position[0]
+                        new_y = position[1]
+        
             self.x, self.y = new_x, new_y
 
     def handle_event(self, buttons):

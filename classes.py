@@ -118,17 +118,16 @@ class alien(object):
 			# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 	def move(self):
-		if self.visible == True:
-			if self.direction == 'right':
-				if self.x + self.vel < self.path[1]:
-					self.x += self.vel
-				else:
-					self.direction = 'left'
+		if self.direction == 'right':
+			if self.x + self.vel < self.path[1]:
+				self.x += self.vel
 			else:
-				if self.x - self.vel > self.path[0]:
-					self.x -= self.vel
-				else:
-					self.direction = 'right'
+				self.direction = 'left'
+		else:
+			if self.x - self.vel > self.path[0]:
+				self.x -= self.vel
+			else:
+				self.direction = 'right'
 
 	def hit(self, win, image, sound):
 		if self.health > 0:

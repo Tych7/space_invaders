@@ -5,7 +5,7 @@ import json
 
 
 from classes import global_game_functions
-from GUI import Button, RectButton, CircleButton, SwitchButton
+from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 
 
 
@@ -45,11 +45,11 @@ class Controls:
         self.set_ratio()
         self.images = game_functions.scale_images(loaded_images)
 
-    def update_screen(self, game_functions):
+    def update_screen(self, game_functions, pointer):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
-        game_functions.display_image(self.images[5], 0 , 1210, self.win)
+        game_functions.display_image(self.images[5], 0 , 1210  * self.ratio, self.win)
 
-        game_functions.display_text(80, 'Keyboard Controls'             , 0, 160 * self.ratio, self.win)
+        game_functions.display_text(80, 'Keyboard Controls', 0, 160 * self.ratio, self.win)
 
         for button in self.home_buttons: button.draw(self.win)
 
@@ -62,6 +62,9 @@ class Controls:
             game_functions.display_image(self.images[7], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
             for button in self.settings_buttons: button.draw(self.win)
+            pointer.draw(self.win, self.settings_buttons)
+        else:
+            pointer.draw(self.win, self.home_buttons)
 
         with open("settings.json", 'r') as file:
             data = json.load(file)
@@ -73,6 +76,7 @@ class Controls:
 
     def main(self, game_functions):
         self.init_game(game_functions)
+        pointer = controller_pointer(1280 * self.ratio, 1290 * self.ratio, 12)
 
         quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[4])
         settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[6])
@@ -93,12 +97,16 @@ class Controls:
                     music_switch.handle_event(event)
                     sfx_switch.handle_event(event)
                     back_button.handle_event(event)
+                    pointer.handle_event(self.settings_buttons)
                 else:
                     main_button.handle_event(event)
                     quit_button.handle_event(event)
                     settings_button.handle_event(event)
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_s: game_functions.mute_sound_toggle("SFX")
+                    pointer.handle_event(self.home_buttons)
+
+                if event.type == pygame.JOYBUTTONDOWN:
+                        if self.settings_open: pointer.move_pointer(self.settings_buttons)
+                        else: pointer.move_pointer(self.home_buttons)
             
             keys = pygame.key.get_pressed()
             if keys[pygame.K_q]:
@@ -108,4 +116,4 @@ class Controls:
                 self.running = False
 
             pygame.display.update()
-            self.update_screen(game_functions)
+            self.update_screen(game_functions, pointer)

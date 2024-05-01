@@ -5,7 +5,7 @@ import json
 import csv
 
 from classes import global_game_functions,alien, projectile, player
-from GUI import Button, RectButton, CircleButton, SwitchButton
+from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 
 class level:
     #global static data
@@ -80,7 +80,7 @@ class level:
         ]
         game_functions.load_sounds(self, sounds)
 
-    def update_screen(self, game_functions):
+    def update_screen(self, game_functions, pointer):
         
         #display static images
         game_functions.display_image(self.images[0], 0 , 0, self.win)
@@ -123,23 +123,27 @@ class level:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.pauze_buttons: button.draw(self.win)
+            pointer.draw(self.win, self.pauze_buttons)
      
         if self.winner:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.win_buttons: button.draw(self.win)
-            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
+            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)#
+            pointer.draw(self.win, self.win_buttons)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.lose_buttons: button.draw(self.win)
             game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
+            pointer.draw(self.win, self.lose_buttons)
             
         if self.settings_open:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
             for button in self.settings_buttons: button.draw(self.win)
+            pointer.draw(self.win, self.settings_buttons)
             
 
     def init_objects(self, lvl_lable, lvl_structure):
@@ -174,12 +178,22 @@ class level:
             if obj.type == '2': obj.vel = 4 * self.ratio
     
     def next_lvl(self, game_functions):
-        next_lvl = int(self.level_string.split(" ")[1]) + 1
-        file_path = "levels/lvl_" + str(next_lvl) + ".csv"
+        current_level = int(self.level_string.split(" ")[1])
+        next_level = current_level + 1
+        file_path = f"levels/lvl_{next_level}.csv"
+        
         if os.path.exists(file_path):
-            obj = level()
-            obj.main(game_functions, "Level " + str(next_lvl), file_path)
-            self.running = False
+            # Clear objects and reset game state
+            self.player_objects.clear()
+            self.alien_objects.clear()
+            self.pauze = False
+            self.winner = False
+            self.lose = False
+            self.running = True
+            self.score = 0
+
+            # Initialize and start the next level
+            self.init_objects(f"Level {next_level}", file_path)
         else:
             print("Error: File not found:", file_path)
 
@@ -187,6 +201,7 @@ class level:
     def main(self, game_functions, lvl_lable, lvl_structure):
         self.init_lvl(global_game_functions)
         self.init_objects(lvl_lable, lvl_structure)
+        pointer = controller_pointer(1280 * self.ratio, 825 * self.ratio, 12)
 
         #Pauze buttons
         home_button =   CircleButton(1170, 825, 50, 50, "Controls", 40, lambda: setattr(self, 'running', False), self.images[11])
@@ -209,7 +224,6 @@ class level:
         self.win_buttons = [settings_button, home_button, quit_button, next_lvl_button, restart_button]
         self.lose_buttons = [settings_button, home_button, quit_button, big_restart_button]
 
-
         move_down = False
         self.running = True
         
@@ -226,12 +240,14 @@ class level:
                     back_button.handle_event(event)
                     sfx_switch.handle_event(event)
                     music_switch.handle_event(event)
+                    pointer.handle_event(self.settings_buttons)
                 elif self.pauze:
                     home_button.handle_event(event)
                     resume_button.handle_event(event)
                     settings_button.handle_event(event)
                     restart_button.handle_event(event)
                     quit_button.handle_event(event)
+                    pointer.handle_event(self.pauze_buttons)
                 elif self.winner or self.lose:
                     home_button.handle_event(event)
                     settings_button.handle_event(event)
@@ -239,8 +255,17 @@ class level:
                     if self.winner:
                         restart_button.handle_event(event)
                         next_lvl_button.handle_event(event)
+                        pointer.handle_event(self.win_buttons)
                     elif self.lose:
                         big_restart_button.handle_event(event)
+                        pointer.handle_event(self.lose_buttons)
+
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if self.settings_open: pointer.move_pointer(self.settings_buttons)
+                    elif self.pauze: pointer.move_pointer(self.pauze_buttons)
+                    elif self.win: pointer.move_pointer(self.win_buttons)
+                    elif self.lose: pointer.move_pointer(self.lose_buttons)
+
             
         #Moving the aliens down
             if self.alien_objects[0].x < (1280 * self.ratio):
@@ -295,7 +320,6 @@ class level:
                 self.pauze = True
             if self.pauze:
                 for obj in self.alien_objects: obj.vel = 0
-                
                     
         #Check for win
             all_aliens_invisible = True
@@ -320,4 +344,4 @@ class level:
 
         #Refresh screen
             pygame.display.update()
-            self.update_screen(game_functions)
+            self.update_screen(game_functions, pointer)
