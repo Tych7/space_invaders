@@ -183,16 +183,6 @@ class level:
         file_path = f"levels/lvl_{next_level}.csv"
         
         if os.path.exists(file_path):
-            # Clear objects and reset game state
-            self.player_objects.clear()
-            self.alien_objects.clear()
-            self.pauze = False
-            self.winner = False
-            self.lose = False
-            self.running = True
-            self.score = 0
-
-            # Initialize and start the next level
             self.init_objects(f"Level {next_level}", file_path)
         else:
             print("Error: File not found:", file_path)
