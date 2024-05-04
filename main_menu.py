@@ -134,7 +134,7 @@ while True:
     game_1 = Game()
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
-    pointer = controller_pointer(1280 * game_1.ratio, 1290 * game_1.ratio, 12)
+    pointer = controller_pointer(1280 * game_1.ratio, 720 * game_1.ratio, 12)
 
     settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
     controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
@@ -166,12 +166,10 @@ while True:
                 music_switch.handle_event(event)
                 sfx_switch.handle_event(event)
                 back_button.handle_event(event)
-                pointer.handle_event(game_1.settings_buttons)
             else:
                 quit_button.handle_event(event)
                 controls_button.handle_event(event)
                 settings_button.handle_event(event)
-                pointer.handle_event(game_1.home_buttons)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)
@@ -218,8 +216,13 @@ while True:
                 elif game_1.controller.get_button(6):
                     game_1.settings_open = True
 
-                if game_1.settings_open: pointer.move_pointer(game_1.settings_buttons)
-                else: pointer.move_pointer(game_1.home_buttons)
+                if game_1.settings_open: 
+                    pointer.move_pointer(game_1.settings_buttons)
+                    pointer.handle_event(game_1.settings_buttons)
+                else: 
+                    pointer.move_pointer(game_1.home_buttons)
+                    pointer.handle_event(game_1.home_buttons)
+
 
         
         pygame.display.update()
