@@ -187,6 +187,16 @@ class level:
         else:
             print("Error: File not found:", file_path)
 
+    def shoot_bullet(self):
+        if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
+            if len(self.player_objects[0].bullets) < 1 and self.player_objects[0].shootloop == 0:
+                    self.player_objects[0].bullets.append(projectile(
+                        round(self.player_objects[0].x + self.player_objects[0].width //2), 
+                        round(self.player_objects[0].y + self.player_objects[0].height//2), 10, (0,255,255), self.ratio))
+                    with open("settings.json", 'r') as file:
+                        data = json.load(file)
+                        if data["SFX"] == "true": self.sounds[0].play()
+
 
     def main(self, game_functions, lvl_lable, lvl_structure):
         self.init_lvl(global_game_functions)
@@ -222,6 +232,7 @@ class level:
         #Start Main Loop
         while self.running:
             clock.tick(60)
+            keys = pygame.key.get_pressed()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -230,14 +241,12 @@ class level:
                     back_button.handle_event(event)
                     sfx_switch.handle_event(event)
                     music_switch.handle_event(event)
-                    pointer.handle_event(self.settings_buttons)
                 elif self.pauze:
                     home_button.handle_event(event)
                     resume_button.handle_event(event)
                     settings_button.handle_event(event)
                     restart_button.handle_event(event)
                     quit_button.handle_event(event)
-                    pointer.handle_event(self.pauze_buttons)
                 elif self.winner or self.lose:
                     home_button.handle_event(event)
                     settings_button.handle_event(event)
@@ -245,17 +254,43 @@ class level:
                     if self.winner:
                         restart_button.handle_event(event)
                         next_lvl_button.handle_event(event)
-                        pointer.handle_event(self.win_buttons)
                     elif self.lose:
                         big_restart_button.handle_event(event)
-                        pointer.handle_event(self.lose_buttons)
 
                 if event.type == pygame.JOYBUTTONDOWN:
-                    if self.settings_open: pointer.move_pointer(self.settings_buttons)
-                    elif self.pauze: pointer.move_pointer(self.pauze_buttons)
-                    elif self.win: pointer.move_pointer(self.win_buttons)
-                    elif self.lose: pointer.move_pointer(self.lose_buttons)
+                    if self.settings_open: 
+                        pointer.move_pointer(self.settings_buttons)
+                        pointer.handle_event(self.settings_buttons)
+                    elif self.pauze: 
+                        pointer.move_pointer(self.pauze_buttons)
+                        pointer.handle_event(self.pauze_buttons)
+                    elif self.winner: 
+                        pointer.move_pointer(self.win_buttons)
+                        pointer.handle_event(self.win_buttons)
+                    elif self.lose: 
+                        pointer.move_pointer(self.lose_buttons)
+                        pointer.handle_event(self.lose_buttons)
+                    else:
+                        if self.controller is not None and self.controller.get_button(0):
+                            self.shoot_bullet()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.shoot_bullet()
 
+
+        #player move controls
+            if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
+                if (keys[pygame.K_LEFT] or (self.controller is not None and self.controller.get_axis(0) < -0.5)) and self.player_objects[0].x > 480 * self.ratio:
+                    self.player_objects[0].x -= self.player_objects[0].vel
+                    self.player_objects[0].left = True
+                    self.player_objects[0].right = False
+                elif (keys[pygame.K_RIGHT] or (self.controller is not None and self.controller.get_axis(0) > 0.5)) and self.player_objects[0].x < 2080 * self.ratio - self.player_objects[0].width:
+                    self.player_objects[0].x += self.player_objects[0].vel
+                    self.player_objects[0].left = False
+                    self.player_objects[0].right = True
+                else:
+                    self.player_objects[0].left = False
+                    self.player_objects[0].right = False
             
         #Moving the aliens down
             if self.alien_objects[0].x < (1280 * self.ratio):
@@ -278,32 +313,7 @@ class level:
                             bullet.y -= bullet.vel
                     else:
                         self.player_objects[0].bullets.pop(self.player_objects[0].bullets.index(bullet))
-
-        #player controls
-            keys = pygame.key.get_pressed()
-            if not self.pauze:
-                if (keys[pygame.K_SPACE] or (self.controller is not None and self.controller.get_button(0))) and self.player_objects[0].shootloop == 0:
-                    if len(self.player_objects[0].bullets) < 1:
-                        self.player_objects[0].bullets.append(projectile(
-                            round(self.player_objects[0].x + self.player_objects[0].width //2), 
-                            round(self.player_objects[0].y + self.player_objects[0].height//2), 10, (0,255,255), self.ratio))
-                        with open("settings.json", 'r') as file:
-                            data = json.load(file)
-                            if data["SFX"] == "true": self.sounds[0].play()
-                    
-                        
-            if (keys[pygame.K_LEFT] or (self.controller is not None and self.controller.get_axis(0) < -0.5)) and self.player_objects[0].x > 480 * self.ratio:
-                self.player_objects[0].x -= self.player_objects[0].vel
-                self.player_objects[0].left = True
-                self.player_objects[0].right = False
-            elif (keys[pygame.K_RIGHT] or (self.controller is not None and self.controller.get_axis(0) > 0.5)) and self.player_objects[0].x < 2080 * self.ratio - self.player_objects[0].width:
-                self.player_objects[0].x += self.player_objects[0].vel
-                self.player_objects[0].left = False
-                self.player_objects[0].right = True
-            else:
-                self.player_objects[0].left = False
-                self.player_objects[0].right = False
-                                
+     
         
         #Pauze game         
             if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:
