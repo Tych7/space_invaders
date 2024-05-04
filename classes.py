@@ -66,7 +66,7 @@ class global_game_functions:
 	def display_text(self, size, text, width, height, win):
 		font_size = int(size * min(self.ratio, self.ratio))
 		font = pygame.font.SysFont('couriernew', font_size, True)
-		renderd_text = font.render(text, 1, (4, 245, 4))
+		renderd_text = font.render(text, 1, (112, 228, 209))
   
 		screen_center  = (pygame.display.get_surface().get_size()[0])/2
 		image_width = 0

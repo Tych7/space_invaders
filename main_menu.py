@@ -51,7 +51,7 @@ class Game:
             "bgB.png",              #0
             "mainmenu.png",         #1
             "selected_lvl.png",     #2
-            "alien_A.png",          #3
+            "alien_B.png",          #3
             "SFX.png",              #4
             "music.png",            #5
             "pauze_menu.png",       #6
@@ -93,7 +93,7 @@ class Game:
 
     def update_screen(self, game_functions, pointer):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
-        game_functions.display_image(self.images[1], 0 , 240 * self.ratio, self.win)
+        game_functions.display_image(self.images[1], 0 , 150 * self.ratio, self.win)
         game_functions.display_image(self.images[2], 0 , 975 * self.ratio, self.win)
         game_functions.display_image(self.images[10], 0 , 1210 * self.ratio, self.win)
 

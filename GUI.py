@@ -39,13 +39,13 @@ class RectButton(Button):
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
-        if mouse_over: pygame.draw.rect(win, (4, 245, 4), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+        if mouse_over: pygame.draw.rect(win, (112, 228, 209), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
         else: pygame.draw.rect(win, (195, 195, 195), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
 
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
 
-        renderd_text = font.render(self.text, 1, (4, 245, 4))
+        renderd_text = font.render(self.text, 1, (112, 228, 209))
         text_x = (self.width / 2) - (font.size(self.text)[0] / 2)
         text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
         win.blit(renderd_text, (self.x + text_x, self.y + text_y))
@@ -67,7 +67,7 @@ class CircleButton(Button):
         mouse_pos = pygame.mouse.get_pos()
         distance_mouse = math.sqrt((mouse_pos[0] - self.x)**2 + (mouse_pos[1] - self.y)**2)
         mouse_over = distance_mouse <= self.width
-        if mouse_over: pygame.draw.circle(win, (4, 245, 4), (self.x, self.y), self.width, int(6 * self.ratio))
+        if mouse_over: pygame.draw.circle(win, (112, 228, 209), (self.x, self.y), self.width, int(6 * self.ratio))
         else: pygame.draw.circle(win, (195, 195, 195), (self.x, self.y), self.width, int(6 * self.ratio))
 
     def handle_event(self, event):
@@ -87,12 +87,12 @@ class SwitchButton(Button):
         text = ""
         text_y = (self.height / 2) - (font.size(self.text)[1] / 2)
 
-        lable_text = font.render(self.text + ":", 1, (4, 245, 4))
+        lable_text = font.render(self.text + ":", 1, (112, 228, 209))
         win.blit(lable_text, (self.x - (100 * self.ratio), self.y + text_y))
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
-        if mouse_over: pygame.draw.rect(win, (4, 245, 4), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+        if mouse_over: pygame.draw.rect(win, (112, 228, 209), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
         else: pygame.draw.rect(win, (195, 195, 195), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
 
         with open("settings.json", 'r') as file:
@@ -135,10 +135,10 @@ class controller_pointer():
                 if isinstance(button, CircleButton):
                     distance = math.sqrt((self.x - button.x) ** 2 + (self.y - button.y) ** 2)
                     if distance <= self.radius + button.width:
-                        pygame.draw.circle(win, (4, 245, 4), (button.x, button.y), button.width, int(6 * button.ratio))
+                        pygame.draw.circle(win, (112, 228, 209), (button.x, button.y), button.width, int(6 * button.ratio))
                 elif isinstance(button, RectButton) or isinstance(button, SwitchButton):
                     if button.rect.collidepoint((self.x, self.y)):
-                        pygame.draw.rect(win, (4, 245, 4), button.rect, int(6 * button.ratio), border_radius=int(22 * button.ratio))
+                        pygame.draw.rect(win, (112, 228, 209), button.rect, int(6 * button.ratio), border_radius=int(22 * button.ratio))
 
     def move_pointer(self, buttons):
         button_positions = []
