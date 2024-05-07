@@ -91,31 +91,41 @@ class global_game_functions:
 	
 
 class alien(object):
-	def __init__(self, x, y, width, height, vel, alien_image, ratio, type):
-		self.x = x
-		self.y = y
+	def __init__(self, x, y, width, height, vel, alien_image, ratio, direction, hp):
+		self.x = x * ratio
+		self.y = y * ratio
+		if direction == "right": 
+			self.end = self.x + (800 * ratio)
+			self.path = [self.x , self.end]
+		else: 
+			self.end = self.x - (800 * ratio)
+			self.path = [self.end , self.x]
+
 		self.width = width * ratio
 		self.height = height * ratio
-		self.end = self.x + (800 * ratio)
-		self.path = [self.x , self.end]
 		self.vel = vel * ratio
-		self.hitbox = (self.x, self.y, width * ratio, height * ratio)
-		self.health = 0
-		self.visible = True
-		self.shootloop = 0
-		self.ratio = ratio
 		self.image = alien_image
-		self.type = type
-		self.direction = ""
+		self.ratio = ratio
+		self.direction = direction
+		self.hp = hp
+
+		self.start_hp = hp
+		self.start_x = x
+		self.start_y = y
+		self.hitbox = (self.x, self.y, width * ratio, height * ratio)
+		self.visible = True
+		self.move_down = False
 
 	def draw(self, win):
-		self.move()
+		self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
+		# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+		
 		if self.visible == True:
+			self.move()
 			win.blit(self.image, (self.x,self.y))
 			pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55 * self.ratio, 5))
-			pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio , (self.hitbox[1] - 8 * self.ratio) , (55 * self.ratio) - (55 * (0 - self.health)), 5))
-			self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
-			# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+			pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio , (self.hitbox[1] - 8 * self.ratio) , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
+			
 
 	def move(self):
 		if self.direction == 'right':
@@ -123,22 +133,27 @@ class alien(object):
 				self.x += self.vel
 			else:
 				self.direction = 'left'
-		else:
+		elif self.direction == 'left':
 			if self.x - self.vel > self.path[0]:
 				self.x -= self.vel
 			else:
 				self.direction = 'right'
 
+		if self.x < ((755 + self.start_x) * self.ratio):
+			self.move_down = True
+		if (self.x > (755 + self.start_x) * self.ratio) and self.move_down:
+			self.y += (55 * self.ratio)
+			self.move_down = False
+
 	def hit(self, win, image, sound):
-		if self.health > 0:
-			self.health -= 1
+		if self.hp > 1:
+			self.hp -= 1
 		else:
 			self.visible = False
 			win.blit(image, (self.x,self.y))
 			with open("settings.json", 'r') as file:
 				data = json.load(file)
 				if data["SFX"] == "true": sound.play()
-			print('hit')
 
 class projectile(object):
 	def __init__(self,x,y,radius,color, ratio):

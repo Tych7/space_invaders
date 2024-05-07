@@ -49,26 +49,27 @@ class level:
         pygame.display.set_caption(self.level_string)
 
         images = [
-            "bgA.png",          #0
-            "lvl_select.png",   #1
-            "ship.png",         #2
-            "shipright.png",    #3
-            "shipleft.png",     #4
-            "gameover.png",     #5
-            "win.png",          #6
-            "explo.png",        #7
-            "SFX.png",          #8
-            "music.png",        #9
-            "pauze_menu.png",   #10
-            "icon_home.png",    #11
-            "icon_quit.png",    #12
-            "icon_settings.png",#13     
+            "bgA.png",              #0
+            "lvl_select.png",       #1
+            "ship.png",             #2
+            "shipright.png",        #3
+            "shipleft.png",         #4
+            "gameover.png",         #5
+            "win.png",              #6
+            "explo.png",            #7
+            "SFX.png",              #8
+            "music.png",            #9
+            "pauze_menu.png",       #10
+            "icon_home.png",        #11
+            "icon_quit.png",        #12
+            "icon_settings.png",    #13     
         ]
         loaded_images = game_functions.load_images(self, images)
         self.images = game_functions.scale_images(self, loaded_images)
 
         alien_images = [
-             "alien_A.png",      #0
+             "alien_A.png",         #0
+             "alien_B.png",         #1        
         ]
         loaded_aliens = game_functions.load_images(self, alien_images)
         self.alien_images = game_functions.scale_images(self, loaded_aliens)
@@ -86,12 +87,12 @@ class level:
         game_functions.display_image(self.images[0], 0 , 0, self.win)
         game_functions.display_image(self.images[1], -640 * self.ratio, 1300 * self.ratio, self.win)
 
-        #display aliens type A
-        for x in self.alien_objects: x.draw(self.win)
+        #display aliens
+        for alien in self.alien_objects: alien.draw(self.win)
 
         #display player
         player_images = [self.images[2], self.images[3], self.images[4]]
-        for x in self.player_objects: x.draw(self.win, player_images)
+        for player in self.player_objects: player.draw(self.win, player_images)
 
         #display text
         game_functions.display_text(60,'SCORE:', 950 * self.ratio, 675 * self.ratio, self.win)
@@ -162,10 +163,18 @@ class level:
                 for col_idx, value in enumerate(row):
                     x = col_idx
                     y = row_idx
-                    if value == '1':                    #|            x              |               y            |widht|height|vel|   image      |  ratio    |
-                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 2, self.alien_images[0], self.ratio, value))
-                    if value == '2':
-                        self.alien_objects.append(alien(self.ratio * (525 + x * 160), self.ratio * (200 + y * 50), 60  ,  45  , 4, self.alien_images[0], self.ratio, value))
+                    if value == ' 1':                  #|       x       |        y      |widht|height|vel|       image        |  ratio    |  dir   | hp |
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "right", 1))
+                    if value == '!1':
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "left" , 1))
+                    if value == ' 2':
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "right", 1))
+                    if value == '!2':
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "left" , 1))
+                    if value == ' 3':
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "right", 1))
+                    if value == '!3':
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "left" , 1))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
@@ -293,11 +302,11 @@ class level:
                     self.player_objects[0].right = False
             
         #Moving the aliens down
-            if self.alien_objects[0].x < (1280 * self.ratio):
-                move_down = True
-            if (self.alien_objects[0].x > 1280 * self.ratio) and move_down:
-                for obj in self.alien_objects: obj.y += (50 * self.ratio)
-                move_down = False
+            # if self.alien_objects[0].x < (1280 * self.ratio):5
+            #     move_down = True
+            # if (self.alien_objects[0].x > 1280 * self.ratio) and move_down:
+            #     for obj in self.alien_objects: obj.y += (55 * self.ratio)
+            #     move_down = False
                     
         #Check if aliens get hit
             for obj in self.alien_objects:

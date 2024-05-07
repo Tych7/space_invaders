@@ -100,7 +100,7 @@ class Game:
         game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
         game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
         game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 995 * self.ratio, self.win)
-        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count), 580 * self.ratio, 90 * self.ratio, self.win)
+        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, self.win)
         
         game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
@@ -193,7 +193,7 @@ while True:
                     game_1.update_entered_number(0)
                 elif event.key == pygame.K_BACKSPACE:
                     game_1.update_entered_number(-1)
-                elif event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_RETURN and game_1.entered_number != 0:
                     file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
                     if os.path.exists(file_path):
                         obj = level()
