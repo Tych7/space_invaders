@@ -139,11 +139,20 @@ class alien(object):
 			else:
 				self.direction = 'right'
 
-		if self.x < ((755 + self.start_x) * self.ratio):
-			self.move_down = True
-		if (self.x > (755 + self.start_x) * self.ratio) and self.move_down:
-			self.y += (55 * self.ratio)
-			self.move_down = False
+		if self.start_x < 1400:
+			if self.x < ((755 + self.start_x) * self.ratio):
+				self.move_down = True
+			if (self.x > (755 + self.start_x) * self.ratio) and self.move_down:
+				self.y += (55 * self.ratio)
+				self.move_down = False
+		elif self.start_x > 1400:
+			if self.x > ((self.start_x - 755) * self.ratio):
+				self.move_down = True
+			if (self.x < (self.start_x - 755) * self.ratio) and self.move_down:
+				self.y += (55 * self.ratio)
+				self.move_down = False
+
+		
 
 	def hit(self, win, image, sound):
 		if self.hp > 1:

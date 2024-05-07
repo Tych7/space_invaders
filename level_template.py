@@ -163,17 +163,17 @@ class level:
                 for col_idx, value in enumerate(row):
                     x = col_idx
                     y = row_idx
-                    if value == ' 1':                  #|       x       |        y      |widht|height|vel|       image        |  ratio    |  dir   | hp |
+                    if value == '>1':                  #|       x       |        y      |widht|height|vel|       image        |  ratio    |  dir   | hp |
                         self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "right", 1))
-                    if value == '!1':
+                    if value == '<1':
                         self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "left" , 1))
-                    if value == ' 2':
+                    if value == '>2':
                         self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "right", 1))
-                    if value == '!2':
+                    if value == '<2':
                         self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "left" , 1))
-                    if value == ' 3':
+                    if value == '>3':
                         self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "right", 1))
-                    if value == '!3':
+                    if value == '<3':
                         self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "left" , 1))
 
         # Example player object creation
@@ -300,13 +300,6 @@ class level:
                 else:
                     self.player_objects[0].left = False
                     self.player_objects[0].right = False
-            
-        #Moving the aliens down
-            # if self.alien_objects[0].x < (1280 * self.ratio):5
-            #     move_down = True
-            # if (self.alien_objects[0].x > 1280 * self.ratio) and move_down:
-            #     for obj in self.alien_objects: obj.y += (55 * self.ratio)
-            #     move_down = False
                     
         #Check if aliens get hit
             for obj in self.alien_objects:
