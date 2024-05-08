@@ -163,18 +163,18 @@ class level:
                 for col_idx, value in enumerate(row):
                     x = col_idx
                     y = row_idx
-                    if value == '>1':                  #|       x       |        y      |widht|height|vel|       image        |  ratio    |  dir   | hp |
-                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "right", 1))
+                    if value == '>1':                  #|       x       |        y      |widht|height|vel|       image        |  ratio    |  dir   | hp |type|
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "right", 1, value))
                     if value == '<1':
-                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "left" , 1))
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 2, self.alien_images[0], self.ratio, "left" , 1, value))
                     if value == '>2':
-                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "right", 1))
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "right", 1, value))
                     if value == '<2':
-                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "left" , 1))
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 3, self.alien_images[0], self.ratio, "left" , 1, value))
                     if value == '>3':
-                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "right", 1))
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "right", 1, value))
                     if value == '<3':
-                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "left" , 1))
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , 6, self.alien_images[1], self.ratio, "left" , 1, value))
 
         # Example player object creation
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
@@ -183,8 +183,9 @@ class level:
     def resume_game(self):
         self.pauze = False
         for obj in self.alien_objects: 
-            if obj.type == '1': obj.vel = 2 * self.ratio
-            if obj.type == '2': obj.vel = 4 * self.ratio
+            if obj.type == ">1" or obj.type == "<1": obj.vel = 2 * self.ratio
+            elif obj.type == ">2" or obj.type == "<2": obj.vel = 3 * self.ratio
+            elif obj.type == ">3" or obj.type == "<3": obj.vel = 6 * self.ratio
     
     def next_lvl(self, game_functions):
         current_level = int(self.level_string.split(" ")[1])

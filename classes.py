@@ -91,7 +91,7 @@ class global_game_functions:
 	
 
 class alien(object):
-	def __init__(self, x, y, width, height, vel, alien_image, ratio, direction, hp):
+	def __init__(self, x, y, width, height, vel, alien_image, ratio, direction, hp, type):
 		self.x = x * ratio
 		self.y = y * ratio
 		if direction == "right": 
@@ -108,6 +108,7 @@ class alien(object):
 		self.ratio = ratio
 		self.direction = direction
 		self.hp = hp
+		self.type = type
 
 		self.start_hp = hp
 		self.start_x = x
@@ -139,13 +140,13 @@ class alien(object):
 			else:
 				self.direction = 'right'
 
-		if self.start_x < 1400:
+		if self.start_x < 1200:
 			if self.x < ((755 + self.start_x) * self.ratio):
 				self.move_down = True
 			if (self.x > (755 + self.start_x) * self.ratio) and self.move_down:
 				self.y += (55 * self.ratio)
 				self.move_down = False
-		elif self.start_x > 1400:
+		elif self.start_x > 1200:
 			if self.x > ((self.start_x - 755) * self.ratio):
 				self.move_down = True
 			if (self.x < (self.start_x - 755) * self.ratio) and self.move_down:
