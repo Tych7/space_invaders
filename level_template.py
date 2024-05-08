@@ -101,7 +101,12 @@ class level:
         else: score_alignment = 1020
         game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
         
-        game_functions.display_text(50,self.level_string, -700 * self.ratio, 1325 * self.ratio, self.win)
+        
+        lvl_number = int(self.level_string.split(" ")[1])
+        if lvl_number > 9:  lvl_label_x = -675 * self.ratio
+        else: lvl_label_x = -700 * self.ratio
+        
+        game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, self.win)
 
         #display projectiles
         for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
@@ -198,7 +203,7 @@ class level:
             elif obj.type == 1: obj.vel = 3 * self.ratio
             elif obj.type == 2: obj.vel = 6 * self.ratio
     
-    def next_lvl(self, game_functions):
+    def next_lvl(self):
         current_level = int(self.level_string.split(" ")[1])
         next_level = current_level + 1
         file_path = f"levels/lvl_{next_level}.csv"
@@ -237,7 +242,7 @@ class level:
         back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
         #Win/lose buttons
-        next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl(game_functions))
+        next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl())
         big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
 
         self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, quit_button]
@@ -245,7 +250,6 @@ class level:
         self.win_buttons = [settings_button, home_button, quit_button, next_lvl_button, restart_button]
         self.lose_buttons = [settings_button, home_button, quit_button, big_restart_button]
 
-        move_down = False
         self.running = True
         
         clock = pygame.time.Clock()
@@ -327,7 +331,6 @@ class level:
                             bullet.y -= bullet.vel
                     else:
                         self.player_objects[0].bullets.pop(self.player_objects[0].bullets.index(bullet))
-     
         
         #Pauze game         
             if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:

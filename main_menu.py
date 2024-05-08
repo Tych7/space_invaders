@@ -93,17 +93,15 @@ class Game:
 
     def update_screen(self, game_functions, pointer):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
-        game_functions.display_image(self.images[1], 0 , 150 * self.ratio, self.win)
-        game_functions.display_image(self.images[2], 0 , 975 * self.ratio, self.win)
+        game_functions.display_image(self.images[1], 0 , 175 * self.ratio, self.win)
+        game_functions.display_image(self.images[2], 0 , 950 * self.ratio, self.win)
         game_functions.display_image(self.images[10], 0 , 1210 * self.ratio, self.win)
-
-        game_functions.display_text(50, 'Select a Level'              , 0, 760 * self.ratio, self.win)
-        game_functions.display_text(50, 'Press [ENTER] to start'      , 0, 800 * self.ratio, self.win)
-        game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 995 * self.ratio, self.win)
+        
+        game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, self.win)
         game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, self.win)
         
-        game_functions.display_image(self.images[3], 400 * self.ratio, 1000 * self.ratio, self.win)
-        game_functions.display_image(self.images[3], -400 * self.ratio, 1000 * self.ratio, self.win)
+        game_functions.display_image(self.images[3], 400 * self.ratio, 975 * self.ratio, self.win)
+        game_functions.display_image(self.images[3], -400 * self.ratio, 975 * self.ratio, self.win)
         
         for button in self.home_buttons: button.draw(self.win)
 
@@ -125,16 +123,14 @@ class Game:
             for button in self.settings_buttons: button.draw(self.win)
             pointer.draw(game_1.win, self.settings_buttons)
         else:
-            pointer.draw(game_1.win, self.home_buttons)
-
-        
+            pointer.draw(game_1.win, self.home_buttons)        
 
 #MAIN LOOP
 while True:
     game_1 = Game()
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
-    pointer = controller_pointer(1280 * game_1.ratio, 720 * game_1.ratio, 12)
+    pointer = controller_pointer(1280 * game_1.ratio, 1290 * game_1.ratio, 12)
 
     settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
     controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
