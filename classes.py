@@ -94,7 +94,7 @@ class alien(object):
 	def __init__(self, x, y, width, height, vel, alien_image, ratio, direction, hp, type):
 		self.x = x * ratio
 		self.y = y * ratio
-		if direction == "right": 
+		if direction == ">": 
 			self.end = self.x + (800 * ratio)
 			self.path = [self.x , self.end]
 		else: 
@@ -129,16 +129,16 @@ class alien(object):
 			
 
 	def move(self):
-		if self.direction == 'right':
+		if self.direction == ">":
 			if self.x + self.vel < self.path[1]:
 				self.x += self.vel
 			else:
-				self.direction = 'left'
-		elif self.direction == 'left':
+				self.direction = "<"
+		elif self.direction == "<":
 			if self.x - self.vel > self.path[0]:
 				self.x -= self.vel
 			else:
-				self.direction = 'right'
+				self.direction = ">"
 
 		if self.start_x < 1200:
 			if self.x < ((755 + self.start_x) * self.ratio):
