@@ -91,7 +91,7 @@ class global_game_functions:
 	
 
 class alien(object):
-	def __init__(self, x, y, width, height, vel, alien_image, ratio, direction, hp, type):
+	def __init__(self, x, y, alien_image, ratio, direction, hp, type):
 		self.x = x * ratio
 		self.y = y * ratio
 		if direction == ">": 
@@ -101,19 +101,23 @@ class alien(object):
 			self.end = self.x - (800 * ratio)
 			self.path = [self.end , self.x]
 
-		self.width = width * ratio
-		self.height = height * ratio
-		self.vel = int(vel * ratio)
+		self.type = type
 		self.image = alien_image
 		self.ratio = ratio
 		self.direction = direction
 		self.hp = hp
-		self.type = type
+  
+		if type == 0:   self.vel = 1 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shoot = False
+		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shoot = False
+		elif type == 2: self.vel = 6 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shoot = False
+		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.shoot = True
+  
+		print(self.vel)
 
 		self.start_hp = hp
 		self.start_x = x
 		self.start_y = y
-		self.hitbox = (self.x, self.y, width * ratio, height * ratio)
+		self.hitbox = (self.x, self.y, self.width, self.height)
 		self.visible = True
 		self.move_down = False
 
@@ -189,6 +193,7 @@ class player(object):
 		self.visible = True
 		self.bullets = []
 		self.shootloop = 0
+		self.ratio = ratio
 
 	def draw(self, win, images):
 		if self.left:
@@ -200,3 +205,13 @@ class player(object):
 
 		self.hitbox = (self.x, self.y, self.width, self.height)
 		# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+  
+	def shoot(self):
+		if self.shootloop > 0: self.shootloop += 1
+		if self.shootloop > 3: self.shootloop = 0
+
+		for bullet in self.bullets:
+			if bullet.y < 1360 * self.ratio and bullet.y > 80 * self.ratio:
+					bullet.y -= bullet.vel
+			else:
+				self.bullets.pop(self.bullets.index(bullet))

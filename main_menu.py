@@ -143,11 +143,6 @@ while True:
     back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
     game_1.settings_buttons = [back_button, sfx_switch, music_switch]
 
-    # with open("settings.json", 'r') as file: data = json.load(file)
-    # data["Music"] = "false"
-    # data["SFX"] = "false"
-    # with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
-
     #Show amount of levels
     files = os.listdir("levels/")
     game_1.lvl_count = len(files)

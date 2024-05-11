@@ -173,7 +173,6 @@ class level:
                     dir = ""
                     hp = 0
                     alien_type = 0
-                    vel = 0
 
                     index = 0
                     for char in value:
@@ -182,14 +181,10 @@ class level:
                         elif index == 3: hp = int(char) 
                         index = index + 1
 
-                    if alien_type == 0: vel = 2
-                    elif alien_type == 1: vel = 3
-                    elif alien_type == 2: vel = 6
-
-                    if dir == ">":                     #|       x       |        y      |widht|height|vel|       image                  |  ratio    |dir| hp | type     |
-                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), 60  ,  45  , vel, self.alien_images[alien_type], self.ratio, ">", hp, alien_type))
+                    if dir == ">":                     #|       x       |        y      |       image                  |  ratio    | dir | hp | type     |
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), self.alien_images[alien_type], self.ratio, ">", hp, alien_type))
                     if dir == "<":
-                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), 60  ,  45  , vel, self.alien_images[alien_type], self.ratio, "<", hp, alien_type))
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), self.alien_images[alien_type], self.ratio, "<", hp, alien_type))
 
 
         # Example player object creation
@@ -322,15 +317,9 @@ class level:
                 if game_functions.alien_hit(obj, self.player_objects[0].bullets, self.images[7], self.sounds[2], self.win) == True:
                     self.score += 1
                     
-            if self.player_objects[0].shootloop > 0: self.player_objects[0].shootloop += 1
-            if self.player_objects[0].shootloop > 3: self.player_objects[0].shootloop = 0
-
+        #Shoot bullets
             if not self.pauze:
-                for bullet in self.player_objects[0].bullets:
-                    if bullet.y < 1360 * self.ratio and bullet.y > 80 * self.ratio:
-                            bullet.y -= bullet.vel
-                    else:
-                        self.player_objects[0].bullets.pop(self.player_objects[0].bullets.index(bullet))
+                self.player_objects[0].shoot()
         
         #Pauze game         
             if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:
