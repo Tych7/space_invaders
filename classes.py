@@ -103,7 +103,7 @@ class alien(object):
 
 		self.width = width * ratio
 		self.height = height * ratio
-		self.vel = vel * ratio
+		self.vel = int(vel * ratio)
 		self.image = alien_image
 		self.ratio = ratio
 		self.direction = direction
