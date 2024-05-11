@@ -151,6 +151,7 @@ class controller_pointer():
                 button_positions.append((x_center, y_center))
 
         if pygame.joystick.get_count() > 0:
+            
             y_dif = float('inf')
             x_dif = float('inf')
 
@@ -184,7 +185,10 @@ class controller_pointer():
                         x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
                         new_x = position[0]
                         new_y = position[1]
-        
+            
+            if (self.x, self.y) not in button_positions:
+                new_x, new_y = button_positions[0]
+                                
             self.x, self.y = new_x, new_y
 
     def handle_event(self, buttons):

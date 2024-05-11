@@ -92,13 +92,11 @@ class Controls:
         switch_controls = CircleButton(1360, 1290, 50, 50, "Switch Controls", 40, lambda: setattr(self, 'switch_controls',  not self.switch_controls), self.images[8])
         quit_button = CircleButton(1520, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[4])
 
-
-
         music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
         sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
         back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
-        self.settings_buttons = [music_switch, sfx_switch, back_button]
+        self.settings_buttons = [back_button, music_switch, sfx_switch]
         self.home_buttons = [main_button, quit_button, settings_button, switch_controls]
 
         while self.running:
@@ -109,28 +107,17 @@ class Controls:
                     music_switch.handle_event(event)
                     sfx_switch.handle_event(event)
                     back_button.handle_event(event)
+                    pointer.move_pointer(self.settings_buttons)
                 else:
                     main_button.handle_event(event)
                     quit_button.handle_event(event)
                     settings_button.handle_event(event)
                     switch_controls.handle_event(event)
+                    pointer.move_pointer(self.home_buttons)
 
                 if event.type == pygame.JOYBUTTONDOWN:
-                    if self.settings_open: 
-                        pointer.move_pointer(self.settings_buttons)
-                        pointer.handle_event(self.settings_buttons)
-                    else: 
-                        pointer.move_pointer(self.home_buttons)
-                        pointer.handle_event(self.home_buttons)
-
-
-            
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_q]:
-                pygame.quit()
-                sys.exit(0)
-            if keys[pygame.K_m]:
-                self.running = False
+                    if self.settings_open: pointer.handle_event(self.settings_buttons)
+                    else: pointer.handle_event(self.home_buttons)
 
             pygame.display.update()
             self.update_screen(game_functions, pointer)

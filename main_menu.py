@@ -22,6 +22,7 @@ class Game:
     second_order_entered = False
 
     settings_open = False
+    returned = False
 
     #Button Collections
     settings_buttons = []
@@ -140,21 +141,21 @@ while True:
     music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
     sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
     back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
-    game_1.settings_buttons = [sfx_switch, music_switch, back_button]
+    game_1.settings_buttons = [back_button, sfx_switch, music_switch]
 
-    with open("settings.json", 'r') as file: data = json.load(file)
-    data["Music"] = "false"
-    data["SFX"] = "false"
-    with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
-
-    button_9_pressed = False
-    button_10_pressed = False
+    # with open("settings.json", 'r') as file: data = json.load(file)
+    # data["Music"] = "false"
+    # data["SFX"] = "false"
+    # with open("settings.json", 'w') as file: json.dump(data, file, indent=4)
 
     #Show amount of levels
     files = os.listdir("levels/")
     game_1.lvl_count = len(files)
         
     while True:
+        button_0_up = game_1.controller.get_button(0) == 0
+        if button_0_up == True: game_1.returned = True
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
@@ -162,10 +163,12 @@ while True:
                 music_switch.handle_event(event)
                 sfx_switch.handle_event(event)
                 back_button.handle_event(event)
+                pointer.move_pointer(game_1.settings_buttons)
             else:
                 quit_button.handle_event(event)
                 controls_button.handle_event(event)
                 settings_button.handle_event(event)
+                pointer.move_pointer(game_1.home_buttons)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)
@@ -194,6 +197,7 @@ while True:
                     if os.path.exists(file_path):
                         obj = level()
                         obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
+                        game_1.returned = False
                     else:
                         print("Error: File not found:", file_path)
                         
@@ -206,18 +210,16 @@ while True:
                     if os.path.exists(file_path):
                         obj = level()
                         obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
+                        game_1.returned = False
                     else:
                         print("Error: File not found:", file_path)
+                        
                 
                 elif game_1.controller.get_button(6):
                     game_1.settings_open = True
 
-                if game_1.settings_open: 
-                    pointer.move_pointer(game_1.settings_buttons)
-                    pointer.handle_event(game_1.settings_buttons)
-                else: 
-                    pointer.move_pointer(game_1.home_buttons)
-                    pointer.handle_event(game_1.home_buttons)
+                if game_1.settings_open: pointer.handle_event(game_1.settings_buttons)
+                elif game_1.returned == True: pointer.handle_event(game_1.home_buttons)
 
 
         

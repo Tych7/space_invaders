@@ -1,51 +1,40 @@
-import pygame
 
+
+import pygame
+import sys
+
+# Initialize Pygame
 pygame.init()
 
-window = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Controller")
+# Initialize the joystick
+pygame.joystick.init()
 
-controller = pygame.joystick.Joystick(0)
+# Check if there's any joystick connected
+if pygame.joystick.get_count() == 0:
+    print("No joystick detected.")
+    sys.exit()
 
-done = False
+# Initialize the first joystick
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
 
-# Create a red block
-block_width = 50
-block_height = 50
-block_x = 375
-block_y = 275
-
-clock = pygame.time.Clock()
-
-while not done:
-    window.fill((255, 255, 255))  # Clear the window
-
-    # Handle events
+# Main loop
+running = True
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            done = True
+            running = False
+    
+    # Check if button 0 is up
+    button_0_up = joystick.get_button(0) == 0
+    
+    # Print the result
+    print("Button 0 is up:", button_0_up)
 
-    # Update block position based on joystick axes
-    block_x += controller.get_axis(0) * 5  # Left stick horizontal axis
-    block_y += controller.get_axis(1) * 5  # Left stick vertical axis
+    # You can add your game logic here
 
-    if controller.get_button(15): pygame.draw.rect(window, (255, 0, 0), [0, 0, 800, 600]) #RED
-    if controller.get_button(16): pygame.draw.rect(window, (0, 255, 0), [0, 0, 800, 600]) #GREEN
-    # if controller.get_button(17): pygame.draw.rect(window, (0, 0, 255), [0, 0, 800, 600]) #BLUE
-    # if controller.get_button(18): pygame.draw.rect(window, (0, 0, 0), [0, 0, 800, 600]) #BLACK
-    # if controller.get_button(19): pygame.draw.rect(window, (255, 255, 0), [0, 0, 800, 600]) #YELLOW
+    # Optional: Add a small delay to reduce CPU usage
+    pygame.time.wait(10)
 
-    # Clamp block position within window bounds
-    block_x = max(0, min(block_x, 800 - block_width))
-    block_y = max(0, min(block_y, 600 - block_height))
-
-    # Draw the block
-    pygame.draw.rect(window, (255, 0, 0), [block_x, block_y, block_width, block_height])
-
-    # Update the display
-    pygame.display.update()
-
-    # Cap the frame rate
-    clock.tick(60)
-
+# Quit Pygame
 pygame.quit()
