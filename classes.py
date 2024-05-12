@@ -137,12 +137,15 @@ class alien(object):
 			pygame.draw.rect(win, (255,0,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio, self.hitbox[1] - 8 * self.ratio , 55 * self.ratio, 5))
 			pygame.draw.rect(win, (0,128,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio , self.hitbox[1] - 8 * self.ratio , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
 	
-	def shoot(self):
+	def shoot(self, win):
+		if self.type == 3: bullet_color = (255,4,252)
+		else: bullet_color = (255,255,255)	
+
 		if self.visible:
 			if self.shoot_delay <= 0:
 				self.bullets.append(projectile(
 					round(self.x + self.width // 2),
-					round(self.y + self.height // 2), 10, (0, 255, 255), self.ratio))
+					round(self.y + self.height // 2), 10, bullet_color, self.ratio))
 				self.shoot_delay = 100  
 			else:
 				self.shoot_delay -= 1

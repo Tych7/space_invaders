@@ -343,7 +343,7 @@ class level:
                     player.shoot()
                 for alien in self.alien_objects:
                     if alien.shooting == True: 
-                        alien.shoot()
+                        alien.shoot(self.win)
         
         #Pauze game         
             if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:
