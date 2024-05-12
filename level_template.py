@@ -70,7 +70,8 @@ class level:
         alien_images = [
             "alien_start.png",      #0
             "alien_A.png",          #1
-            "alien_B.png",          #2        
+            "alien_B.png",          #2
+            "alien_C.png",          #3        
         ]
         loaded_aliens = game_functions.load_images(self, alien_images)
         self.alien_images = game_functions.scale_images(self, loaded_aliens)
@@ -109,7 +110,10 @@ class level:
         game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, self.win)
 
         #display projectiles
-        for bullet in self.player_objects[0].bullets: bullet.draw(self.win)
+        for player_bullet in self.player_objects[0].bullets: player_bullet.draw(self.win)
+        
+        for alien in self.alien_objects:
+            for alien_bullet in alien.bullets: alien_bullet.draw(self.win)
 
         #display icons
         with open("settings.json", 'r') as file:
@@ -208,12 +212,15 @@ class level:
         else:
             print("Error: File not found:", file_path)
 
-    def shoot_bullet(self):
+    def shoot_bullet(self, obj):
+        if obj.shootloop > 0: obj.shootloop += 1
+        if obj.shootloop > 3: obj.shootloop = 0
+
         if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
-            if len(self.player_objects[0].bullets) < 1 and self.player_objects[0].shootloop == 0:
-                    self.player_objects[0].bullets.append(projectile(
-                        round(self.player_objects[0].x + self.player_objects[0].width //2), 
-                        round(self.player_objects[0].y + self.player_objects[0].height//2), 10, (0,255,255), self.ratio))
+            if len(obj.bullets) < 1 and obj.shootloop == 0:
+                    obj.bullets.append(projectile(
+                        round(obj.x + obj.width //2), 
+                        round(obj.y + obj.height//2), 10, (0,255,255), self.ratio))
                     with open("settings.json", 'r') as file:
                         data = json.load(file)
                         if data["SFX"] == "true": self.sounds[0].play()
@@ -292,11 +299,11 @@ class level:
                         pointer.handle_event(self.lose_buttons)
                     else:
                         if self.controller is not None and self.controller.get_button(0):
-                            self.shoot_bullet()
+                            self.shoot_bullet(self.player_objects[0])
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        self.shoot_bullet()
-
+                        self.shoot_bullet(self.player_objects[0])
+        
 
         #player move controls
             if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
@@ -312,14 +319,31 @@ class level:
                     self.player_objects[0].left = False
                     self.player_objects[0].right = False
                     
-        #Check if aliens get hit
-            for obj in self.alien_objects:
-                if game_functions.alien_hit(obj, self.player_objects[0].bullets, self.images[7], self.sounds[2], self.win) == True:
+        #Check if object gets hit
+            for alien_obj in self.alien_objects:
+                if game_functions.object_hit(alien_obj, self.player_objects[0].bullets, self.images[7], self.sounds[2], self.win) == True:
                     self.score += 1
+                    alien_obj.hit(self.win, self.images[7], self.sounds[2])
+
+
+            for player_obj in self.player_objects:
+                for alien_obj in self.alien_objects:
+                    if game_functions.object_hit(player_obj, alien_obj.bullets, self.images[7], self.sounds[2], self.win) == True:
+                        with open("settings.json", 'r') as file:
+                            data = json.load(file)
+                            if data["SFX"] == "true": self.sounds[1].play()
+                        for obj in self.alien_objects: 
+                            obj.vel = 0
+                            obj.shooting = False                
+                        self.lose = True
                     
         #Shoot bullets
             if not self.pauze:
-                self.player_objects[0].shoot()
+                for player in self.player_objects:
+                    player.shoot()
+                for alien in self.alien_objects:
+                    if alien.shooting == True: 
+                        alien.shoot()
         
         #Pauze game         
             if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:

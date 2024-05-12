@@ -130,7 +130,7 @@ class controller_pointer():
 
     def draw(self, win, buttons):
         if pygame.joystick.get_count() > 0:
-            # pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.radius * self.ratio)) #pointer
+            #pygame.draw.circle(win, (255, 0, 0), (self.x, self.y), int(self.radius * self.ratio)) #pointer
             for button in buttons:
                 if isinstance(button, CircleButton):
                     distance = math.sqrt((self.x - button.x) ** 2 + (self.y - button.y) ** 2)

@@ -48,7 +48,7 @@ class global_game_functions:
 		scaled_images = []
 		for x in loaded_images:
 			image_width, image_height = x.get_size()
-			scaled_images.append(pygame.transform.smoothscale(x, (image_width * self.ratio, image_height * self.ratio)))
+			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
 		return scaled_images
 
 	def display_image(self, image, x, y, win):
@@ -79,12 +79,11 @@ class global_game_functions:
   
 		win.blit(renderd_text, (image_width, height))
 	
-	def alien_hit(self, alien, bullets, image, sound, win):
-		if alien.visible:
+	def object_hit(self, obj, bullets, image, sound, win):
+		if obj.visible:
 			for bullet in bullets:
-				if bullet.y - bullet.radius < alien.hitbox[1] + alien.hitbox[3] and bullet.y + bullet.radius > alien.hitbox[1]:
-					if bullet.x + bullet.radius > alien.hitbox[0] and bullet.x - bullet.radius < alien.hitbox[0] + alien.hitbox[2]:
-						alien.hit(win, image, sound)
+				if bullet.y - bullet.radius < obj.hitbox[1] + obj.hitbox[3] and bullet.y + bullet.radius > obj.hitbox[1]:
+					if bullet.x + bullet.radius > obj.hitbox[0] and bullet.x - bullet.radius < obj.hitbox[0] + obj.hitbox[2]:
 						bullets.pop(bullets.index(bullet))
 						return True
 		return False
@@ -106,32 +105,54 @@ class alien(object):
 		self.ratio = ratio
 		self.direction = direction
 		self.hp = hp
+		self.bullets = []
+		self.shootloop = 0
   
-		if type == 0:   self.vel = 1 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shoot = False
-		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shoot = False
-		elif type == 2: self.vel = 6 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shoot = False
-		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.shoot = True
+		if type == 0:   self.vel = 1 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
+		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
+		elif type == 2: self.vel = 6 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
+		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.shooting = True
   
-		print(self.vel)
-
 		self.start_hp = hp
 		self.start_x = x
 		self.start_y = y
 		self.hitbox = (self.x, self.y, self.width, self.height)
 		self.visible = True
 		self.move_down = False
+		self.shoot_delay = 0
 
 	def draw(self, win):
 		self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
 		# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+
+		if self.direction == ">" and self.vel > 1: correction = +5 
+		elif self.direction == "<" and self.vel > 1: correction = -5 
+		else: correction = 0
+
 		
 		if self.visible == True:
 			self.move()
-			win.blit(self.image, (self.x,self.y))
-			pygame.draw.rect(win, (255,0,0), (self.hitbox[0] + 5 * self.ratio, (self.hitbox[1] - 8 * self.ratio) , 55 * self.ratio, 5))
-			pygame.draw.rect(win, (0,128,0), (self.hitbox[0] + 5 * self.ratio , (self.hitbox[1] - 8 * self.ratio) , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
 			
+			win.blit(self.image, (self.x,self.y))
+			pygame.draw.rect(win, (255,0,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio, self.hitbox[1] - 8 * self.ratio , 55 * self.ratio, 5))
+			pygame.draw.rect(win, (0,128,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio , self.hitbox[1] - 8 * self.ratio , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
+	
+	def shoot(self):
+		if self.visible:
+			if self.shoot_delay <= 0:
+				self.bullets.append(projectile(
+					round(self.x + self.width // 2),
+					round(self.y + self.height // 2), 10, (0, 255, 255), self.ratio))
+				self.shoot_delay = 100  
+			else:
+				self.shoot_delay -= 1
 
+		for bullet in self.bullets:
+			if bullet.y < 1360 * self.ratio and bullet.y > 80 * self.ratio:
+				bullet.y += bullet.vel
+			else:
+				self.bullets.pop(self.bullets.index(bullet))
+	
 	def move(self):
 		if self.direction == ">":
 			if self.x + self.vel < self.path[1]:
@@ -157,8 +178,6 @@ class alien(object):
 				self.y += (55 * self.ratio)
 				self.move_down = False
 
-		
-
 	def hit(self, win, image, sound):
 		if self.hp > 1:
 			self.hp -= 1
@@ -168,6 +187,7 @@ class alien(object):
 			with open("settings.json", 'r') as file:
 				data = json.load(file)
 				if data["SFX"] == "true": sound.play()
+				
 
 class projectile(object):
 	def __init__(self,x,y,radius,color, ratio):
@@ -175,7 +195,7 @@ class projectile(object):
 		self.y = y
 		self.radius = radius * ratio 
 		self.color = color
-		self.vel = 12 * ratio
+		self.vel = 15 * ratio
 
 	def draw(self,win):
 		pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
