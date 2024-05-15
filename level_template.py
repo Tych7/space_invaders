@@ -33,6 +33,7 @@ class level:
     lose = False
     running = True
     settings_open = False
+    player_move = True
 
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
@@ -93,7 +94,8 @@ class level:
         for alien in self.alien_objects: alien.draw(self.win)
 
         #display player
-        player_images = [self.images[2], self.images[3], self.images[4]]
+        if self.lose == False: player_images = [self.images[2], self.images[3], self.images[4]]
+        else: player_images = [self.images[7], self.images[7], self.images[7]]
         for player in self.player_objects: player.draw(self.win, player_images)
 
         #display text
@@ -163,6 +165,7 @@ class level:
         self.winner = False
         self.lose = False
         self.pauze = False
+        self.player_move = True
         self.score = 0
         self.level_string = lvl_lable
         
@@ -198,9 +201,9 @@ class level:
     def resume_game(self):
         self.pauze = False
         for obj in self.alien_objects: 
-            if obj.type == 0: obj.vel = 2 * self.ratio
-            elif obj.type == 1: obj.vel = 3 * self.ratio
-            elif obj.type == 2: obj.vel = 6 * self.ratio
+            obj.moving = True
+            self.player_move = True
+
     
     def next_lvl(self):
         current_level = int(self.level_string.split(" ")[1])
@@ -213,17 +216,18 @@ class level:
             print("Error: File not found:", file_path)
 
     def shoot_bullet(self, obj):
-        if obj.shootloop > 0: obj.shootloop += 1
-        if obj.shootloop > 3: obj.shootloop = 0
+        if self.player_move == True:          
+            if obj.shootloop > 0: obj.shootloop += 1
+            if obj.shootloop > 3: obj.shootloop = 0
 
-        if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
-            if len(obj.bullets) < 1 and obj.shootloop == 0:
-                    obj.bullets.append(projectile(
-                        round(obj.x + obj.width //2), 
-                        round(obj.y + obj.height//2), 10, (0,255,255), self.ratio))
-                    with open("settings.json", 'r') as file:
-                        data = json.load(file)
-                        if data["SFX"] == "true": self.sounds[0].play()
+            if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
+                if len(obj.bullets) < 1 and obj.shootloop == 0:
+                        obj.bullets.append(projectile(
+                            round(obj.x + obj.width //2), 
+                            round(obj.y + obj.height//2), 10, (0,255,255), self.ratio))
+                        with open("settings.json", 'r') as file:
+                            data = json.load(file)
+                            if data["SFX"] == "true": self.sounds[0].play()
 
 
     def main(self, game_functions, lvl_lable, lvl_structure):
@@ -265,24 +269,17 @@ class level:
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 if self.settings_open:
-                    back_button.handle_event(event)
-                    sfx_switch.handle_event(event)
-                    music_switch.handle_event(event)
+                    for button in self.settings_buttons:
+                        button.handle_event(event)
                 elif self.pauze:
-                    home_button.handle_event(event)
-                    resume_button.handle_event(event)
-                    settings_button.handle_event(event)
-                    restart_button.handle_event(event)
-                    quit_button.handle_event(event)
-                elif self.winner or self.lose:
-                    home_button.handle_event(event)
-                    settings_button.handle_event(event)
-                    quit_button.handle_event(event)
-                    if self.winner:
-                        restart_button.handle_event(event)
-                        next_lvl_button.handle_event(event)
-                    elif self.lose:
-                        big_restart_button.handle_event(event)
+                    for button in self.pauze_buttons:
+                        button.handle_event(event)
+                elif self.winner:
+                    for button in self.win_buttons:
+                        button.handle_event(event)
+                elif self.lose:
+                    for button in self.lose_buttons:
+                        button.handle_event(event)
 
                 if event.type == pygame.JOYBUTTONDOWN:
                     if self.settings_open: 
@@ -306,7 +303,7 @@ class level:
         
 
         #player move controls
-            if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
+            if self.player_move == True:         
                 if (keys[pygame.K_LEFT] or (self.controller is not None and self.controller.get_axis(0) < -0.5)) and self.player_objects[0].x > 480 * self.ratio:
                     self.player_objects[0].x -= self.player_objects[0].vel
                     self.player_objects[0].left = True
@@ -336,6 +333,7 @@ class level:
                             obj.vel = 0
                             obj.shooting = False                
                         self.lose = True
+                        self.player_move = False
                     
         #Shoot bullets
             if not self.pauze:
@@ -348,8 +346,9 @@ class level:
         #Pauze game         
             if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:
                 self.pauze = True
+                self.player_move = False
             if self.pauze:
-                for obj in self.alien_objects: obj.vel = 0
+                for obj in self.alien_objects: obj.moving = False
                     
         #Check for win
             all_aliens_invisible = True
@@ -359,6 +358,7 @@ class level:
             if all_aliens_invisible == True:
                 for obj in self.alien_objects: obj.vel = 0
                 self.winner = True
+                self.player_move = False
         
         #Check for lose
             alien_to_low = False
@@ -371,6 +371,7 @@ class level:
                     if data["SFX"] == "true": self.sounds[1].play()
                 for obj in self.alien_objects: obj.vel = 0                
                 self.lose = True
+                self.player_move = False
 
         #Refresh screen
             pygame.display.update()

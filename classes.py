@@ -91,7 +91,10 @@ class global_game_functions:
 
 class alien(object):
 	def __init__(self, x, y, alien_image, ratio, direction, hp, type):
-		self.x = x * ratio
+		if type == 3:
+			self.x = (x + 7.5) * ratio
+		else:
+			self.x = x * ratio
 		self.y = y * ratio
 		if direction == ">": 
 			self.end = self.x + (800 * ratio)
@@ -108,7 +111,7 @@ class alien(object):
 		self.bullets = []
 		self.shootloop = 0
   
-		if type == 0:   self.vel = 1 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
+		if type == 0:   self.vel = 2 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
 		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
 		elif type == 2: self.vel = 6 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
 		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.shooting = True
@@ -120,19 +123,18 @@ class alien(object):
 		self.visible = True
 		self.move_down = False
 		self.shoot_delay = 0
+		self.moving = True
 
 	def draw(self, win):
 		self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
-		# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+		#pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 		if self.direction == ">" and self.vel > 1: correction = +5 
 		elif self.direction == "<" and self.vel > 1: correction = -5 
 		else: correction = 0
 
-		
 		if self.visible == True:
 			self.move()
-			
 			win.blit(self.image, (self.x,self.y))
 			pygame.draw.rect(win, (255,0,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio, self.hitbox[1] - 8 * self.ratio , 55 * self.ratio, 5))
 			pygame.draw.rect(win, (0,128,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio , self.hitbox[1] - 8 * self.ratio , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
@@ -157,16 +159,17 @@ class alien(object):
 				self.bullets.pop(self.bullets.index(bullet))
 	
 	def move(self):
-		if self.direction == ">":
-			if self.x + self.vel < self.path[1]:
-				self.x += self.vel
-			else:
-				self.direction = "<"
-		elif self.direction == "<":
-			if self.x - self.vel > self.path[0]:
-				self.x -= self.vel
-			else:
-				self.direction = ">"
+		if self.moving == True:
+			if self.direction == ">":
+				if self.x + self.vel < self.path[1]:
+					self.x += self.vel
+				else:
+					self.direction = "<"
+			elif self.direction == "<":
+				if self.x - self.vel > self.path[0]:
+					self.x -= self.vel
+				else:
+					self.direction = ">"
 
 		if self.start_x < 1200:
 			if self.x < ((755 + self.start_x) * self.ratio):

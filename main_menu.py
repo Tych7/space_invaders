@@ -148,8 +148,9 @@ while True:
     game_1.lvl_count = len(files)
         
     while True:
-        button_0_up = game_1.controller.get_button(0) == 0
-        if button_0_up == True: game_1.returned = True
+        if pygame.joystick.get_count() > 0:
+            button_0_up = game_1.controller.get_button(0) == 0
+            if button_0_up == True: game_1.returned = True
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
