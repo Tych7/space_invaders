@@ -129,15 +129,15 @@ class alien(object):
 		self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
 		#pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
-		if self.direction == ">" and self.vel > 1: correction = +5 
-		elif self.direction == "<" and self.vel > 1: correction = -5 
+		if self.direction == ">" and self.vel > 1: correction = +5 * self.ratio
+		elif self.direction == "<" and self.vel > 1: correction = -5 * self.ratio
 		else: correction = 0
 
 		if self.visible == True:
 			self.move()
 			win.blit(self.image, (self.x,self.y))
-			pygame.draw.rect(win, (255,0,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio, self.hitbox[1] - 8 * self.ratio , 55 * self.ratio, 5))
-			pygame.draw.rect(win, (0,128,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - (55 / 2))) * self.ratio , self.hitbox[1] - 8 * self.ratio , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
+			pygame.draw.rect(win, (255,0,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - ((55 * self.ratio) / 2))), self.hitbox[1] - 8 * self.ratio , 55 * self.ratio, 5))
+			pygame.draw.rect(win, (0,128,0), ((correction + self.hitbox[0] + ((self.hitbox[2] / 2) - ((55 * self.ratio) / 2))), self.hitbox[1] - 8 * self.ratio , ((55 / self.start_hp) * self.hp) * self.ratio, 5))
 	
 	def shoot(self, win):
 		if self.type == 3: bullet_color = (255,4,252)
