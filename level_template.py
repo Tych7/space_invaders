@@ -240,7 +240,7 @@ class level:
         settings_button = CircleButton(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
         quit_button = CircleButton(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
         resume_button = RectButton(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_game())
-        restart_button = RectButton(1130, 600, 300, 60, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        restart_button = RectButton(1130, 600, 300, 60, "Restart", 40, lambda: self.init_objects(self.level_string, lvl_structure))
 
         #Settings buttons
         music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
@@ -249,7 +249,7 @@ class level:
 
         #Win/lose buttons
         next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl())
-        big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(lvl_lable, lvl_structure))
+        big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(self.level_string, lvl_structure))
 
         self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, quit_button]
         self.settings_buttons = [back_button, sfx_switch, music_switch]
