@@ -107,11 +107,13 @@ class Controls:
                     music_switch.handle_event(event)
                     sfx_switch.handle_event(event)
                     back_button.handle_event(event)
+                    pointer.pointer_on_button(self.settings_buttons)
                 else:
                     main_button.handle_event(event)
                     quit_button.handle_event(event)
                     settings_button.handle_event(event)
                     switch_controls.handle_event(event)
+                    pointer.pointer_on_button(self.home_buttons)
 
                 if event.type == pygame.JOYBUTTONDOWN:
                     if self.settings_open: 

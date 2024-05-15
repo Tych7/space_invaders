@@ -273,15 +273,19 @@ class level:
                 if self.settings_open:
                     for button in self.settings_buttons:
                         button.handle_event(event)
+                    pointer.pointer_on_button(self.settings_buttons)
                 elif self.pauze:
                     for button in self.pauze_buttons:
                         button.handle_event(event)
+                    pointer.pointer_on_button(self.pauze_buttons)
                 elif self.winner:
                     for button in self.win_buttons:
                         button.handle_event(event)
+                    pointer.pointer_on_button(self.win_buttons)
                 elif self.lose:
                     for button in self.lose_buttons:
                         button.handle_event(event)
+                    pointer.pointer_on_button(self.lose_buttons)
 
                 if event.type == pygame.JOYBUTTONDOWN:
                     if self.settings_open: 

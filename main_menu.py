@@ -159,10 +159,12 @@ while True:
                 music_switch.handle_event(event)
                 sfx_switch.handle_event(event)
                 back_button.handle_event(event)
+                pointer.pointer_on_button(game_1.settings_buttons)
             else:
                 quit_button.handle_event(event)
                 controls_button.handle_event(event)
                 settings_button.handle_event(event)
+                pointer.pointer_on_button(game_1.home_buttons)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)

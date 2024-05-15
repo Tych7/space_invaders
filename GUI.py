@@ -139,6 +139,24 @@ class controller_pointer():
                 elif isinstance(button, RectButton) or isinstance(button, SwitchButton):
                     if button.rect.collidepoint((self.x, self.y)):
                         pygame.draw.rect(win, (255, 140 ,68), button.rect, int(6 * button.ratio), border_radius=int(22 * button.ratio))
+                        
+    def pointer_on_button(self, buttons):
+        button_positions = []
+        for button in buttons:
+            if isinstance(button, CircleButton):
+                button_positions.append((button.x, button.y))
+            elif isinstance(button, RectButton) or isinstance(button, SwitchButton):
+                x_center = button.x + (button.width / 2)
+                y_center = button.y + (button.height / 2)
+                button_positions.append((x_center, y_center))
+                
+        new_y = self.y
+        new_x = self.x
+        
+        if (self.x, self.y) not in button_positions:
+            new_x, new_y = button_positions[0]
+                                
+        self.x, self.y = new_x, new_y
 
     def move_pointer(self, buttons):
         button_positions = []
@@ -185,9 +203,6 @@ class controller_pointer():
                         x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
                         new_x = position[0]
                         new_y = position[1]
-            
-            if (self.x, self.y) not in button_positions:
-                new_x, new_y = button_positions[0]
                                 
             self.x, self.y = new_x, new_y
 
