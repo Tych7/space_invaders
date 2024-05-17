@@ -87,17 +87,16 @@ class Controls:
         self.init_game(game_functions)
         pointer = controller_pointer(1280 * self.ratio, 1290 * self.ratio, 12)
 
-        main_button = CircleButton(1040, 1290, 50, 50, "Main Menu", 40, lambda: setattr(self, 'running', False), self.images[3])
-        settings_button = CircleButton(1200, 1290, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[6])
-        switch_controls = CircleButton(1360, 1290, 50, 50, "Switch Controls", 40, lambda: setattr(self, 'switch_controls',  not self.switch_controls), self.images[8])
-        quit_button = CircleButton(1520, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[4])
+        main_button = CircleButton(1100, 1290, 50, 50, "Main Menu", 40, lambda: setattr(self, 'running', False), self.images[3])
+        settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[6])
+        switch_controls = CircleButton(1460, 1290, 50, 50, "Switch Controls", 40, lambda: setattr(self, 'switch_controls',  not self.switch_controls), self.images[8])
 
         music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
         sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
         back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
         self.settings_buttons = [back_button, music_switch, sfx_switch]
-        self.home_buttons = [main_button, quit_button, settings_button, switch_controls]
+        self.home_buttons = [main_button, settings_button, switch_controls]
 
         while self.running:
             for event in pygame.event.get():
@@ -110,7 +109,6 @@ class Controls:
                     pointer.move_pointer(self.settings_buttons)
                 else:
                     main_button.handle_event(event)
-                    quit_button.handle_event(event)
                     settings_button.handle_event(event)
                     switch_controls.handle_event(event)
                     pointer.move_pointer(self.home_buttons)
