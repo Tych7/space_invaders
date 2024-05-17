@@ -60,6 +60,8 @@ class Game:
             "icon_controls.png",    #8
             "icon_quit.png",        #9
             "button_border.png",    #10
+            "icon_r1.png",          #11
+            "icon_l1.png",          #12
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -100,6 +102,10 @@ class Game:
         
         game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, self.win)
         game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, self.win)
+
+        if pygame.joystick.get_count() > 0:
+            game_functions.display_image(self.images[11], 520 , 960 * self.ratio, self.win)
+            game_functions.display_image(self.images[12], -520 , 960 * self.ratio, self.win)
         
         game_functions.display_image(self.images[3], 400 * self.ratio, 975 * self.ratio, self.win)
         game_functions.display_image(self.images[3], -400 * self.ratio, 975 * self.ratio, self.win)
@@ -159,12 +165,12 @@ while True:
                 music_switch.handle_event(event)
                 sfx_switch.handle_event(event)
                 back_button.handle_event(event)
-                pointer.pointer_on_button(game_1.settings_buttons)
+                pointer.move_pointer(game_1.settings_buttons)
             else:
                 quit_button.handle_event(event)
                 controls_button.handle_event(event)
                 settings_button.handle_event(event)
-                pointer.pointer_on_button(game_1.home_buttons)
+                pointer.move_pointer(game_1.home_buttons)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     game_1.update_entered_number(1)
@@ -196,7 +202,7 @@ while True:
                         game_1.returned = False
                     else:
                         print("Error: File not found:", file_path)
-                        
+            
             elif event.type == pygame.JOYBUTTONDOWN:
                 if game_1.controller.get_button(9) and game_1.entered_number > 0: 
                     game_1.entered_number -= 1
@@ -216,12 +222,8 @@ while True:
 
                 if game_1.settings_open: 
                     pointer.handle_event(game_1.settings_buttons)
-                    pointer.move_pointer(game_1.settings_buttons)
                 else: 
-                    pointer.move_pointer(game_1.home_buttons)
                     if game_1.returned == True: pointer.handle_event(game_1.home_buttons)
-
-
 
         
         pygame.display.update()
