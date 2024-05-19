@@ -31,6 +31,7 @@ class level:
     
     #global variable data
     score = 0
+    lives = 3
     pauze = False
     winner = False
     lose = False
@@ -66,7 +67,9 @@ class level:
             "pauze_menu.png",       #10
             "icon_home.png",        #11
             "icon_quit.png",        #12
-            "icon_settings.png",    #13     
+            "icon_settings.png",    #13
+            "heart_full.png",       #14
+            "heart_empty.png",      #15
         ]
         loaded_images = game_functions.load_images(self, images)
         self.images = game_functions.scale_images(self, loaded_images)
@@ -84,6 +87,7 @@ class level:
             "laser.wav",
             "gameover.wav",
             "invaderkilled.wav",
+            "get_hit.mp3",
         ]
         game_functions.load_sounds(self, sounds)
 
@@ -108,12 +112,21 @@ class level:
         score_alignment = 1040 - ((digits - 1) * 20)
         game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
         
-        
+        #display score
         lvl_number = int(self.level_string.split(" ")[1])
         if lvl_number > 9:  lvl_label_x = -675 * self.ratio
         else: lvl_label_x = -700 * self.ratio
         
         game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, self.win)
+
+
+        hearts = []
+        for i in range(self.lives): hearts.append(14)
+        for i in range(3 - len(hearts)): hearts.append(15)
+        for i in range(len(hearts)): 
+            image_x = (675 + (i * 40)) * self.ratio
+            game_functions.display_image(self.images[hearts[i]], image_x , 100 * self.ratio, self.win)
+
 
         #display projectiles
         for player_bullet in self.player_objects[0].bullets: player_bullet.draw(self.win)
@@ -121,7 +134,7 @@ class level:
         for alien in self.alien_objects:
             for alien_bullet in alien.bullets: alien_bullet.draw(self.win)
 
-        #display icons
+        #display sound icons
         with open("settings.json", 'r') as file:
             data = json.load(file)
             if data["SFX"] == "false": game_functions.display_image(self.images[8], -700 * self.ratio, 90 * self.ratio, self.win)
@@ -228,6 +241,7 @@ class level:
         elif self.state == 'waves': 
             self.init_objects("Wave 1", "levels/lvl_1.csv", self.state)
             self.score = 0
+            self.lives = 3
 
     def shoot_bullet(self, obj):
         if self.player_move == True:          
@@ -263,7 +277,7 @@ class level:
 
         #Win/lose buttons
         next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl())
-        big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.init_objects(self.level_string, self.level_structure))
+        big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.restart_lvl())
 
         self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, quit_button]
         self.settings_buttons = [back_button, sfx_switch, music_switch]
@@ -336,14 +350,31 @@ class level:
             for player_obj in self.player_objects:
                 for alien_obj in self.alien_objects:
                     if game_functions.object_hit(player_obj, alien_obj.bullets, self.images[7], self.sounds[2], self.win) == True:
-                        with open("settings.json", 'r') as file:
-                            data = json.load(file)
-                            if data["SFX"] == "true": self.sounds[1].play()
-                        for obj in self.alien_objects: 
-                            obj.vel = 0
-                            obj.shooting = False                
-                        self.lose = True
-                        self.player_move = False
+                        if self.state == 'level':
+                            with open("settings.json", 'r') as file:
+                                data = json.load(file)
+                                if data["SFX"] == "true": self.sounds[1].play()
+                            for obj in self.alien_objects: 
+                                obj.vel = 0
+                                obj.shooting = False                
+                            self.lose = True
+                            self.player_move = False
+                        elif self.state == 'waves':
+                            if self.lives == 1:
+                                for obj in self.alien_objects: 
+                                    obj.vel = 0
+                                    obj.shooting = False                
+                                self.lose = True
+                                self.player_move = False
+                                with open("settings.json", 'r') as file:
+                                    data = json.load(file)
+                                    if data["SFX"] == "true": self.sounds[1].play()
+                            else:
+                                with open("settings.json", 'r') as file:
+                                    data = json.load(file)
+                                    if data["SFX"] == "true": self.sounds[3].play()
+                                self.lives -= 1
+
                     
         #Shoot bullets
             if not self.pauze:
@@ -381,9 +412,12 @@ class level:
                 with open("settings.json", 'r') as file:
                     data = json.load(file)
                     if data["SFX"] == "true": self.sounds[1].play()
-                for obj in self.alien_objects: obj.vel = 0                
-                self.lose = True
-                self.player_move = False
+                if self.state == 'level':
+                    for obj in self.alien_objects: obj.vel = 0                
+                    self.lose = True
+                    self.player_move = False
+                elif self.state == 'waves':
+                    print("PLACEHOLDER")
 
         #Refresh screen
             pygame.display.update()

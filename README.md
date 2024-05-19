@@ -1,4 +1,4 @@
-# Space Invaders Version 2
+# Space Invaders Remasterd
 
 A modernized version of the retro space invaders game
-- Only keyboard support so far
+- Keyboard and Contoller Support
