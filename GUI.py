@@ -144,69 +144,69 @@ class controller_pointer():
                         pygame.draw.rect(win, (255, 140 ,68), button.rect, int(6 * button.ratio), border_radius=int(22 * button.ratio))
 
     def move_pointer(self, buttons):
-        button_positions = []
-        for button in buttons:
-            if isinstance(button, CircleButton):
-                button_positions.append((button.x, button.y))
-            elif isinstance(button, RectButton) or isinstance(button, SwitchButton):
-                x_center = button.x + (button.width / 2)
-                y_center = button.y + (button.height / 2)
-                button_positions.append((x_center, y_center))
+        if len(buttons) != 0:
+            button_positions = []
+            for button in buttons:
+                if isinstance(button, CircleButton):
+                    button_positions.append((button.x, button.y))
+                elif isinstance(button, RectButton) or isinstance(button, SwitchButton):
+                    x_center = button.x + (button.width / 2)
+                    y_center = button.y + (button.height / 2)
+                    button_positions.append((x_center, y_center))
 
-        if pygame.joystick.get_count() > 0:
-            
-            y_dif = float('inf')
-            x_dif = float('inf')
-
-            new_y = self.y
-            new_x = self.x
-
-            if (self.controller.get_button(11) and self.button_lock == False) or (self.controller.get_axis(1) < -0.5 and self.con_y_lock == False): # Up
-                for position in button_positions:
-                    if (position[1] < self.y) and ((self.y - position[1]) + abs(self.x - position[0])) < y_dif:  
-                        y_dif = ((self.y - position[1]) + abs(self.x - position[0]))
-                        new_x = position[0]
-                        new_y = position[1]
-            
-            if (self.controller.get_button(12) and self.button_lock == False) or (self.controller.get_axis(1) > 0.5 and self.con_y_lock == False): # Down
-                for position in button_positions:
-                    if (position[1] > self.y) and ((position[1] + self.y) + abs(self.x - position[0])) < y_dif:
-                        y_dif = ((position[1] + self.y) + abs(self.x - position[0]))
-                        new_x = position[0]
-                        new_y = position[1]
-            
-            if (self.controller.get_button(13) and self.button_lock == False) or (self.controller.get_axis(0) < -0.5 and self.con_x_lock == False): # Left
-                for position in button_positions:
-                    if (position[0] < self.x) and ((self.x - position[0]) + abs(self.y - position[1])) < x_dif:
-                        x_dif = ((self.x - position[0]) + abs(self.y - position[1]))
-                        new_x = position[0]
-                        new_y = position[1]
+            if pygame.joystick.get_count() > 0:
                 
-            if (self.controller.get_button(14) and self.button_lock == False) or (self.controller.get_axis(0) > 0.5 and self.con_x_lock == False): # Right
-                for position in button_positions:
-                    if (position[0] > self.x) and ((position[0] + self.x) + abs(self.y - position[1])) < x_dif:
-                        x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
-                        new_x = position[0]
-                        new_y = position[1]
+                y_dif = float('inf')
+                x_dif = float('inf')
 
-            #joystick lock
-            if -0.5 < self.controller.get_axis(1) < 0.5: self.con_y_lock = False
-            else: self.con_y_lock = True
-            if -0.5 < self.controller.get_axis(0) < 0.5: self.con_x_lock = False
-            else: self.con_x_lock = True
+                new_y = self.y
+                new_x = self.x
 
-            #button lock
-            if (self.controller.get_button(11) or self.controller.get_button(12) or self.controller.get_button(13) or self.controller.get_button(14)):
-                self.button_lock = True
-            else:
-                self.button_lock = False
+                if (self.controller.get_button(11) and self.button_lock == False) or (self.controller.get_axis(1) < -0.5 and self.con_y_lock == False): # Up
+                    for position in button_positions:
+                        if (position[1] < self.y) and ((self.y - position[1]) + abs(self.x - position[0])) < y_dif:  
+                            y_dif = ((self.y - position[1]) + abs(self.x - position[0]))
+                            new_x = position[0]
+                            new_y = position[1]
+                
+                if (self.controller.get_button(12) and self.button_lock == False) or (self.controller.get_axis(1) > 0.5 and self.con_y_lock == False): # Down
+                    for position in button_positions:
+                        if (position[1] > self.y) and ((position[1] + self.y) + abs(self.x - position[0])) < y_dif:
+                            y_dif = ((position[1] + self.y) + abs(self.x - position[0]))
+                            new_x = position[0]
+                            new_y = position[1]
+                
+                if (self.controller.get_button(13) and self.button_lock == False) or (self.controller.get_axis(0) < -0.5 and self.con_x_lock == False): # Left
+                    for position in button_positions:
+                        if (position[0] < self.x) and ((self.x - position[0]) + abs(self.y - position[1])) < x_dif:
+                            x_dif = ((self.x - position[0]) + abs(self.y - position[1]))
+                            new_x = position[0]
+                            new_y = position[1]
+                    
+                if (self.controller.get_button(14) and self.button_lock == False) or (self.controller.get_axis(0) > 0.5 and self.con_x_lock == False): # Right
+                    for position in button_positions:
+                        if (position[0] > self.x) and ((position[0] + self.x) + abs(self.y - position[1])) < x_dif:
+                            x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
+                            new_x = position[0]
+                            new_y = position[1]
 
-            #pointer always on button
-            if (self.x, self.y) not in button_positions:
-                new_x, new_y = button_positions[0]
+                #joystick lock
+                if -0.5 < self.controller.get_axis(1) < 0.5: self.con_y_lock = False
+                else: self.con_y_lock = True
+                if -0.5 < self.controller.get_axis(0) < 0.5: self.con_x_lock = False
+                else: self.con_x_lock = True
 
-                                
-            self.x, self.y = new_x, new_y
+                #button lock
+                if (self.controller.get_button(11) or self.controller.get_button(12) or self.controller.get_button(13) or self.controller.get_button(14)):
+                    self.button_lock = True
+                else:
+                    self.button_lock = False
+
+                #pointer always on button
+                if (self.x, self.y) not in button_positions:
+                    new_x, new_y = button_positions[0]
+                    
+                self.x, self.y = new_x, new_y
 
     def handle_event(self, buttons):
         if pygame.joystick.get_count() > 0:

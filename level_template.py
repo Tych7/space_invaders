@@ -28,7 +28,8 @@ class level:
     settings_buttons = []
     win_buttons = []
     lose_buttons = []    
-    
+    active_buttons = []
+
     #global variable data
     score = 0
     lives = 3
@@ -38,6 +39,8 @@ class level:
     running = True
     settings_open = False
     player_move = True
+    block_shoot = False
+
 
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
@@ -219,6 +222,7 @@ class level:
         self.player_objects.append(player_1)
             
     def resume_lvl(self):
+        self.block_shoot = True
         self.pauze = False
         for obj in self.alien_objects: 
             obj.moving = True
@@ -226,6 +230,7 @@ class level:
 
     
     def next_lvl(self):
+        self.block_shoot = True
         current_level = int(self.level_string.split(" ")[1])
         next_level = current_level + 1
         file_path = f"levels/lvl_{next_level}.csv"
@@ -236,6 +241,7 @@ class level:
             print("Error: File not found:", file_path)
     
     def restart_lvl(self):
+        self.block_shoot = True
         if self.state == 'level': 
             self.init_objects(self.level_string, self.level_structure, self.state)
         elif self.state == 'waves': 
@@ -290,37 +296,33 @@ class level:
 
         #Start Main Loop
         while self.running:
+            if self.settings_open: self.active_buttons = self.settings_buttons
+            elif self.pauze: self.active_buttons = self.pauze_buttons
+            elif self.winner: self.active_buttons = self.win_buttons
+            elif self.lose: self.active_buttons = self.lose_buttons
+            else: self.active_buttons = []
+
+            
             clock.tick(60)
             keys = pygame.key.get_pressed()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
-                if self.settings_open:
-                    for button in self.settings_buttons:
-                        button.handle_event(event)
-                    pointer.move_pointer(self.settings_buttons)
-                elif self.pauze:
-                    for button in self.pauze_buttons:
-                        button.handle_event(event)
-                    pointer.move_pointer(self.pauze_buttons)
-                elif self.winner:
-                    for button in self.win_buttons:
-                        button.handle_event(event)
-                    pointer.move_pointer(self.win_buttons)
-                elif self.lose:
-                    for button in self.lose_buttons:
-                        button.handle_event(event)
-                    pointer.move_pointer(self.lose_buttons)
+                
+                for button in self.active_buttons:
+                    button.handle_event(event)
+                pointer.move_pointer(self.active_buttons)
+
+                if event.type == pygame.JOYBUTTONUP:
+                    self.block_shoot = False
 
                 if event.type == pygame.JOYBUTTONDOWN:
-                    if self.settings_open: pointer.handle_event(self.settings_buttons)
-                    elif self.pauze: pointer.handle_event(self.pauze_buttons)
-                    elif self.winner: pointer.handle_event(self.win_buttons)
-                    elif self.lose: pointer.handle_event(self.lose_buttons)
-                    else:
-                        if self.controller is not None and self.controller.get_button(0):
-                            self.shoot_bullet(self.player_objects[0])
+                    pointer.handle_event(self.active_buttons)
+                    if self.controller is not None and self.controller.get_button(0) and self.block_shoot == False:
+                        self.shoot_bullet(self.player_objects[0])
+                        self.block_shoot = True
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.shoot_bullet(self.player_objects[0])
