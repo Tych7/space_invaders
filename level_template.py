@@ -119,13 +119,13 @@ class level:
         
         game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, self.win)
 
-
-        hearts = []
-        for i in range(self.lives): hearts.append(14)
-        for i in range(3 - len(hearts)): hearts.append(15)
-        for i in range(len(hearts)): 
-            image_x = (675 + (i * 40)) * self.ratio
-            game_functions.display_image(self.images[hearts[i]], image_x , 100 * self.ratio, self.win)
+        if self.state == 'waves':
+            hearts = []
+            for i in range(self.lives): hearts.append(14)
+            for i in range(3 - len(hearts)): hearts.append(15)
+            for i in range(len(hearts)): 
+                image_x = (675 + (i * 40)) * self.ratio
+                game_functions.display_image(self.images[hearts[i]], image_x , 100 * self.ratio, self.win)
 
 
         #display projectiles
@@ -374,7 +374,6 @@ class level:
                                     data = json.load(file)
                                     if data["SFX"] == "true": self.sounds[3].play()
                                 self.lives -= 1
-
                     
         #Shoot bullets
             if not self.pauze:

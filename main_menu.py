@@ -30,6 +30,9 @@ class Game:
     settings_buttons = []
     home_buttons = []
     state_buttons = []
+    level_buttons = []
+
+    active_buttons = []
 
 
     def set_ratio(self, loaded_images, game_functions):
@@ -97,6 +100,17 @@ class Game:
             else:
                 self.entered_number = self.entered_number * 10 + number
             self.second_order_entered = True
+
+    def start_lvl(self):
+        if self.entered_number > 0:
+            file_path = "levels/lvl_" + str(self.entered_number) + ".csv"
+            if os.path.exists(file_path):
+                obj = level()
+                obj.main(game_functions, "Level " + str(self.entered_number), file_path, self.state)
+                self.returned = False
+                self.state = 'home'
+            else:
+                print("Error: File not found:", file_path)
         
 
     def update_screen(self, game_functions, pointer):
@@ -113,8 +127,9 @@ class Game:
         game_functions.display_image(self.images[14], 100 , 965 * self.ratio, self.win)
 
         if self.state == 'level':
-            game_functions.display_image(self.images[2], 0 , 950 * self.ratio, self.win)
+            for button in self.level_buttons: button.draw(self.win)
             game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, self.win)
+            pointer.draw(game_1.win, self.level_buttons)
             if pygame.joystick.get_count() > 0:
                 game_functions.display_image(self.images[11], 520 , 960 * self.ratio, self.win)
                 game_functions.display_image(self.images[12], -520 , 960 * self.ratio, self.win)
@@ -155,19 +170,30 @@ while True:
     waves_button = RectButton(800, 950, 400, 100,  "Ranked  ", 40, lambda: setattr(game_1, 'state', 'waves'))
     level_button = RectButton(1360, 950, 400, 100, " Practice", 40, lambda: setattr(game_1, 'state', 'level'))
 
+    level_select_button = RectButton(780, 950, 1000, 100, "", 50, lambda: game_1.start_lvl())
+    level_back_button = RectButton(1130, 1075, 300, 60, "Back", 40, lambda: setattr(game_1, 'state', 'home'))
+
+
+    game_1.level_buttons = [level_select_button, level_back_button]
     game_1.home_buttons = [settings_button, controls_button, quit_button]
     game_1.state_buttons = [waves_button, level_button]
 
     music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
     sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
-    back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
-    game_1.settings_buttons = [back_button, sfx_switch, music_switch]
+    settings_back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(game_1, 'settings_open', False))
+    game_1.settings_buttons = [settings_back_button, sfx_switch, music_switch]
 
     #Show amount of levels
     files = os.listdir("levels/")
     game_1.lvl_count = len(files)
         
     while True:
+        #select active buttons
+        if game_1.settings_open: game_1.active_buttons = game_1.settings_buttons
+        elif game_1.state == 'home': game_1.active_buttons = game_1.home_buttons + game_1.state_buttons
+        elif game_1.state == 'level': game_1.active_buttons = game_1.level_buttons + game_1.home_buttons
+
+
         if pygame.joystick.get_count() > 0:
             button_0_up = game_1.controller.get_button(0) == 0
             if button_0_up == True: game_1.returned = True
@@ -175,19 +201,9 @@ while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
-            if game_1.settings_open:
-                for button in game_1.settings_buttons:
-                    button.handle_event(event)
-                pointer.move_pointer(game_1.settings_buttons)
-            else:
-                buttons = game_1.home_buttons
-                if game_1.state == 'home':
-                    for button in game_1.state_buttons:
-                        button.handle_event(event)
-                    buttons = game_1.home_buttons + game_1.state_buttons
-                for button in game_1.home_buttons:
-                    button.handle_event(event)
-                pointer.move_pointer(buttons)
+            for button in game_1.active_buttons:
+                button.handle_event(event)
+            pointer.move_pointer(game_1.active_buttons)
 
             if game_1.state == 'level':
                 if event.type == pygame.KEYDOWN:
@@ -227,15 +243,6 @@ while True:
                     if game_1.controller.get_button(9) and game_1.entered_number > 0: 
                         game_1.entered_number -= 1
                     elif game_1.controller.get_button(10): game_1.entered_number += 1
-                    if game_1.controller.get_button(5):
-                        file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
-                        if os.path.exists(file_path):
-                            obj = level()
-                            obj.main(game_functions, "Level " + str(game_1.entered_number), file_path, game_1.state)
-                            game_1.returned = False
-                            game_1.state = 'home'
-                        else:
-                            print("Error: File not found:", file_path)
 
             elif game_1.state == 'waves':
                 file_path = "levels/lvl_1.csv"
@@ -251,12 +258,8 @@ while True:
                 if game_1.controller.get_button(6):
                     game_1.settings_open = True
 
-                if game_1.settings_open: pointer.handle_event(game_1.settings_buttons)
-                elif game_1.returned == True: 
-                    buttons = game_1.home_buttons
-                    if game_1.state == 'home':
-                        buttons = game_1.home_buttons + game_1.state_buttons
-                    pointer.handle_event(buttons)
+                if game_1.returned == True: 
+                    pointer.handle_event(game_1.active_buttons)
 
         
         pygame.display.update()
