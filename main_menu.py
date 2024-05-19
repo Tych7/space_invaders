@@ -4,7 +4,7 @@ import sys
 import json
 
 
-from classes import global_game_functions
+from entities import global_game_functions
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 from controls import Controls
 from level_template import level
@@ -24,9 +24,12 @@ class Game:
     settings_open = False
     returned = False
 
+    state = 'home'
+
     #Button Collections
     settings_buttons = []
     home_buttons = []
+    state_buttons = []
 
 
     def set_ratio(self, loaded_images, game_functions):
@@ -62,6 +65,8 @@ class Game:
             "button_border.png",    #10
             "icon_r1.png",          #11
             "icon_l1.png",          #12
+            "icon_ranked.png",      #13
+            "icon_target.png",      #14
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -97,21 +102,25 @@ class Game:
     def update_screen(self, game_functions, pointer):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
         game_functions.display_image(self.images[1], 0 , 175 * self.ratio, self.win)
-        game_functions.display_image(self.images[2], 0 , 950 * self.ratio, self.win)
         game_functions.display_image(self.images[10], 0 , 1210 * self.ratio, self.win)
         
-        game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, self.win)
         game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, self.win)
 
-        if pygame.joystick.get_count() > 0:
-            game_functions.display_image(self.images[11], 520 , 960 * self.ratio, self.win)
-            game_functions.display_image(self.images[12], -520 , 960 * self.ratio, self.win)
-        
-        game_functions.display_image(self.images[3], 400 * self.ratio, 975 * self.ratio, self.win)
-        game_functions.display_image(self.images[3], -400 * self.ratio, 975 * self.ratio, self.win)
-        
         for button in self.home_buttons: button.draw(self.win)
+        for button in self.state_buttons: button.draw(self.win)
 
+        game_functions.display_image(self.images[13], -400 , 965 * self.ratio, self.win)
+        game_functions.display_image(self.images[14], 100 , 965 * self.ratio, self.win)
+
+        if self.state == 'level':
+            game_functions.display_image(self.images[2], 0 , 950 * self.ratio, self.win)
+            game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, self.win)
+            if pygame.joystick.get_count() > 0:
+                game_functions.display_image(self.images[11], 520 , 960 * self.ratio, self.win)
+                game_functions.display_image(self.images[12], -520 , 960 * self.ratio, self.win)
+            game_functions.display_image(self.images[3], 400 * self.ratio, 975 * self.ratio, self.win)
+            game_functions.display_image(self.images[3], -400 * self.ratio, 975 * self.ratio, self.win)
+        
         with open("settings.json", 'r') as file:
             data = json.load(file)
             if data["SFX"] == "false": game_functions.display_image(self.images[4], -700 * self.ratio, 90 * self.ratio, self.win)
@@ -130,7 +139,8 @@ class Game:
             for button in self.settings_buttons: button.draw(self.win)
             pointer.draw(game_1.win, self.settings_buttons)
         else:
-            pointer.draw(game_1.win, self.home_buttons)        
+            pointer.draw(game_1.win, self.home_buttons)
+            pointer.draw(game_1.win, self.state_buttons)        
 
 #MAIN LOOP
 while True:
@@ -142,7 +152,11 @@ while True:
     controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
     settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
     quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
+    waves_button = RectButton(800, 950, 400, 100,  "Ranked  ", 40, lambda: setattr(game_1, 'state', 'waves'))
+    level_button = RectButton(1360, 950, 400, 100, " Practice", 40, lambda: setattr(game_1, 'state', 'level'))
+
     game_1.home_buttons = [settings_button, controls_button, quit_button]
+    game_1.state_buttons = [waves_button, level_button]
 
     music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
     sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
@@ -162,68 +176,87 @@ while True:
             if event.type == pygame.QUIT:
                 sys.exit(0)
             if game_1.settings_open:
-                music_switch.handle_event(event)
-                sfx_switch.handle_event(event)
-                back_button.handle_event(event)
+                for button in game_1.settings_buttons:
+                    button.handle_event(event)
                 pointer.move_pointer(game_1.settings_buttons)
             else:
-                quit_button.handle_event(event)
-                controls_button.handle_event(event)
-                settings_button.handle_event(event)
-                pointer.move_pointer(game_1.home_buttons)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    game_1.update_entered_number(1)
-                elif event.key == pygame.K_2:
-                    game_1.update_entered_number(2)
-                elif event.key == pygame.K_3:
-                    game_1.update_entered_number(3)
-                elif event.key == pygame.K_4:
-                    game_1.update_entered_number(4)
-                elif event.key == pygame.K_5:
-                    game_1.update_entered_number(5)
-                elif event.key == pygame.K_6:
-                    game_1.update_entered_number(6)
-                elif event.key == pygame.K_7:
-                    game_1.update_entered_number(7)
-                elif event.key == pygame.K_8:
-                    game_1.update_entered_number(8)
-                elif event.key == pygame.K_9:
-                    game_1.update_entered_number(9)
-                elif event.key == pygame.K_0:
-                    game_1.update_entered_number(0)
-                elif event.key == pygame.K_BACKSPACE:
-                    game_1.update_entered_number(-1)
-                elif event.key == pygame.K_RETURN and game_1.entered_number != 0:
-                    file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
-                    if os.path.exists(file_path):
-                        obj = level()
-                        obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
-                        game_1.returned = False
-                    else:
-                        print("Error: File not found:", file_path)
-            
-            elif event.type == pygame.JOYBUTTONDOWN:
-                if game_1.controller.get_button(9) and game_1.entered_number > 0: 
-                    game_1.entered_number -= 1
-                elif game_1.controller.get_button(10): game_1.entered_number += 1
-                if game_1.controller.get_button(5):
-                    file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
-                    if os.path.exists(file_path):
-                        obj = level()
-                        obj.main(game_functions, "Level " + str(game_1.entered_number), file_path)
-                        game_1.returned = False
-                    else:
-                        print("Error: File not found:", file_path)
+                buttons = game_1.home_buttons
+                if game_1.state == 'home':
+                    for button in game_1.state_buttons:
+                        button.handle_event(event)
+                    buttons = game_1.home_buttons + game_1.state_buttons
+                for button in game_1.home_buttons:
+                    button.handle_event(event)
+                pointer.move_pointer(buttons)
+
+            if game_1.state == 'level':
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        game_1.update_entered_number(1)
+                    elif event.key == pygame.K_2:
+                        game_1.update_entered_number(2)
+                    elif event.key == pygame.K_3:
+                        game_1.update_entered_number(3)
+                    elif event.key == pygame.K_4:
+                        game_1.update_entered_number(4)
+                    elif event.key == pygame.K_5:
+                        game_1.update_entered_number(5)
+                    elif event.key == pygame.K_6:
+                        game_1.update_entered_number(6)
+                    elif event.key == pygame.K_7:
+                        game_1.update_entered_number(7)
+                    elif event.key == pygame.K_8:
+                        game_1.update_entered_number(8)
+                    elif event.key == pygame.K_9:
+                        game_1.update_entered_number(9)
+                    elif event.key == pygame.K_0:
+                        game_1.update_entered_number(0)
+                    elif event.key == pygame.K_BACKSPACE:
+                        game_1.update_entered_number(-1)
+                    elif event.key == pygame.K_RETURN and game_1.entered_number != 0:
+                        file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
+                        if os.path.exists(file_path):
+                            obj = level()
+                            obj.main(game_functions, "Level " + str(game_1.entered_number), file_path, game_1.state)
+                            game_1.returned = False
+                            game_1.state = 'home'
+                        else:
+                            print("Error: File not found:", file_path)
+
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    if game_1.controller.get_button(9) and game_1.entered_number > 0: 
+                        game_1.entered_number -= 1
+                    elif game_1.controller.get_button(10): game_1.entered_number += 1
+                    if game_1.controller.get_button(5):
+                        file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
+                        if os.path.exists(file_path):
+                            obj = level()
+                            obj.main(game_functions, "Level " + str(game_1.entered_number), file_path, game_1.state)
+                            game_1.returned = False
+                            game_1.state = 'home'
+                        else:
+                            print("Error: File not found:", file_path)
+
+            elif game_1.state == 'waves':
+                file_path = "levels/lvl_1.csv"
+                if os.path.exists(file_path):
+                    obj = level()
+                    obj.main(game_functions, "Wave 1", file_path, game_1.state)
+                    game_1.returned = False
+                    game_1.state = 'home'
+                else:
+                    print("Error: File not found:", file_path)
                         
-                
-                elif game_1.controller.get_button(6):
+            if pygame.joystick.get_count() > 0:  
+                if game_1.controller.get_button(6):
                     game_1.settings_open = True
 
-                if game_1.settings_open: 
-                    pointer.handle_event(game_1.settings_buttons)
-                else: 
-                    if game_1.returned == True: pointer.handle_event(game_1.home_buttons)
+                if game_1.settings_open: pointer.handle_event(game_1.settings_buttons)
+                elif game_1.returned == True: 
+                    buttons = game_1.home_buttons
+                    if game_1.state == 'home':
+                        buttons = game_1.home_buttons + game_1.state_buttons
+                    pointer.handle_event(buttons)
 
         
         pygame.display.update()

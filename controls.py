@@ -4,7 +4,7 @@ import sys
 import json
 
 
-from classes import global_game_functions
+from entities import global_game_functions
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 
 

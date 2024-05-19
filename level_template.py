@@ -3,8 +3,9 @@ import sys
 import os
 import json
 import csv
+import time
 
-from classes import global_game_functions,alien, projectile, player
+from entities import global_game_functions,alien, projectile, player
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 
 class level:
@@ -17,6 +18,7 @@ class level:
     player_objects = [] 
     alien_objects = []
     ratio = 0
+    state = None
     level_string = ""
     level_structure = None
     alien_rows = []
@@ -101,8 +103,9 @@ class level:
 
         #display text
         game_functions.display_text(60,'SCORE:', 950 * self.ratio, 675 * self.ratio, self.win)
-        if self.score < 10: score_alignment = 1040
-        else: score_alignment = 1020
+
+        digits = len(str(abs(self.score)))
+        score_alignment = 1040 - ((digits - 1) * 20)
         game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
         
         
@@ -160,16 +163,18 @@ class level:
             pointer.draw(self.win, self.settings_buttons)
             
 
-    def init_objects(self, lvl_lable, lvl_structure):
+    def init_objects(self, lvl_lable, lvl_structure, state):
         self.player_objects.clear()
         self.alien_objects.clear()
         self.winner = False
         self.lose = False
         self.pauze = False
         self.player_move = True
-        self.score = 0
         self.level_string = lvl_lable
         self.level_structure = lvl_structure
+        self.state = state
+
+        if self.state == 'level': self.score = 0
         
         # Read the CSV file
         with open(lvl_structure, newline='') as csvfile:
@@ -200,7 +205,7 @@ class level:
         player_1 = player(self.ratio * 1280, self.ratio * 1200, self.ratio)
         self.player_objects.append(player_1)
             
-    def resume_game(self):
+    def resume_lvl(self):
         self.pauze = False
         for obj in self.alien_objects: 
             obj.moving = True
@@ -213,9 +218,16 @@ class level:
         file_path = f"levels/lvl_{next_level}.csv"
         
         if os.path.exists(file_path):
-            self.init_objects(f"Level {next_level}", file_path)
+            self.init_objects(self.level_string.split(" ")[0] + " " + str(next_level), file_path, self.state)
         else:
             print("Error: File not found:", file_path)
+    
+    def restart_lvl(self):
+        if self.state == 'level': 
+            self.init_objects(self.level_string, self.level_structure, self.state)
+        elif self.state == 'waves': 
+            self.init_objects("Wave 1", "levels/lvl_1.csv", self.state)
+            self.score = 0
 
     def shoot_bullet(self, obj):
         if self.player_move == True:          
@@ -232,17 +244,17 @@ class level:
                             if data["SFX"] == "true": self.sounds[0].play()
 
 
-    def main(self, game_functions, lvl_lable, lvl_structure):
+    def main(self, game_functions, lvl_lable, lvl_structure, state):
         self.init_lvl(global_game_functions)
-        self.init_objects(lvl_lable, lvl_structure)
+        self.init_objects(lvl_lable, lvl_structure, state)
         pointer = controller_pointer(1280 * self.ratio, 825 * self.ratio, 12)
 
         #Pauze buttons
         home_button = CircleButton(1170, 825, 50, 50, "Controls", 40, lambda: setattr(self, 'running', False), self.images[11])
         settings_button = CircleButton(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
         quit_button = CircleButton(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
-        resume_button = RectButton(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_game())
-        restart_button = RectButton(1130, 600, 300, 60, "Restart", 40, lambda: self.init_objects(self.level_string, self.level_structure))
+        resume_button = RectButton(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_lvl())
+        restart_button = RectButton(1130, 600, 300, 60, "Restart", 40, lambda: self.restart_lvl())
 
         #Settings buttons
         music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
@@ -354,10 +366,12 @@ class level:
                 if obj.visible == True:
                     all_aliens_invisible = False
             if all_aliens_invisible == True:
-                for obj in self.alien_objects: obj.vel = 0
-                self.winner = True
-                self.player_move = False
-        
+                if self.state == 'level':
+                    for obj in self.alien_objects: obj.vel = 0
+                    self.winner = True
+                    self.player_move = False
+                elif self.state == 'waves': self.next_lvl()
+                    
         #Check for lose
             alien_to_low = False
             for obj in self.alien_objects:
