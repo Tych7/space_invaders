@@ -79,15 +79,13 @@ class global_game_functions:
   
 		win.blit(renderd_text, (image_width, height))
 	
-	def object_hit(self, obj, bullets, image, sound, win):
+	def object_hit(self, obj, bullets):
 		if obj.visible:
 			for bullet in bullets:
 				if bullet.y - bullet.radius < obj.hitbox[1] + obj.hitbox[3] and bullet.y + bullet.radius > obj.hitbox[1]:
 					if bullet.x + bullet.radius > obj.hitbox[0] and bullet.x - bullet.radius < obj.hitbox[0] + obj.hitbox[2]:
 						bullets.pop(bullets.index(bullet))
-						return True
-		return False
-	
+						return True	
 
 class alien(object):
 	def __init__(self, x, y, alien_image, ratio, direction, hp, type):

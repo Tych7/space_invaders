@@ -33,6 +33,8 @@ class level:
     #global variable data
     score = 0
     lives = 3
+    combo_counter = 0
+    multiplier = 1
     pauze = False
     winner = False
     lose = False
@@ -114,6 +116,8 @@ class level:
         digits = len(str(abs(self.score)))
         score_alignment = 1040 - ((digits - 1) * 20)
         game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
+
+        game_functions.display_text(50,"Combo X" + str(self.multiplier), 1020 * self.ratio, 600 * self.ratio, self.win)
         
         #display score
         lvl_number = int(self.level_string.split(" ")[1])
@@ -189,8 +193,12 @@ class level:
         self.level_string = lvl_lable
         self.level_structure = lvl_structure
         self.state = state
+        self.block_shoot = False
 
-        if self.state == 'level': self.score = 0
+        if self.state == 'level': 
+            self.score = 0
+            self.combo_counter = 0
+            self.multiplier = 1
         
         # Read the CSV file
         with open(lvl_structure, newline='') as csvfile:
@@ -251,9 +259,6 @@ class level:
 
     def shoot_bullet(self, obj):
         if self.player_move == True:          
-            if obj.shootloop > 0: obj.shootloop += 1
-            if obj.shootloop > 3: obj.shootloop = 0
-
             if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
                 if len(obj.bullets) < 1 and obj.shootloop == 0:
                         obj.bullets.append(projectile(
@@ -344,14 +349,21 @@ class level:
                     
         #Check if object gets hit
             for alien_obj in self.alien_objects:
-                if game_functions.object_hit(alien_obj, self.player_objects[0].bullets, self.images[7], self.sounds[2], self.win) == True:
+                if game_functions.object_hit(alien_obj, self.player_objects[0].bullets) == True:
                     self.score += 1
+                    self.combo_counter += 1
                     alien_obj.hit(self.win, self.images[7], self.sounds[2])
+                else:
+                    self.combo_counter = 0
+
+        #set score multilier
+            if self.combo_counter > 2: self.multiplier = 2
+            if self.combo_counter > 3: self.multiplier = 3
 
 
             for player_obj in self.player_objects:
                 for alien_obj in self.alien_objects:
-                    if game_functions.object_hit(player_obj, alien_obj.bullets, self.images[7], self.sounds[2], self.win) == True:
+                    if game_functions.object_hit(player_obj, alien_obj.bullets) == True:
                         if self.state == 'level':
                             with open("settings.json", 'r') as file:
                                 data = json.load(file)
