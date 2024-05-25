@@ -35,7 +35,7 @@ class Controls:
             "keyboard_controls.png",    #0
             "SFX.png",                  #1
             "music.png",                #2
-            "icon_home.png",            #3
+            "icon_back.png",            #3
             "icon_quit.png",            #4
             "button_border.png",        #5
             "icon_settings.png",        #6
@@ -52,10 +52,10 @@ class Controls:
         
         if self.switch_controls:    
             game_functions.display_image(self.images[9], 0 , 0  * self.ratio, self.win)
-            game_functions.display_text(80, 'Controller', 0, 160 * self.ratio, self.win)
+            game_functions.display_text(80, 'Controller', 0, 160 * self.ratio, (112, 228, 209), self.win)
         else:                       
             game_functions.display_image(self.images[0], 0 , 0, self.win)
-            game_functions.display_text(80, 'Keyboard', 0, 160 * self.ratio, self.win)
+            game_functions.display_text(80, 'Keyboard', 0, 160 * self.ratio, (112, 228, 209), self.win)
 
 
         game_functions.display_image(self.images[5], 0 , 1210  * self.ratio, self.win)
@@ -69,7 +69,7 @@ class Controls:
             self.win.blit(overlay, (0, 0))
 
             game_functions.display_image(self.images[7], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.settings_buttons: button.draw(self.win)
             pointer.draw(self.win, self.settings_buttons)
         else:
@@ -103,14 +103,12 @@ class Controls:
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 if self.settings_open:
-                    music_switch.handle_event(event)
-                    sfx_switch.handle_event(event)
-                    back_button.handle_event(event)
+                    for button in self.settings_buttons:
+                        button.handle_event(event)
                     pointer.move_pointer(self.settings_buttons)
                 else:
-                    main_button.handle_event(event)
-                    settings_button.handle_event(event)
-                    switch_controls.handle_event(event)
+                    for button in self.home_buttons:
+                        button.handle_event(event)
                     pointer.move_pointer(self.home_buttons)
 
                 if event.type == pygame.JOYBUTTONDOWN:

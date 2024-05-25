@@ -7,6 +7,7 @@ import json
 from entities import global_game_functions
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 from controls import Controls
+from scoreboard import scoreboard
 from level_template import level
 
 
@@ -70,6 +71,7 @@ class Game:
             "icon_l1.png",          #12
             "icon_ranked.png",      #13
             "icon_target.png",      #14
+            "icon_score.png",       #15
         ]
         loaded_images = game_functions.load_images(images)
         self.set_ratio(loaded_images, game_functions)
@@ -118,7 +120,7 @@ class Game:
         game_functions.display_image(self.images[1], 0 , 175 * self.ratio, self.win)
         game_functions.display_image(self.images[10], 0 , 1210 * self.ratio, self.win)
         
-        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, self.win)
+        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, (112, 228, 209), self.win)
 
         for button in self.home_buttons: button.draw(self.win)
         for button in self.state_buttons: button.draw(self.win)
@@ -128,7 +130,7 @@ class Game:
 
         if self.state == 'level':
             for button in self.level_buttons: button.draw(self.win)
-            game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, self.win)
+            game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, (112, 228, 209), self.win)
             pointer.draw(game_1.win, self.level_buttons)
             if pygame.joystick.get_count() > 0:
                 game_functions.display_image(self.images[11], 520 , 960 * self.ratio, self.win)
@@ -150,7 +152,7 @@ class Game:
             self.win.blit(overlay, (0, 0))
 
             game_functions.display_image(self.images[6], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.settings_buttons: button.draw(self.win)
             pointer.draw(game_1.win, self.settings_buttons)
         else:
@@ -163,19 +165,21 @@ while True:
     game_functions = global_game_functions()
     game_1.init_game(game_functions)
     pointer = controller_pointer(1280 * game_1.ratio, 1290 * game_1.ratio, 12)
+    
 
-    controls_button = CircleButton(1100, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
-    settings_button = CircleButton(1280, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
-    quit_button = CircleButton(1460, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
+    controls_button = CircleButton(1070, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
+    score_button = CircleButton(1210, 1290, 50, 50, "Score Board", 40, lambda: scoreboard().main(game_functions), game_1.images[15])
+    settings_button = CircleButton(1350, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
+    quit_button = CircleButton(1490, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
+
     waves_button = RectButton(800, 950, 400, 100,  "Ranked  ", 40, lambda: setattr(game_1, 'state', 'waves'))
     level_button = RectButton(1360, 950, 400, 100, " Practice", 40, lambda: setattr(game_1, 'state', 'level'))
 
     level_select_button = RectButton(780, 950, 1000, 100, "", 50, lambda: game_1.start_lvl())
     level_back_button = RectButton(1130, 1075, 300, 60, "Back", 40, lambda: setattr(game_1, 'state', 'home'))
 
-
     game_1.level_buttons = [level_select_button, level_back_button]
-    game_1.home_buttons = [settings_button, controls_button, quit_button]
+    game_1.home_buttons = [settings_button, controls_button, quit_button, score_button]
     game_1.state_buttons = [waves_button, level_button]
 
     music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))

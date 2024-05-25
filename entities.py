@@ -63,10 +63,10 @@ class global_game_functions:
 
 		win.blit(image, (image_width, y))
   
-	def display_text(self, size, text, width, height, win):
+	def display_text(self, size, text, width, height, color, win):
 		font_size = int(size * min(self.ratio, self.ratio))
 		font = pygame.font.SysFont('couriernew', font_size, True)
-		renderd_text = font.render(text, 1, (112, 228, 209))
+		renderd_text = font.render(text, 1, color)
   
 		screen_center  = (pygame.display.get_surface().get_size()[0])/2
 		image_width = 0
@@ -200,9 +200,14 @@ class projectile(object):
 		self.radius = radius * ratio 
 		self.color = color
 		self.vel = 15 * ratio
+		self.ratio = ratio
 
 	def draw(self,win):
 		pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
+
+	def hit_check(self):
+		if self.y < 80 * self.ratio: return False
+		else: return True
 
 class player(object):
 	def __init__(self,x,y, ratio):
@@ -216,7 +221,6 @@ class player(object):
 		self.hitbox = (self.x, self.y, 58, 80)
 		self.visible = True
 		self.bullets = []
-		self.shootloop = 0
 		self.ratio = ratio
 
 	def draw(self, win, images):
@@ -230,10 +234,7 @@ class player(object):
 		self.hitbox = (self.x, self.y, self.width, self.height)
 		# pygame.draw.rect(win, (255,0,0), self.hitbox,2)
   
-	def shoot(self):
-		if self.shootloop > 0: self.shootloop += 1
-		if self.shootloop > 3: self.shootloop = 0
-
+	def move_bullet(self):
 		for bullet in self.bullets:
 			if bullet.y < 1360 * self.ratio and bullet.y > 80 * self.ratio:
 					bullet.y -= bullet.vel

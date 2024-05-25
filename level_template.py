@@ -7,6 +7,7 @@ import time
 
 from entities import global_game_functions,alien, projectile, player
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
+from scoreboard import scoreboard
 
 class level:
     #global static data
@@ -42,6 +43,7 @@ class level:
     settings_open = False
     player_move = True
     block_shoot = False
+    single_lose_run = False
 
 
     def set_ratio(self):
@@ -111,20 +113,20 @@ class level:
         for player in self.player_objects: player.draw(self.win, player_images)
 
         #display text
-        game_functions.display_text(60,'SCORE:', 950 * self.ratio, 675 * self.ratio, self.win)
+        game_functions.display_text(60,'SCORE:', 950 * self.ratio, 675 * self.ratio, (112, 228, 209), self.win)
 
         digits = len(str(abs(self.score)))
         score_alignment = 1040 - ((digits - 1) * 20)
-        game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, self.win)
+        game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, (112, 228, 209), self.win)
 
-        game_functions.display_text(50,"Combo X" + str(self.multiplier), 1020 * self.ratio, 600 * self.ratio, self.win)
+        game_functions.display_text(40,"Combo x" + str(self.multiplier), 960 * self.ratio, 575 * self.ratio, (112, 228, 209), self.win)
         
         #display score
         lvl_number = int(self.level_string.split(" ")[1])
         if lvl_number > 9:  lvl_label_x = -675 * self.ratio
         else: lvl_label_x = -700 * self.ratio
         
-        game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, self.win)
+        game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, (112, 228, 209), self.win)
 
         if self.state == 'waves':
             hearts = []
@@ -158,7 +160,7 @@ class level:
 
         if self.pauze:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.pauze_buttons: button.draw(self.win)
             pointer.draw(self.win, self.pauze_buttons)
      
@@ -166,19 +168,19 @@ class level:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.win_buttons: button.draw(self.win)
-            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)#
+            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, (112, 228, 209), self.win)
             pointer.draw(self.win, self.win_buttons)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
             for button in self.lose_buttons: button.draw(self.win)
-            game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
+            game_functions.display_image(self.images[5], 0 , 300 * self.ratio, (112, 228, 209), self.win)
             pointer.draw(self.win, self.lose_buttons)
             
         if self.settings_open:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, 'SETTINGS', 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.settings_buttons: button.draw(self.win)
             pointer.draw(self.win, self.settings_buttons)
             
@@ -194,6 +196,7 @@ class level:
         self.level_structure = lvl_structure
         self.state = state
         self.block_shoot = False
+        self.single_lose_run = False
 
         if self.state == 'level': 
             self.score = 0
@@ -257,10 +260,16 @@ class level:
             self.score = 0
             self.lives = 3
 
+    def return_home(self):
+        self.running = False
+        if self.state == 'waves':
+            obj = scoreboard()
+            obj.update_board(self.score)
+
     def shoot_bullet(self, obj):
         if self.player_move == True:          
             if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
-                if len(obj.bullets) < 1 and obj.shootloop == 0:
+                if len(obj.bullets) < 1:
                         obj.bullets.append(projectile(
                             round(obj.x + obj.width //2), 
                             round(obj.y + obj.height//2), 10, (0,255,255), self.ratio))
@@ -275,7 +284,7 @@ class level:
         pointer = controller_pointer(1280 * self.ratio, 825 * self.ratio, 12)
 
         #Pauze buttons
-        home_button = CircleButton(1170, 825, 50, 50, "Controls", 40, lambda: setattr(self, 'running', False), self.images[11])
+        home_button = CircleButton(1170, 825, 50, 50, "Controls", 40, lambda: self.return_home(), self.images[11])
         settings_button = CircleButton(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
         quit_button = CircleButton(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
         resume_button = RectButton(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_lvl())
@@ -347,20 +356,23 @@ class level:
                     self.player_objects[0].left = False
                     self.player_objects[0].right = False
                     
-        #Check if object gets hit
+        #Check if alien gets hit
             for alien_obj in self.alien_objects:
                 if game_functions.object_hit(alien_obj, self.player_objects[0].bullets) == True:
-                    self.score += 1
+                    self.score += (1 * self.multiplier) 
                     self.combo_counter += 1
                     alien_obj.hit(self.win, self.images[7], self.sounds[2])
-                else:
+
+        #set score multiplier
+            for player_bullet in self.player_objects[0].bullets: 
+                if player_bullet.hit_check() == False: 
                     self.combo_counter = 0
+                    self.multiplier = 1
 
-        #set score multilier
             if self.combo_counter > 2: self.multiplier = 2
-            if self.combo_counter > 3: self.multiplier = 3
+            if self.combo_counter > 4: self.multiplier = 3
 
-
+        #Check if player gets hit
             for player_obj in self.player_objects:
                 for alien_obj in self.alien_objects:
                     if game_functions.object_hit(player_obj, alien_obj.bullets) == True:
@@ -392,7 +404,7 @@ class level:
         #Shoot bullets
             if not self.pauze:
                 for player in self.player_objects:
-                    player.shoot()
+                    player.move_bullet()
                 for alien in self.alien_objects:
                     if alien.shooting == True: 
                         alien.shoot(self.win)
@@ -417,20 +429,22 @@ class level:
                 elif self.state == 'waves': self.next_lvl()
                     
         #Check for lose
-            alien_to_low = False
             for obj in self.alien_objects:
                 if obj.y + obj.height > self.player_objects[0].y:
-                    alien_to_low = True
-            if alien_to_low == True:
-                with open("settings.json", 'r') as file:
-                    data = json.load(file)
-                    if data["SFX"] == "true": self.sounds[1].play()
-                if self.state == 'level':
+                    self.lose = True   
+
+            if self.lose == True:
+                if self.single_lose_run == False:
+                    with open("settings.json", 'r') as file:
+                        data = json.load(file)
+                        if data["SFX"] == "true": self.sounds[1].play()
+                    
                     for obj in self.alien_objects: obj.vel = 0                
-                    self.lose = True
                     self.player_move = False
-                elif self.state == 'waves':
-                    print("PLACEHOLDER")
+                    if self.state == 'waves':
+                        obj = scoreboard()
+                        obj.update_board(self.score)
+                    self.single_lose_run = True
 
         #Refresh screen
             pygame.display.update()
