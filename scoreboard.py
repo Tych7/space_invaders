@@ -59,6 +59,8 @@ class scoreboard:
                 scores.sort(reverse=True)
                 scores = scores[:10]
         
+        data["scores"] = scores
+        
         with open("settings.json", 'w') as file:
             json.dump(data, file, indent=4)
 
