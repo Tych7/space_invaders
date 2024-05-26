@@ -144,6 +144,14 @@ class controller_pointer():
                         pygame.draw.rect(win, (255, 140 ,68), button.rect, int(6 * button.ratio), border_radius=int(22 * button.ratio))
 
     def move_pointer(self, buttons):
+        # Check for controller reconnection
+        if pygame.joystick.get_count() > 0:
+            if self.controller is None:
+                self.controller = pygame.joystick.Joystick(0)
+                self.controller.init()
+        else:
+            self.controller = None
+        
         if len(buttons) != 0:
             button_positions = []
             for button in buttons:

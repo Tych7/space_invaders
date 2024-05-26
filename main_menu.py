@@ -125,8 +125,8 @@ class Game:
         for button in self.home_buttons: button.draw(self.win)
         for button in self.state_buttons: button.draw(self.win)
 
-        game_functions.display_image(self.images[13], -400 , 965 * self.ratio, self.win)
-        game_functions.display_image(self.images[14], 100 , 965 * self.ratio, self.win)
+        game_functions.display_image(self.images[13], -400 * self.ratio, 965 * self.ratio, self.win)
+        game_functions.display_image(self.images[14], 100 * self.ratio, 965 * self.ratio, self.win)
 
         if self.state == 'level':
             for button in self.level_buttons: button.draw(self.win)
@@ -192,11 +192,18 @@ while True:
     game_1.lvl_count = len(files)
         
     while True:
+        # Check for controller reconnection
+        if pygame.joystick.get_count() > 0:
+            if game_1.controller is None:
+                game_1.controller = pygame.joystick.Joystick(0)
+                game_1.controller.init()
+        else:
+            game_1.controller = None
+        
         #select active buttons
         if game_1.settings_open: game_1.active_buttons = game_1.settings_buttons
         elif game_1.state == 'home': game_1.active_buttons = game_1.home_buttons + game_1.state_buttons
         elif game_1.state == 'level': game_1.active_buttons = game_1.level_buttons + game_1.home_buttons
-
 
         if pygame.joystick.get_count() > 0:
             button_0_up = game_1.controller.get_button(0) == 0
@@ -247,6 +254,9 @@ while True:
                     if game_1.controller.get_button(9) and game_1.entered_number > 0: 
                         game_1.entered_number -= 1
                     elif game_1.controller.get_button(10): game_1.entered_number += 1
+                    
+                if event.type == pygame.JOYBUTTONUP:
+                    game_1.returned = True
 
             elif game_1.state == 'waves':
                 file_path = "levels/lvl_1.csv"
@@ -258,7 +268,7 @@ while True:
                 else:
                     print("Error: File not found:", file_path)
                         
-            if pygame.joystick.get_count() > 0:  
+            if pygame.joystick.get_count() > 0 and game_1.controller != None:  
                 if game_1.controller.get_button(6):
                     game_1.settings_open = True
 
