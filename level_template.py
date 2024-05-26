@@ -265,7 +265,7 @@ class level:
 
     def return_home(self):
         self.running = False
-        if self.state == 'waves':
+        if self.state == 'waves' and self.lose == False:
             obj = scoreboard()
             obj.update_board(self.score)
 
@@ -313,6 +313,15 @@ class level:
 
         #Start Main Loop
         while self.running:
+            # Check for controller reconnection
+            if pygame.joystick.get_count() > 0:
+                if self.controller is None:
+                    self.controller = pygame.joystick.Joystick(0)
+                    self.controller.init()
+            else:
+                self.controller = None
+            
+            
             if self.settings_open: self.active_buttons = self.settings_buttons
             elif self.pauze: self.active_buttons = self.pauze_buttons
             elif self.winner: self.active_buttons = self.win_buttons
@@ -343,7 +352,6 @@ class level:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.shoot_bullet(self.player_objects[0])
-        
 
         #player move controls
             if self.player_move == True:         
@@ -447,7 +455,9 @@ class level:
                     if self.state == 'waves':
                         obj = scoreboard()
                         obj.update_board(self.score)
+                    
                     self.single_lose_run = True
+
 
         #Refresh screen
             pygame.display.update()
