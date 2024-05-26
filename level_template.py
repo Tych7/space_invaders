@@ -267,7 +267,7 @@ class level:
 
     def return_home(self):
         self.running = False
-        if self.state == 'waves':
+        if self.state == 'waves' and self.lose == False:
             obj = scoreboard()
             obj.update_board(self.score)
 
@@ -457,7 +457,9 @@ class level:
                     if self.state == 'waves':
                         obj = scoreboard()
                         obj.update_board(self.score)
+                    
                     self.single_lose_run = True
+
 
         #Refresh screen
             pygame.display.update()
