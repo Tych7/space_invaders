@@ -78,7 +78,7 @@ class Game:
         self.images = game_functions.scale_images(loaded_images)
 
         # load mixer with music
-        pygame.mixer.music.load('sounds/spaceinvaders1.mp3')
+        pygame.mixer.music.load('sounds/spaceinvaders1_music.mp3')
         pygame.mixer.music.play(-1)
         with open("settings.json", 'r') as file:
             data = json.load(file)

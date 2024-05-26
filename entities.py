@@ -111,7 +111,7 @@ class alien(object):
   
 		if type == 0:   self.vel = 2 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
 		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
-		elif type == 2: self.vel = 6 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
+		elif type == 2: self.vel = 8 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
 		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.shooting = True
   
 		self.start_hp = hp

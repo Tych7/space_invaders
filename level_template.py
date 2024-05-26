@@ -166,17 +166,22 @@ class level:
      
         if self.winner:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.win_buttons: button.draw(self.win)
-            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, (112, 228, 209), self.win)
+            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
             pointer.draw(self.win, self.win_buttons)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
-            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.lose_buttons: button.draw(self.win)
-            game_functions.display_image(self.images[5], 0 , 300 * self.ratio, (112, 228, 209), self.win)
+            game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
             pointer.draw(self.win, self.lose_buttons)
+
+            if self.state == 'waves':
+                game_functions.display_image(self.images[1], 0 , 1050 * self.ratio, self.win)
+                game_functions.display_text(45, "Your Score:", 0 , 1000 * self.ratio, (112, 228, 209), self.win)
+                game_functions.display_text(45, str(self.score), 0 , 1075 * self.ratio, (255, 140 ,68), self.win)
             
         if self.settings_open:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
