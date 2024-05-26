@@ -88,7 +88,7 @@ class global_game_functions:
 						return True	
 
 class alien(object):
-	def __init__(self, x, y, alien_image, ratio, direction, hp, type):
+	def __init__(self, x, y, alien_image, ratio, direction, type):
 		if type == 3:
 			self.x = (x + 7.5) * ratio
 		else:
@@ -105,16 +105,17 @@ class alien(object):
 		self.image = alien_image
 		self.ratio = ratio
 		self.direction = direction
-		self.hp = hp
+		self.hp = 0
 		self.bullets = []
 		self.shootloop = 0
   
-		if type == 0:   self.vel = 2 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
-		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
-		elif type == 2: self.vel = 8 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.shooting = False
-		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.shooting = True
+		if type == 0:   self.vel = 2 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.hp = 1; self.shooting = False
+		elif type == 1: self.vel = 3 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.hp = 2; self.shooting = False
+		elif type == 2: self.vel = 8 * self.ratio; self.width = 60 * self.ratio; self.height = 45 * self.ratio; self.hp = 1; self.shooting = False
+		elif type == 3:	self.vel = 3 * self.ratio; self.width = 45 * self.ratio; self.height = 45 * self.ratio; self.hp = 1; self.shooting = True
+		elif type == 4: self.vel = 3 * self.ratio; self.width = 235 * self.ratio; self.height = 75 * self.ratio; self.hp = 4; self.shooting = False
   
-		self.start_hp = hp
+		self.start_hp = self.hp
 		self.start_x = x
 		self.start_y = y
 		self.hitbox = (self.x, self.y, self.width, self.height)

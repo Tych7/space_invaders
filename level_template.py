@@ -217,20 +217,18 @@ class level:
                     y = row_idx
 
                     dir = ""
-                    hp = 0
                     alien_type = 0
 
                     index = 0
                     for char in value:
                         if index == 0: dir = char
                         elif index == 1: alien_type = int(char)
-                        elif index == 3: hp = int(char) 
                         index = index + 1
 
-                    if dir == ">":                     #|       x       |        y      |       image                  |  ratio    | dir | hp | type     |
-                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), self.alien_images[alien_type], self.ratio, ">", hp, alien_type))
+                    if dir == ">":                     #|       x       |        y      |       image                  |  ratio    | dir | type     |
+                        self.alien_objects.append(alien((525  + x * 160), (200 + y * 55), self.alien_images[alien_type], self.ratio, ">", alien_type))
                     if dir == "<":
-                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), self.alien_images[alien_type], self.ratio, "<", hp, alien_type))
+                        self.alien_objects.append(alien((1965 - x * 160), (200 + y * 55), self.alien_images[alien_type], self.ratio, "<", alien_type))
 
 
         # Example player object creation
