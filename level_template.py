@@ -73,7 +73,7 @@ class level:
             "music.png",            #9
             "pauze_menu.png",       #10
             "icon_home.png",        #11
-            "icon_quit.png",        #12
+            "icon_score.png",       #12
             "icon_settings.png",    #13
             "heart_full.png",       #14
             "heart_empty.png",      #15
@@ -105,7 +105,11 @@ class level:
         game_functions.display_image(self.images[1], -640 * self.ratio, 1300 * self.ratio, self.win)
 
         #display aliens
-        for alien in self.alien_objects: alien.draw(self.win)
+        for alien in self.alien_objects:
+            alien.draw(self.win)
+            for alien_bullet in alien.bullets: alien_bullet.draw(self.win)
+            alien.death_animation(self.images[7], self.win)
+
 
         #display player
         if self.lose == False: player_images = [self.images[2], self.images[3], self.images[4]]
@@ -139,9 +143,6 @@ class level:
 
         #display projectiles
         for player_bullet in self.player_objects[0].bullets: player_bullet.draw(self.win)
-        
-        for alien in self.alien_objects:
-            for alien_bullet in alien.bullets: alien_bullet.draw(self.win)
 
         #display sound icons
         with open("settings.json", 'r') as file:
@@ -289,7 +290,7 @@ class level:
         #Pauze buttons
         home_button = CircleButton(1170, 825, 50, 50, "Controls", 40, lambda: self.return_home(), self.images[11])
         settings_button = CircleButton(1280, 825, 50, 50, "Settings", 40, lambda: setattr(self, 'settings_open', True), self.images[13])
-        quit_button = CircleButton(1390, 825, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), self.images[12])
+        score_button = CircleButton(1390, 825, 50, 50, "Quit Game", 40, lambda: scoreboard().main(game_functions), self.images[12])
         resume_button = RectButton(1130, 680, 300, 60, "Resume", 40, lambda: self.resume_lvl())
         restart_button = RectButton(1130, 600, 300, 60, "Restart", 40, lambda: self.restart_lvl())
 
@@ -302,10 +303,10 @@ class level:
         next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl())
         big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.restart_lvl())
 
-        self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, quit_button]
+        self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, score_button]
         self.settings_buttons = [back_button, sfx_switch, music_switch]
-        self.win_buttons = [settings_button, home_button, quit_button, next_lvl_button, restart_button]
-        self.lose_buttons = [settings_button, home_button, quit_button, big_restart_button]
+        self.win_buttons = [settings_button, home_button, score_button, next_lvl_button, restart_button]
+        self.lose_buttons = [settings_button, home_button, score_button, big_restart_button]
 
         self.running = True
         
@@ -372,7 +373,7 @@ class level:
                 if game_functions.object_hit(alien_obj, self.player_objects[0].bullets) == True:
                     self.score += (1 * self.multiplier) 
                     self.combo_counter += 1
-                    alien_obj.hit(self.win, self.images[7], self.sounds[2])
+                    alien_obj.hit(self.sounds[2])
 
         #set score multiplier
             for player_bullet in self.player_objects[0].bullets: 

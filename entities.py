@@ -93,7 +93,7 @@ class global_game_functions:
 class alien(object):
 	def __init__(self, x, y, alien_image, ratio, direction, type):
 		if type == 3:
-			self.x = (x + 7.5) * ratio
+			self.x = (x + 7.5 * ratio) * ratio
 		else:
 			self.x = x * ratio
 		self.y = y * ratio
@@ -126,6 +126,8 @@ class alien(object):
 		self.move_down = False
 		self.shoot_delay = 0
 		self.moving = True
+		self.play_animation = False
+		self.animation_duration = 20
 
 	def draw(self, win):
 		self.hitbox = (self.x - 2, self.y - 1, self.width, self.height)
@@ -186,15 +188,23 @@ class alien(object):
 				self.y += (60 * self.ratio)
 				self.move_down = False
 
-	def hit(self, win, image, sound):
+	def hit(self, sound):
 		if self.hp > 1:
 			self.hp -= 1
 		else:
 			self.visible = False
-			win.blit(image, (self.x,self.y))
+			self.play_animation = True
 			with open("settings.json", 'r') as file:
 				data = json.load(file)
 				if data["SFX"] == "true": sound.play()
+
+	def death_animation(self, image, win):
+		if self.play_animation == True:
+			if self.animation_duration > 0:
+				if self.animation_duration % 10 > 3: 
+					win.blit(image, (self.x,self.y))
+				self.animation_duration -= 1
+
 				
 
 class projectile(object):

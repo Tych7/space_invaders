@@ -133,8 +133,8 @@ class Game:
             game_functions.display_text(50, 'Selected Level = ' + str(game_1.entered_number), 0, 970 * self.ratio, (112, 228, 209), self.win)
             pointer.draw(game_1.win, self.level_buttons)
             if pygame.joystick.get_count() > 0:
-                game_functions.display_image(self.images[11], 520 , 960 * self.ratio, self.win)
-                game_functions.display_image(self.images[12], -520 , 960 * self.ratio, self.win)
+                game_functions.display_image(self.images[11], 520 * self.ratio, 960 * self.ratio, self.win)
+                game_functions.display_image(self.images[12], -520 * self.ratio, 960 * self.ratio, self.win)
             game_functions.display_image(self.images[3], 400 * self.ratio, 975 * self.ratio, self.win)
             game_functions.display_image(self.images[3], -400 * self.ratio, 975 * self.ratio, self.win)
         

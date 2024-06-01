@@ -172,31 +172,35 @@ class controller_pointer():
 
                 if (self.controller.get_button(11) and self.button_lock == False) or (self.controller.get_axis(1) < -0.5 and self.con_y_lock == False): # Up
                     for position in button_positions:
-                        if (position[1] < self.y) and ((self.y - position[1]) + abs(self.x - position[0])) < y_dif:  
-                            y_dif = ((self.y - position[1]) + abs(self.x - position[0]))
-                            new_x = position[0]
-                            new_y = position[1]
+                        if abs(self.x - position[0]) < 250 * self.ratio:
+                            if (position[1] < self.y) and ((self.y - position[1]) + abs(self.x - position[0])) < y_dif:  
+                                y_dif = ((self.y - position[1]) + abs(self.x - position[0]))
+                                new_x = position[0]
+                                new_y = position[1]
                 
                 if (self.controller.get_button(12) and self.button_lock == False) or (self.controller.get_axis(1) > 0.5 and self.con_y_lock == False): # Down
                     for position in button_positions:
-                        if (position[1] > self.y) and ((position[1] + self.y) + abs(self.x - position[0])) < y_dif:
-                            y_dif = ((position[1] + self.y) + abs(self.x - position[0]))
-                            new_x = position[0]
-                            new_y = position[1]
+                        if abs(self.x - position[0]) < 250 * self.ratio:
+                            if (position[1] > self.y) and ((position[1] + self.y) + abs(self.x - position[0])) < y_dif:
+                                y_dif = ((position[1] + self.y) + abs(self.x - position[0]))
+                                new_x = position[0]
+                                new_y = position[1]
                 
                 if (self.controller.get_button(13) and self.button_lock == False) or (self.controller.get_axis(0) < -0.5 and self.con_x_lock == False): # Left
                     for position in button_positions:
-                        if (position[0] < self.x) and ((self.x - position[0]) + abs(self.y - position[1])) < x_dif:
-                            x_dif = ((self.x - position[0]) + abs(self.y - position[1]))
-                            new_x = position[0]
-                            new_y = position[1]
+                        if abs(self.y - position[1]) < 250 * self.ratio:
+                            if (position[0] < self.x) and ((self.x - position[0]) + abs(self.y - position[1])) < x_dif:
+                                x_dif = ((self.x - position[0]) + abs(self.y - position[1]))
+                                new_x = position[0]
+                                new_y = position[1]
                     
                 if (self.controller.get_button(14) and self.button_lock == False) or (self.controller.get_axis(0) > 0.5 and self.con_x_lock == False): # Right
                     for position in button_positions:
-                        if (position[0] > self.x) and ((position[0] + self.x) + abs(self.y - position[1])) < x_dif:
-                            x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
-                            new_x = position[0]
-                            new_y = position[1]
+                        if abs(self.y - position[1]) < 250 * self.ratio:
+                            if (position[0] > self.x) and ((position[0] + self.x) + abs(self.y - position[1])) < x_dif:
+                                x_dif = ((position[0] + self.x) + abs(self.y - position[1]))
+                                new_x = position[0]
+                                new_y = position[1]
 
                 #joystick lock
                 if -0.5 < self.controller.get_axis(1) < 0.5: self.con_y_lock = False
@@ -228,3 +232,5 @@ class controller_pointer():
                     if button.rect.collidepoint((self.x, self.y)):
                         if self.controller.get_button(0):
                             button.action()   
+
+
