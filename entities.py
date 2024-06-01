@@ -4,6 +4,8 @@ import sys
 import json
 import math
 from pygame import gfxdraw
+from PIL import Image
+
 
 class global_game_functions:
 	ratio = 0
@@ -48,9 +50,10 @@ class global_game_functions:
 		scaled_images = []
 		for x in loaded_images:
 			image_width, image_height = x.get_size()
-			scaled_images.append(pygame.transform.scale(x, (image_width * self.ratio, image_height * self.ratio)))
+			new_size = (int(image_width * self.ratio), int(image_height * self.ratio))
+			scaled_images.append(pygame.transform.smoothscale(x, new_size))
 		return scaled_images
-
+	
 	def display_image(self, image, x, y, win):
 		screen_center  = ((pygame.display.get_surface().get_size()[0])/2)
 		image_width = 0
