@@ -26,6 +26,8 @@ class Button:
         self.image = image
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+        self.sound = pygame.mixer.Sound("sounds/button_click.mp3")
+
     def handle_event(self, event):
         raise NotImplementedError("Subclasses must implement handle_event.")
 
@@ -53,6 +55,9 @@ class RectButton(Button):
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
+                with open("settings.json", 'r') as file:
+                    data = json.load(file)
+                    if data["SFX"] == "true": self.sound.play()
                 self.action()
 
 
@@ -75,8 +80,11 @@ class CircleButton(Button):
             mouse_pos = pygame.mouse.get_pos()
             distance = math.sqrt((mouse_pos[0] - self.x)**2 + (mouse_pos[1] - self.y)**2)
             if distance <= self.width:	
+                with open("settings.json", 'r') as file:
+                    data = json.load(file)
+                    if data["SFX"] == "true": self.sound.play()
                 self.action()
-
+                
 
 class SwitchButton(Button):
     def draw(self, win):
@@ -111,8 +119,11 @@ class SwitchButton(Button):
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
+                with open("settings.json", 'r') as file:
+                    data = json.load(file)
+                    if data["SFX"] == "true": self.sound.play()
                 self.action()
-
+                
 class controller_pointer():
     def set_ratio(self):
         with open("settings.json", 'r') as file: 
