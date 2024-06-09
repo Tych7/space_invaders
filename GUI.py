@@ -26,6 +26,11 @@ class Button:
         self.image = image
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+        new_size = (int((200 * self.ratio) * 0.5), int((200 * self.ratio) * 0.5))
+        self.button_cicle_image = pygame.transform.smoothscale(pygame.image.load("images/button_circle.png").convert_alpha(), new_size)
+        self.button_cicle_image_pressed = pygame.transform.smoothscale(pygame.image.load("images/button_circle_pressed.png").convert_alpha(), new_size)
+
+
         self.sound = pygame.mixer.Sound("sounds/button_click.mp3")
 
     def handle_event(self, event):
@@ -63,17 +68,30 @@ class RectButton(Button):
 
 class CircleButton(Button):
     def draw(self, win):
-        pygame.draw.circle(win, (0, 0, 0), (self.x, self.y), self.width)
-        image_width, image_height = self.image.get_size()
-        centered_x = self.x - (image_width / 2)
-        centered_y = self.y - (image_height / 2)
-        win.blit(self.image, (centered_x, centered_y))
-
+        
+        # pygame.draw.circle(win, (0, 0, 0), (self.x, self.y), self.width)
+        button_width, button_height = (200 * self.ratio) * 0.5, (200 * self.ratio) * 0.5
+        centered_button_x = self.x - (button_width / 2)
+        centered_button_y = self.y - (button_height / 2)
         mouse_pos = pygame.mouse.get_pos()
         distance_mouse = math.sqrt((mouse_pos[0] - self.x)**2 + (mouse_pos[1] - self.y)**2)
         mouse_over = distance_mouse <= self.width
-        if mouse_over: pygame.draw.circle(win, (255, 140 ,68), (self.x, self.y), self.width, int(6 * self.ratio))
-        else: pygame.draw.circle(win, (195, 195, 195), (self.x, self.y), self.width, int(6 * self.ratio))
+        if mouse_over: win.blit(self.button_cicle_image_pressed, (centered_button_x, centered_button_y))
+        else: win.blit(self.button_cicle_image, (centered_button_x, centered_button_y))
+
+        
+
+        icon_width, icon_height = self.image.get_size()
+        centered_icon_x = self.x - (icon_width / 2)
+        centered_icon_y = self.y - (icon_height / 2)
+        win.blit(self.image, (centered_icon_x, centered_icon_y))
+
+        
+        # mouse_pos = pygame.mouse.get_pos()
+        # distance_mouse = math.sqrt((mouse_pos[0] - self.x)**2 + (mouse_pos[1] - self.y)**2)
+        # mouse_over = distance_mouse <= self.width
+        # if mouse_over: pygame.draw.circle(win, (255, 140 ,68), (self.x, self.y), self.width, int(6 * self.ratio))
+        # else: pygame.draw.circle(win, (195, 195, 195), (self.x, self.y), self.width, int(6 * self.ratio))
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
