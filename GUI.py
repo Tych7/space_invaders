@@ -26,11 +26,13 @@ class Button:
         self.image = image
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-        new_size = (int((200 * self.ratio) * 0.5), int((200 * self.ratio) * 0.5))
-        self.button_cicle_image = pygame.transform.smoothscale(pygame.image.load("images/button_circle.png").convert_alpha(), new_size)
-        self.button_cicle_image_pressed = pygame.transform.smoothscale(pygame.image.load("images/button_circle_pressed.png").convert_alpha(), new_size)
-
-
+        resize_circle = (int((self.height * self.ratio) * 2), int((self.width * self.ratio) * 2))
+        self.button_cicle_image = pygame.transform.smoothscale(pygame.image.load("images/button_circle.png").convert_alpha(), resize_circle)
+        self.button_cicle_image_pressed = pygame.transform.smoothscale(pygame.image.load("images/button_circle_pressed.png").convert_alpha(), resize_circle)
+        
+        resize_rect = (int((self.height * self.ratio) * 2), int((self.width * self.ratio) * 2))       
+        self.button_rect_image = pygame.transform.smoothscale(pygame.image.load("images/button_rect.png").convert_alpha(), resize_rect)
+        # self.button_cicle_image_pressed = pygame.transform.smoothscale(pygame.image.load("images/button_circle_pressed.png").convert_alpha(), new_size)
         self.sound = pygame.mixer.Sound("sounds/button_click.mp3")
 
     def handle_event(self, event):
@@ -46,8 +48,11 @@ class RectButton(Button):
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(mouse_pos)
+        # if mouse_over: pygame.draw.rect(win, (255, 140 ,68), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+        # else: pygame.draw.rect(win, (195, 195, 195), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+
         if mouse_over: pygame.draw.rect(win, (255, 140 ,68), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
-        else: pygame.draw.rect(win, (195, 195, 195), self.rect, int(6 * self.ratio), border_radius=int(22 * self.ratio))
+        else: win.blit(self.button_rect_image, (self.x, self.y))
 
         font_size = int(self.font_size * min(self.ratio, self.ratio))
         font = pygame.font.SysFont('couriernew', font_size, True)
@@ -78,8 +83,6 @@ class CircleButton(Button):
         mouse_over = distance_mouse <= self.width
         if mouse_over: win.blit(self.button_cicle_image_pressed, (centered_button_x, centered_button_y))
         else: win.blit(self.button_cicle_image, (centered_button_x, centered_button_y))
-
-        
 
         icon_width, icon_height = self.image.get_size()
         centered_icon_x = self.x - (icon_width / 2)
