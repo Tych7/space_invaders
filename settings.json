@@ -1,7 +1,7 @@
 {
-    "Music": "true",
+    "Music": "false",
     "SFX": "true",
-    "ratio": 1.0,
+    "ratio": 0.75,
     "scores": [
         248,
         110,
