@@ -1,17 +1,5 @@
 {
-    "Music": "false",
+    "Music": "true",
     "SFX": "true",
-    "ratio": 0.75,
-    "scores": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    ]
+    "ratio": 1.0
 }

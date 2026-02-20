@@ -6,6 +6,7 @@ import json
 
 from entities import global_game_functions
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
+from firebase_admin import db
 
 
 
@@ -47,22 +48,31 @@ class scoreboard:
         self.images = game_functions.scale_images(loaded_images)
 
     def update_board(self, score):
-        with open("settings.json", 'r') as file:
-            data = json.load(file)
-            scores = data["scores"]
+        ref = db.reference("scores")
 
-        if len(scores) < 10:
+        def update(scores):
+            if scores is None:
+                scores = []
+
             scores.append(score)
-        else:
-            if score > min(scores):
-                scores.append(score)
-                scores.sort(reverse=True)
-                scores = scores[:10]
-        
-        data["scores"] = scores
-        
-        with open("settings.json", 'w') as file:
-            json.dump(data, file, indent=4)
+            scores = sorted(scores, reverse=True)[:10]
+            return scores
+
+        ref.transaction(update)
+
+    def load_scores(self):
+        ref = db.reference("scores")
+        scores = ref.get()
+
+        if scores is None:
+            scores = [0]*10
+
+        # Always ensure 10 entries
+        while len(scores) < 10:
+            scores.append(0)
+
+        self.scores = scores
+
 
 
     def update_screen(self, game_functions, pointer):
@@ -116,9 +126,7 @@ class scoreboard:
         self.settings_buttons = [back_button, music_switch, sfx_switch]
         self.home_buttons = [main_button, settings_button]
 
-        with open("settings.json", 'r') as file:
-            data = json.load(file)
-            self.scores = data["scores"]
+        self.load_scores()
 
         while self.running:
             for event in pygame.event.get():

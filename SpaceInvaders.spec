@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='main_menu',
+    name='SpaceInvaders',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

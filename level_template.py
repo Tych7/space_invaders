@@ -4,6 +4,7 @@ import os
 import json
 import csv
 import time
+import threading
 
 from entities import global_game_functions,alien, projectile, player
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
@@ -455,7 +456,7 @@ class level:
                     self.player_move = False
                     if self.state == 'waves':
                         obj = scoreboard()
-                        obj.update_board(self.score)
+                        threading.Thread(target=obj.update_board, args=(self.score,)).start()
                     
                     self.single_lose_run = True
 
