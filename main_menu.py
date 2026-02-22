@@ -36,12 +36,6 @@ class Game:
 
     active_buttons = []
 
-    if not firebase_admin._apps:
-        cred = credentials.Certificate("data/spaceinvaders-e0ff8-firebase-adminsdk-fbsvc-af31810396.json")
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://spaceinvaders-e0ff8-default-rtdb.europe-west1.firebasedatabase.app/'
-        })
-
     def set_ratio(self, loaded_images, game_functions):
         bg_width = loaded_images[0].get_size()[0]
         screen_width = pygame.display.get_surface().get_size()[0]

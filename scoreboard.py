@@ -2,13 +2,12 @@ import pygame
 import os
 import sys
 import json
-
+import requests
 
 from entities import global_game_functions
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
-from firebase_admin import db
 
-
+FIREBASE_URL = 'https://spaceinvaders-e0ff8-default-rtdb.europe-west1.firebasedatabase.app/'
 
 class scoreboard:
     images = []
@@ -48,26 +47,29 @@ class scoreboard:
         self.images = game_functions.scale_images(loaded_images)
 
     def update_board(self, score):
-        ref = db.reference("scores")
+        url = f"{FIREBASE_URL}/scores.json"
 
-        def update(scores):
-            if scores is None:
-                scores = []
+        # Get current scores
+        response = requests.get(url)
+        scores = response.json()
 
-            scores.append(score)
-            scores = sorted(scores, reverse=True)[:10]
-            return scores
+        if scores is None:
+            scores = []
 
-        ref.transaction(update)
+        scores.append(score)
+        scores = sorted(scores, reverse=True)[:10]
+
+        # Write back
+        requests.put(url, json=scores)
 
     def load_scores(self):
-        ref = db.reference("scores")
-        scores = ref.get()
+        url = f"{FIREBASE_URL}/scores.json"
+        response = requests.get(url)
+        scores = response.json()
 
         if scores is None:
             scores = [0]*10
 
-        # Always ensure 10 entries
         while len(scores) < 10:
             scores.append(0)
 
