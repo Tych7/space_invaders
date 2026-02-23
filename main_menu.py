@@ -11,6 +11,13 @@ from controls import Controls
 from scoreboard import scoreboard
 from level_template import level
 
+def resource_path(relative_path):
+    """Get the absolute path to a resource (works for dev and PyInstaller exe)"""
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 class Game:
     images = []
@@ -84,7 +91,6 @@ class Game:
             data = json.load(file)
             if data["Music"] == "false": pygame.mixer.music.pause()
 
-
     def update_entered_number(self, number):
         if number == -1:
             if self.second_order_entered:
@@ -105,10 +111,10 @@ class Game:
 
     def start_lvl(self):
         if self.entered_number > 0:
-            file_path = "levels/lvl_" + str(self.entered_number) + ".csv"
+            file_path = resource_path(f"levels/lvl_{self.entered_number}.csv")
             if os.path.exists(file_path):
                 obj = level()
-                obj.main(game_functions, "Level " + str(self.entered_number), file_path, self.state)
+                obj.main(game_functions, f"Level {self.entered_number}", file_path, self.state)
                 self.returned = False
                 self.state = 'home'
             else:
@@ -188,9 +194,10 @@ while True:
     game_1.settings_buttons = [settings_back_button, sfx_switch, music_switch]
 
     #Show amount of levels
-    files = os.listdir("levels/")
+    levels_path = resource_path("levels")
+    files = os.listdir(levels_path)
     game_1.lvl_count = len(files)
-        
+
     while True:
         # Check for controller reconnection
         if pygame.joystick.get_count() > 0:
@@ -241,7 +248,7 @@ while True:
                     elif event.key == pygame.K_BACKSPACE:
                         game_1.update_entered_number(-1)
                     elif event.key == pygame.K_RETURN and game_1.entered_number != 0:
-                        file_path = "levels/lvl_" + str(game_1.entered_number) + ".csv"
+                        file_path = resource_path(f"levels/lvl_{game_1.entered_number}.csv")
                         if os.path.exists(file_path):
                             obj = level()
                             obj.main(game_functions, "Level " + str(game_1.entered_number), file_path, game_1.state)
@@ -259,7 +266,7 @@ while True:
                     game_1.returned = True
 
             elif game_1.state == 'waves':
-                file_path = "levels/lvl_1.csv"
+                file_path = resource_path("levels/lvl_1.csv")
                 if os.path.exists(file_path):
                     obj = level()
                     obj.main(game_functions, "Wave 1", file_path, game_1.state)

@@ -5,7 +5,7 @@ a = Analysis(
     ['main_menu.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('levels', 'levels')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

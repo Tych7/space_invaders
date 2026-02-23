@@ -10,6 +10,14 @@ from entities import global_game_functions,alien, projectile, player
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
 from scoreboard import scoreboard
 
+def resource_path(relative_path):
+    """Get the absolute path to a resource (works for dev and PyInstaller exe)"""
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class level:
     #global static data
     images = []
@@ -249,7 +257,7 @@ class level:
         self.block_shoot = True
         current_level = int(self.level_string.split(" ")[1])
         next_level = current_level + 1
-        file_path = f"levels/lvl_{next_level}.csv"
+        file_path = resource_path(f"levels/lvl_{next_level}.csv")
         
         if os.path.exists(file_path):
             self.init_objects(self.level_string.split(" ")[0] + " " + str(next_level), file_path, self.state)
@@ -261,7 +269,7 @@ class level:
         if self.state == 'level': 
             self.init_objects(self.level_string, self.level_structure, self.state)
         elif self.state == 'waves': 
-            self.init_objects("Wave 1", "levels/lvl_1.csv", self.state)
+            self.init_objects("Wave 1", resource_path("levels/lvl_1.csv"), self.state)
             self.score = 0
             self.lives = 3
 
