@@ -1,3 +1,5 @@
+import string
+
 import pygame
 import sys
 import os
@@ -5,6 +7,8 @@ import json
 import csv
 import time
 import threading
+
+import requests
 
 from entities import global_game_functions,alien, projectile, player
 from GUI import Button, RectButton, CircleButton, SwitchButton, controller_pointer
@@ -53,6 +57,12 @@ class level:
     player_move = True
     block_shoot = False
     single_lose_run = False
+
+    name_input = ""
+    entering_name = False
+    backspace_held = False
+    FIREBASE_URL = 'https://spaceinvaders-e0ff8-default-rtdb.europe-west1.firebasedatabase.app/'
+
 
 
     def set_ratio(self):
@@ -126,18 +136,17 @@ class level:
         for player in self.player_objects: player.draw(self.win, player_images)
 
         #display text
-        game_functions.display_text(60,'SCORE:', 950 * self.ratio, 675 * self.ratio, (112, 228, 209), self.win)
+        game_functions.display_text(60,'SCORE:', 1050 * self.ratio, 675 * self.ratio, (112, 228, 209), self.win)
 
         digits = len(str(abs(self.score)))
-        score_alignment = 1040 - ((digits - 1) * 20)
-        game_functions.display_text(60,str(self.score), score_alignment * self.ratio, 750 * self.ratio, (112, 228, 209), self.win)
+        game_functions.display_text(60,str(self.score), 1050 * self.ratio, 750 * self.ratio, (112, 228, 209), self.win)
 
-        game_functions.display_text(40,"Combo x" + str(self.multiplier), 960 * self.ratio, 575 * self.ratio, (112, 228, 209), self.win)
+        game_functions.display_text(40,"Combo x" + str(self.multiplier), 1060 * self.ratio, 575 * self.ratio, (112, 228, 209), self.win)
         
         #display score
         lvl_number = int(self.level_string.split(" ")[1])
-        if lvl_number > 9:  lvl_label_x = -675 * self.ratio
-        else: lvl_label_x = -700 * self.ratio
+        if lvl_number > 9:  lvl_label_x = -775 * self.ratio
+        else: lvl_label_x = -800 * self.ratio
         
         game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, (112, 228, 209), self.win)
 
@@ -189,9 +198,17 @@ class level:
             pointer.draw(self.win, self.lose_buttons)
 
             if self.state == 'waves':
-                game_functions.display_image(self.images[1], 0 , 1050 * self.ratio, self.win)
-                game_functions.display_text(45, "Your Score:", 0 , 1000 * self.ratio, (112, 228, 209), self.win)
-                game_functions.display_text(45, str(self.score), 0 , 1075 * self.ratio, (255, 140 ,68), self.win)
+                if self.entering_name:
+                    game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
+                    game_functions.display_text(30, "Top 10 Score!", 0 , 515 * self.ratio, (112, 228, 209), self.win)
+
+                    game_functions.display_image(self.images[1], 0 , 690 * self.ratio, self.win)
+                    game_functions.display_text(45, str(self.score), 0 , 715 * self.ratio, (255, 140 ,68), self.win)
+
+                    game_functions.display_text(45, "Enter Name:", 0, 575 * self.ratio, (112, 228, 209), self.win)
+                    cursor = "|" if pygame.time.get_ticks() % 1000 < 500 else " "
+                    game_functions.display_text(40, self.name_input + cursor, 10, 625 * self.ratio, (255, 140 ,68), self.win)
+                    self.submit_button.draw(self.win)
             
         if self.settings_open:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
@@ -275,9 +292,6 @@ class level:
 
     def return_home(self):
         self.running = False
-        if self.state == 'waves' and self.lose == False:
-            obj = scoreboard()
-            obj.update_board(self.score)
 
     def shoot_bullet(self, obj):
         if self.player_move == True:          
@@ -290,6 +304,32 @@ class level:
                             data = json.load(file)
                             if data["SFX"] == "true": self.sounds[0].play()
 
+    def submit_score(self):
+        if len(self.name_input) > 0:
+            obj = scoreboard()
+            obj.update_board(self.name_input, self.score)
+            self.entering_name = False
+
+    def is_highscore(self):
+        url = f"{self.FIREBASE_URL}/scores.json"
+        try:
+            response = requests.get(url)
+            scores = response.json()
+        except:
+            scores = []
+
+        # Ensure scores is always a list
+        if not scores:
+            scores = []
+
+        # Less than 10 scores → always allow
+        if len(scores) < 10:
+            return True
+
+        # Get lowest score in top 10
+        lowest_score = min(entry["score"] for entry in scores)
+
+        return self.score > lowest_score
 
     def main(self, game_functions, lvl_lable, lvl_structure, state):
         self.init_lvl(global_game_functions)
@@ -306,11 +346,12 @@ class level:
         #Settings buttons
         music_switch = SwitchButton(1270, 600, 100, 40, "Music", 25, lambda: game_functions.mute_sound_toggle("Music"))
         sfx_switch = SwitchButton(1270, 650, 100, 40, "SFX", 25, lambda: game_functions.mute_sound_toggle("SFX"))
-        back_button = RectButton(1130, 820, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
+        back_button = RectButton(1130, 800, 300, 60, "Back", 40, lambda: setattr(self, 'settings_open', False))
 
         #Win/lose buttons
         next_lvl_button = RectButton(1130, 680, 300, 60, "Next Level", 40, lambda: self.next_lvl())
         big_restart_button = RectButton(1130, 600, 300, 120, "Restart", 40, lambda: self.restart_lvl())
+        self.submit_button = RectButton(1130, 810, 300, 60,"Submit Score", 35, lambda: self.submit_score())
 
         self.pauze_buttons = [resume_button, restart_button, settings_button, home_button, score_button]
         self.settings_buttons = [back_button, sfx_switch, music_switch]
@@ -335,7 +376,8 @@ class level:
             if self.settings_open: self.active_buttons = self.settings_buttons
             elif self.pauze: self.active_buttons = self.pauze_buttons
             elif self.winner: self.active_buttons = self.win_buttons
-            elif self.lose: self.active_buttons = self.lose_buttons
+            elif self.entering_name: self.active_buttons = [self.submit_button]
+            elif self.lose: self.active_buttons = self.lose_buttons              
             else: self.active_buttons = []
 
             
@@ -360,8 +402,35 @@ class level:
                         self.block_shoot = True
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        self.shoot_bullet(self.player_objects[0])
+
+                    # 🎯 NAME INPUT MODE
+                    if self.entering_name:
+                        if event.key == pygame.K_BACKSPACE:
+                            if not self.backspace_held:
+                                self.name_input = self.name_input[:-1]
+                                self.backspace_held = True
+
+                        elif event.key == pygame.K_RETURN:
+                            if len(self.name_input) > 0:
+                                obj = scoreboard()
+                                obj.update_board(self.name_input, self.score)
+                                self.entering_name = False
+                                self.running = False
+
+                        else:
+                            if len(self.name_input) < 10 and event.unicode in string.ascii_letters + string.digits:
+                                self.name_input += event.unicode
+
+                    # 🎮 NORMAL GAME INPUT
+                    else:
+                        if event.key == pygame.K_SPACE:
+                            self.shoot_bullet(self.player_objects[0])
+
+
+                # 🔑 KEY RELEASE (OUTSIDE KEYDOWN!)
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_BACKSPACE:
+                        self.backspace_held = False
 
         #player move controls
             if self.player_move == True:         
@@ -463,11 +532,11 @@ class level:
                     for obj in self.alien_objects: obj.vel = 0                
                     self.player_move = False
                     if self.state == 'waves':
-                        obj = scoreboard()
-                        threading.Thread(target=obj.update_board, args=(self.score,)).start()
+                        if self.is_highscore():
+                            self.entering_name = True
+                            self.name_input = ""
                     
                     self.single_lose_run = True
-
 
         #Refresh screen
             pygame.display.update()

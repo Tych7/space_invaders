@@ -46,20 +46,20 @@ class scoreboard:
         self.set_ratio()
         self.images = game_functions.scale_images(loaded_images)
 
-    def update_board(self, score):
+    def update_board(self, name, score):
         url = f"{FIREBASE_URL}/scores.json"
 
-        # Get current scores
         response = requests.get(url)
         scores = response.json()
 
         if scores is None:
             scores = []
 
-        scores.append(score)
-        scores = sorted(scores, reverse=True)[:10]
+        scores.append({"name": name, "score": score})
 
-        # Write back
+        # Sort by score
+        scores = sorted(scores, key=lambda x: x["score"], reverse=True)[:10]
+
         requests.put(url, json=scores)
 
     def load_scores(self):
@@ -68,14 +68,12 @@ class scoreboard:
         scores = response.json()
 
         if scores is None:
-            scores = [0]*10
+            scores = []
 
         while len(scores) < 10:
-            scores.append(0)
+            scores.append({"name": "---", "score": 0})
 
         self.scores = scores
-
-
 
     def update_screen(self, game_functions, pointer):
         game_functions.display_image(self.images[0], 0 , 0, self.win)
@@ -83,13 +81,20 @@ class scoreboard:
         game_functions.display_image(self.images[5], 0 , 1210  * self.ratio, self.win)
 
         game_functions.display_text(40, "#" , -250 * self.ratio, 340 * self.ratio, (112, 228, 209), self.win)
-        game_functions.display_text(40, "Scores" , -10 * self.ratio, 340 * self.ratio, (112, 228, 209), self.win)
+        game_functions.display_text(40, "Scores" , 10 * self.ratio, 340 * self.ratio, (112, 228, 209), self.win)
 
         for i in range(10):
-            correction = 0
-            if i == 9: correction = 10
-            game_functions.display_text(40, str(i + 1) , (-250 + correction) * self.ratio, (415 + i * 71) * self.ratio, (112, 228, 209), self.win)
-            game_functions.display_text(40, str(self.scores[i]) , -100 * self.ratio, (415 + i * 71) * self.ratio, (255, 140 ,68), self.win)
+            entry = self.scores[i]
+            name = entry["name"]
+            score = entry["score"]
+
+            game_functions.display_text(40, str(i + 1),
+                (-250 * self.ratio), (415 + i * 71) * self.ratio, (112, 228, 209), self.win)
+
+            game_functions.display_text(40, name,(-1200 * self.ratio), (415 + i * 71) * self.ratio, (112, 228, 209), self.win, align="right")
+
+            game_functions.display_text(40, str(score),
+                (200 * self.ratio), (415 + i * 71) * self.ratio, (255, 140 ,68), self.win)
 
         for button in self.home_buttons: button.draw(self.win)
 

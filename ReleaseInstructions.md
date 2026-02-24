@@ -1,2 +1,2 @@
-1. run at root of project: python -m PyInstaller --onefile --windowed --name SpaceInvaders main_menu.py
+1. run at root of project: python -m PyInstaller --onefile --windowed --name SpaceInvaders --add-data "levels;levels" --icon=spaceinvaders_104010.ico main_menu.py
 2. Place all neded assets around the .exe file

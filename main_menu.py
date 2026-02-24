@@ -126,7 +126,7 @@ class Game:
         game_functions.display_image(self.images[1], 0 , 175 * self.ratio, self.win)
         game_functions.display_image(self.images[10], 0 , 1210 * self.ratio, self.win)
         
-        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 580 * self.ratio, 90 * self.ratio, (112, 228, 209), self.win)
+        game_functions.display_text(30, 'Max lvl: ' + str(self.lvl_count - 1), 680 * self.ratio, 90 * self.ratio, (112, 228, 209), self.win)
 
         for button in self.home_buttons: button.draw(self.win)
         for button in self.state_buttons: button.draw(self.win)
@@ -172,13 +172,12 @@ while True:
     game_1.init_game(game_functions)
     pointer = controller_pointer(1280 * game_1.ratio, 1290 * game_1.ratio, 12)
     
-
     controls_button = CircleButton(1070, 1290, 50, 50, "Controls", 40, lambda: Controls().main(game_functions), game_1.images[8])
     score_button = CircleButton(1210, 1290, 50, 50, "Score Board", 40, lambda: scoreboard().main(game_functions), game_1.images[15])
     settings_button = CircleButton(1350, 1290, 50, 50, "Settings", 40, lambda: setattr(game_1, 'settings_open', True), game_1.images[7])
     quit_button = CircleButton(1490, 1290, 50, 50, "Quit Game", 40, lambda: (pygame.quit(), sys.exit(0)), game_1.images[9])
 
-    waves_button = RectButton(800, 950, 400, 100,  "Ranked  ", 40, lambda: setattr(game_1, 'state', 'waves'))
+    waves_button = RectButton(800, 950, 400, 100,  "Play  ", 40, lambda: setattr(game_1, 'state', 'waves'))
     level_button = RectButton(1360, 950, 400, 100, " Practice", 40, lambda: setattr(game_1, 'state', 'level'))
 
     level_select_button = RectButton(780, 950, 1000, 100, "", 50, lambda: game_1.start_lvl())

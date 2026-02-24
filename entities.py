@@ -66,21 +66,24 @@ class global_game_functions:
 
 		win.blit(image, (image_width, y))
   
-	def display_text(self, size, text, width, height, color, win):
-		font_size = int(size * min(self.ratio, self.ratio))
+	def display_text(self, size, text, x, y, color, win, align="center"):
+		font_size = int(size * self.ratio)
 		font = pygame.font.SysFont('couriernew', font_size, True)
-		renderd_text = font.render(text, 1, color)
-  
-		screen_center  = (pygame.display.get_surface().get_size()[0])/2
-		image_width = 0
-		if width == 0:
-			image_width = screen_center - (font.size(text)[0] / 2)
-		elif width < 0:
-			image_width = screen_center - font.size(text)[0] + width 
+		rendered_text = font.render(text, True, color)
+
+		screen_width = pygame.display.get_surface().get_width()
+		text_width = rendered_text.get_width()
+
+		if align == "center":
+			pos_x = (screen_width / 2) - (text_width / 2) + x
+		elif align == "left":
+			pos_x = x
+		elif align == "right":
+			pos_x = screen_width - text_width + x
 		else:
-			image_width = screen_center + width
-  
-		win.blit(renderd_text, (image_width, height))
+			pos_x = x  # fallback
+
+		win.blit(rendered_text, (pos_x, y))
 	
 	def object_hit(self, obj, bullets):
 		if obj.visible:
