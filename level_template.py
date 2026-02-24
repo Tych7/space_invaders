@@ -144,11 +144,7 @@ class level:
         game_functions.display_text(40,"Combo x" + str(self.multiplier), 1060 * self.ratio, 575 * self.ratio, (112, 228, 209), self.win)
         
         #display score
-        lvl_number = int(self.level_string.split(" ")[1])
-        if lvl_number > 9:  lvl_label_x = -775 * self.ratio
-        else: lvl_label_x = -800 * self.ratio
-        
-        game_functions.display_text(50,self.level_string, lvl_label_x , 1325 * self.ratio, (112, 228, 209), self.win)
+        game_functions.display_text(50, self.level_string, -800 * self.ratio , 1325 * self.ratio, (112, 228, 209), self.win)
 
         if self.state == 'waves':
             hearts = []
