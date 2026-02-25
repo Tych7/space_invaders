@@ -50,7 +50,8 @@ class level:
     combo_counter = 0
     multiplier = 1
     pauze = False
-    winner = False
+    level_winner = False
+    waves_winner = False
     lose = False
     running = True
     settings_open = False
@@ -114,6 +115,7 @@ class level:
             "gameover.wav",
             "invaderkilled.wav",
             "get_hit.mp3",
+            "winner.mp3",
         ]
         game_functions.load_sounds(self, sounds)
 
@@ -167,7 +169,7 @@ class level:
             if data["Music"] == "false": game_functions.display_image(self.images[9], -750 * self.ratio, 90 * self.ratio, self.win)
         
 
-        if self.pauze or self.winner or self.lose:
+        if self.pauze or self.level_winner or self.lose or self.waves_winner:
             overlay_color = (0, 0, 0, 200) 
             overlay = pygame.Surface((self.win.get_width(), self.win.get_height()), pygame.SRCALPHA)
             overlay.fill(overlay_color)
@@ -179,12 +181,19 @@ class level:
             for button in self.pauze_buttons: button.draw(self.win)
             pointer.draw(self.win, self.pauze_buttons)
      
-        if self.winner:
+        if self.level_winner:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
             game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, (112, 228, 209), self.win)
             for button in self.win_buttons: button.draw(self.win)
             game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
             pointer.draw(self.win, self.win_buttons)
+
+        if self.waves_winner:
+            game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
+            game_functions.display_text(35, self.level_string, 0 , 515 * self.ratio, (112, 228, 209), self.win)
+            for button in self.waves_winner_buttons: button.draw(self.win)
+            game_functions.display_image(self.images[6], 0 , 300 * self.ratio, self.win)
+            pointer.draw(self.win, self.waves_winner)
         
         if self.lose:
             game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
@@ -193,6 +202,7 @@ class level:
             game_functions.display_image(self.images[5], 0 , 300 * self.ratio, self.win)
             pointer.draw(self.win, self.lose_buttons)
 
+        if self.lose or self.waves_winner:
             if self.state == 'waves':
                 if self.entering_name:
                     game_functions.display_image(self.images[10], 0 , 500 * self.ratio, self.win)
@@ -216,7 +226,7 @@ class level:
     def init_objects(self, lvl_lable, lvl_structure, state):
         self.player_objects.clear()
         self.alien_objects.clear()
-        self.winner = False
+        self.level_winner = False
         self.lose = False
         self.pauze = False
         self.player_move = True
@@ -268,14 +278,37 @@ class level:
     
     def next_lvl(self):
         self.block_shoot = True
+
         current_level = int(self.level_string.split(" ")[1])
         next_level = current_level + 1
         file_path = resource_path(f"levels/lvl_{next_level}.csv")
-        
+
         if os.path.exists(file_path):
-            self.init_objects(self.level_string.split(" ")[0] + " " + str(next_level), file_path, self.state)
+            # Load next level
+            self.init_objects(
+                self.level_string.split(" ")[0] + " " + str(next_level),
+                file_path,
+                self.state
+            )
         else:
-            print("Error: File not found:", file_path)
+            if self.waves_winner == False:
+                print("No more levels. You finished the game!")
+                with open("settings.json", 'r') as file:
+                            data = json.load(file)
+                            if data["SFX"] == "true": self.sounds[4].play()
+
+            if self.is_highscore():
+                if self.waves_winner == False:
+                    self.entering_name = True
+                    self.name_input = ""   
+
+            self.waves_winner = True
+            self.player_move = False
+
+            # Stop all alien movement
+            for obj in self.alien_objects:
+                obj.vel = 0
+                obj.shooting = False
     
     def restart_lvl(self):
         self.block_shoot = True
@@ -291,7 +324,7 @@ class level:
 
     def shoot_bullet(self, obj):
         if self.player_move == True:          
-            if not self.pauze or not self.winner or not self.lose or not self.settings_open:               
+            if not self.pauze or not self.level_winner or not self.waves_winner or not self.lose or not self.settings_open:               
                 if len(obj.bullets) < 1:
                         obj.bullets.append(projectile(
                             round(obj.x + obj.width //2), 
@@ -353,6 +386,7 @@ class level:
         self.settings_buttons = [back_button, sfx_switch, music_switch]
         self.win_buttons = [settings_button, home_button, score_button, next_lvl_button, restart_button]
         self.lose_buttons = [settings_button, home_button, score_button, big_restart_button]
+        self.waves_winner_buttons = [settings_button, home_button, score_button, big_restart_button]
 
         self.running = True
         
@@ -370,9 +404,10 @@ class level:
             
             
             if self.settings_open: self.active_buttons = self.settings_buttons
-            elif self.pauze: self.active_buttons = self.pauze_buttons
-            elif self.winner: self.active_buttons = self.win_buttons
             elif self.entering_name: self.active_buttons = [self.submit_button]
+            elif self.waves_winner: self.active_buttons = self.waves_winner_buttons
+            elif self.pauze: self.active_buttons = self.pauze_buttons
+            elif self.level_winner: self.active_buttons = self.win_buttons
             elif self.lose: self.active_buttons = self.lose_buttons              
             else: self.active_buttons = []
 
@@ -406,13 +441,6 @@ class level:
                                 self.name_input = self.name_input[:-1]
                                 self.backspace_held = True
 
-                        elif event.key == pygame.K_RETURN:
-                            if len(self.name_input) > 0:
-                                obj = scoreboard()
-                                obj.update_board(self.name_input, self.score)
-                                self.entering_name = False
-                                self.running = False
-
                         else:
                             if len(self.name_input) < 10 and event.unicode in string.ascii_letters + string.digits:
                                 self.name_input += event.unicode
@@ -423,7 +451,6 @@ class level:
                             self.shoot_bullet(self.player_objects[0])
 
 
-                # 🔑 KEY RELEASE (OUTSIDE KEYDOWN!)
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_BACKSPACE:
                         self.backspace_held = False
@@ -496,7 +523,7 @@ class level:
                         alien.shoot(self.win)
         
         #Pauze game         
-            if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.winner and not self.lose:
+            if (keys[pygame.K_ESCAPE] or (self.controller is not None and self.controller.get_button(6))) and not self.level_winner and not self.lose:
                 self.pauze = True
                 self.player_move = False
             if self.pauze:
@@ -510,7 +537,7 @@ class level:
             if all_aliens_invisible == True:
                 if self.state == 'level':
                     for obj in self.alien_objects: obj.vel = 0
-                    self.winner = True
+                    self.level_winner = True
                     self.player_move = False
                 elif self.state == 'waves': self.next_lvl()
                     
